@@ -1,0 +1,45 @@
+{
+    "schema": "dashcore-design/1",
+    "generated_at": "2026-09-10T20:00:10+00:00",
+    "brief": {
+        "client": "Dashcore",
+        "product": "The design tool itself: the standard, the designs, and the mockups. Used by John and Travis while shaping a new project.",
+        "shell": "sidebar",
+        "brand_colour": null,
+        "logo": null,
+        "notes": "This is the default the tool wears. Deliberately quiet so a client's design reads as the design, not this one."
+    },
+    "decisions": {
+        "accent": {
+            "value": "#274db4",
+            "why": "A plain, saturated blue that reads as a tool rather than a brand, well away from the reds and ambers used for status."
+        },
+        "temperature": {
+            "value": "cool",
+            "why": "True grey so a client's chosen temperature is judged against neutral, not against a tint."
+        },
+        "pairing": {
+            "value": "5",
+            "why": "IBM Plex Sans with Plex Mono: neutral, technical, and the mono face carries the labels and hex values this tool is full of."
+        },
+        "radius": {
+            "value": "round",
+            "why": "The default when nothing argues otherwise."
+        },
+        "density": {
+            "value": "comfortable",
+            "why": "Two people who know the tool, working from panels of controls all day."
+        },
+        "motif": {
+            "value": "eyebrow",
+            "why": "Mono uppercase labels suit a tool whose content is mostly labels and values."
+        },
+        "copy": {
+            "eyebrow": "Dashcore",
+            "headline": "One standard, fifteen apps.",
+            "tagline": "Sign in to shape the next one.",
+            "footer": null,
+            "why": "Says what the tool is for in one line."
+        }
+    }
+}

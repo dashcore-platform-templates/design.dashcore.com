@@ -87,6 +87,10 @@ Measured on the roles above, all three temperatures:
 
 Two things fall out of the numbers. Muted text at 500 only just passes on white and fails on neutral 100 (4.35:1), so muted text on any sunken surface uses 600 in light. And Flux's default of neutral 500 for muted text in dark fails at 3.07 to 3.19:1 on neutral 800, so the standard sets dark muted text to 400 and the adapter overrides Flux there.
 
+## Open for the cut
+
+The floor above says a border that carries meaning, such as an input outline, needs 3:1. Measured, the 300 step used for `border-strong` sits at about 1.5:1 on white, and Flux's own inputs use the same step. Either input outlines move to the 500 step, which is noticeably heavier than anything in the fleet today, or the rule relaxes to say the focus ring carries the meaning and the resting outline may be quiet. The resolver reports the border pair for information and does not fail a design on it until this is decided.
+
 ## Mapping onto Flux
 
 The tokens layer writes these into `@theme`:
