@@ -197,7 +197,7 @@ final class Resolver
             if ($min >= 4.5) {
                 $passes = $passes && $ok;
             }
-            $results[] = ['pair' => $label, 'ratio' => $ratio, 'min' => $min, 'passes' => $ok];
+            $results[] = ['pair' => $label, 'ratio' => $ratio, 'min' => $min, 'passes' => $ok, 'informational' => $min < 4.5];
             if ($min >= 4.5 && ($lowest === null || $ratio < $lowest['ratio'])) {
                 $lowest = ['pair' => $label, 'ratio' => $ratio];
             }

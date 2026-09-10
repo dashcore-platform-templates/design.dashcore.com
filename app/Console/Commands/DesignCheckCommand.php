@@ -30,6 +30,13 @@ class DesignCheckCommand extends Command
             $this->components->twoColumnDetail("<fg=cyan>{$design->slug}</>", $contrast['passes'] ? '<fg=green>passes</>' : '<fg=red>FAILS</>');
 
             foreach ($contrast['pairs'] as $pair) {
+                if ($pair['informational']) {
+                    // Border pairs are reported, not judged: 04 gives decorative borders no floor and leaves input outlines open for the cut.
+                    $this->components->twoColumnDetail("  {$pair['pair']}", sprintf('<fg=gray>info</>  %5.2f (no floor, see 04)', $pair['ratio']));
+
+                    continue;
+                }
+
                 $status = $pair['passes'] ? '<fg=green>ok</>' : '<fg=red>fail</>';
                 $this->components->twoColumnDetail("  {$pair['pair']}", sprintf('%s  %5.2f (min %.1f)', $status, $pair['ratio'], $pair['min']));
             }
