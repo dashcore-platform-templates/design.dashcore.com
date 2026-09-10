@@ -36,6 +36,7 @@
                             <x-tool-nav-item :href="route('designs.show', $design->slug)" :active="request()->routeIs('designs.show') && request()->route('slug') === $design->slug" icon="swatch">{{ $design->name() }}</x-tool-nav-item>
                         @endforeach
                         <x-tool-nav-item :href="route('designs.index')" :active="request()->routeIs('designs.index')" icon="squares-2x2">All designs</x-tool-nav-item>
+                        <x-tool-nav-item :href="route('designs.create')" :active="request()->routeIs('designs.create')" icon="plus">New design</x-tool-nav-item>
                     </div>
                 </nav>
                 <div class="border-t border-(--ds-border) px-4 py-3">

@@ -11,7 +11,8 @@ use InvalidArgumentException;
  * One design: a brief plus the seven decisions, stored as a JSON file in
  * resources/designs. No database. The tokens layer is derived on read, never
  * stored by hand, so a file can only ever disagree with the standard in its
- * decisions.
+ * decisions. A generated design also carries a small record of how it was
+ * made: model, prompt hash, duration, token usage.
  */
 final class Design
 {
@@ -20,12 +21,14 @@ final class Design
     /**
      * @param  array<string,mixed>  $brief
      * @param  array<string,mixed>  $decisions
+     * @param  array<string,mixed>|null  $generator
      */
     public function __construct(
         public string $slug,
         public array $brief,
         public array $decisions,
         public ?string $generatedAt = null,
+        public ?array $generator = null,
     ) {}
 
     public static function directory(): string
@@ -56,6 +59,7 @@ final class Design
             brief: $data['brief'] ?? [],
             decisions: $data['decisions'] ?? [],
             generatedAt: $data['generated_at'] ?? null,
+            generator: $data['generator'] ?? null,
         );
     }
 
@@ -81,13 +85,14 @@ final class Design
      */
     public function toArray(): array
     {
-        return [
+        return array_filter([
             'schema' => self::SCHEMA,
             'generated_at' => $this->generatedAt ?? now()->toIso8601String(),
+            'generator' => $this->generator,
             'brief' => $this->brief,
             'decisions' => $this->decisions,
             'tokens' => $this->tokens(),
-        ];
+        ], fn ($v) => $v !== null);
     }
 
     public function toJson(): string
@@ -107,12 +112,13 @@ final class Design
         }
 
         File::ensureDirectoryExists(self::directory());
-        File::put(self::path($this->slug), json_encode([
+        File::put(self::path($this->slug), json_encode(array_filter([
             'schema' => self::SCHEMA,
             'generated_at' => $this->generatedAt ?? now()->toIso8601String(),
+            'generator' => $this->generator,
             'brief' => $this->brief,
             'decisions' => $this->decisions,
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n");
+        ], fn ($v) => $v !== null), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)."\n");
     }
 
     public function name(): string

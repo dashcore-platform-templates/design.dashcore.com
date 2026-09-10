@@ -1,0 +1,56 @@
+{
+    "schema": "dashcore-design/1",
+    "generated_at": "2026-09-10T20:57:36+00:00",
+    "generator": {
+        "model": "claude-opus-5",
+        "prompt_sha1": "c02d1216b51ad4ae27d7a2444fea5acd32d68047",
+        "duration_ms": 18631,
+        "usage": {
+            "input_tokens": 403,
+            "output_tokens": 988,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 17030
+        }
+    },
+    "brief": {
+        "client": "Dashcore, product ExecutiveOS",
+        "product": "An AI executive assistant for one person. It reads their mail and calendar, writes a morning briefing, drafts replies, remembers people and commitments, and asks for approval before anything leaves with their name on it. Used all day by a busy executive or founder, in short glances between meetings rather than long sessions, plus an admin view for the person running the platform.",
+        "shell": "sidebar",
+        "brand_colour": null,
+        "logo": null,
+        "notes": "Most of the product happens in the background, so screens are mostly reading surfaces: a stat row, lists with counts, a chat panel beside a page being read. Amber is reserved for \"this wants you\" (Needs you rows, a drafted reply waiting, new chat bubbles) and must stay distinct from the accent. Dark mode is used a lot; muted text needs 4.5:1 measured against the dark surface, not eyeballed. Icons are Heroicons only, no Lucide mixing. It should feel like a quiet, competent assistant, not a dashboard and not a bank."
+    },
+    "decisions": {
+        "accent": {
+            "value": "#4338ca",
+            "why": "A deep indigo sits far from the amber the brief reserves for \"this wants you\", so an approval button never reads as an alert."
+        },
+        "temperature": {
+            "value": "cool",
+            "why": "Cool greys suit a software product that is read heavily in dark mode."
+        },
+        "pairing": {
+            "value": 7,
+            "why": "Hanken Grotesk with Newsreader gives the morning briefing an authored, considered feel rather than a dashboard one."
+        },
+        "radius": {
+            "value": "soft",
+            "why": "Nothing in the brief calls for hard technical edges or consumer roundness."
+        },
+        "density": {
+            "value": "comfortable",
+            "why": "One executive glancing between meetings is not trained staff grinding through rows all day."
+        },
+        "motif": {
+            "value": "hairline",
+            "why": "The screens are mostly reading surfaces, lists and counts, which sit better on quiet rules than in boxes."
+        },
+        "copy": {
+            "eyebrow": "ExecutiveOS",
+            "headline": "Your morning, already read.",
+            "tagline": "Sign in to see what came in overnight and what is waiting on your word.",
+            "footer": null,
+            "why": "It speaks to the one thing the executive opens the app to find out, without describing the software."
+        }
+    }
+}

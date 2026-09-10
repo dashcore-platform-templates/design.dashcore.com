@@ -20,6 +20,7 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
             <h1 class="text-2xl font-semibold leading-tight text-(--ds-text-strong)">Every design in the fleet</h1>
             <p class="mt-1 text-sm text-(--ds-text-muted)">One file per project in <code class="font-mono text-xs">resources/designs</code>. Open one to change its decisions and export the pack.</p>
         </div>
+        <flux:button :href="route('designs.create')" wire:navigate variant="primary" icon="plus">New design</flux:button>
     </header>
 
     <div class="grid gap-(--ds-section) md:grid-cols-2 xl:grid-cols-3">

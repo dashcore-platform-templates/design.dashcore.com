@@ -2,6 +2,8 @@
 
 use App\Design\Css;
 use App\Design\Design;
+use App\Design\Generation\DesignGenerator;
+use App\Design\Generation\GenerationFailed;
 use App\Design\Neutrals;
 use App\Design\Pairings;
 use App\Design\Resolver;
@@ -28,6 +30,8 @@ new #[Layout('layouts::tool')] class extends Component
 
     #[Url]
     public string $register = 'light';
+
+    public ?array $generator = null;
 
     public bool $dirty = false;
 
@@ -60,17 +64,35 @@ new #[Layout('layouts::tool')] class extends Component
         $this->notice = 'Reverted to the file.';
     }
 
+    /** Run the brief through the generator again. Replaces the decisions in the session, not the file, until Save. */
+    public function regenerate(DesignGenerator $generator): void
+    {
+        try {
+            $fresh = $generator->generate($this->brief, $this->slug);
+        } catch (GenerationFailed $e) {
+            $this->notice = $e->getMessage();
+
+            return;
+        }
+
+        $this->decisions = $fresh->decisions;
+        $this->generator = $fresh->generator;
+        $this->dirty = true;
+        $this->notice = 'Regenerated with '.$fresh->generator['model'].'. Save to keep it.';
+    }
+
     protected function load(): void
     {
         $design = Design::load($this->slug);
         $this->brief = $design->brief;
         $this->decisions = $design->decisions;
+        $this->generator = $design->generator;
         $this->dirty = false;
     }
 
     protected function design(): Design
     {
-        return new Design($this->slug, $this->brief, $this->decisions);
+        return new Design($this->slug, $this->brief, $this->decisions, generator: $this->generator);
     }
 
     public function with(): array
@@ -110,7 +132,7 @@ new #[Layout('layouts::tool')] class extends Component
         <div class="flex-1 space-y-5 overflow-y-auto px-(--ds-card) py-4">
             {{-- Shell: a person's choice, in the brief --}}
             <flux:field>
-                <flux:label>Shell <span class="ds-label font-normal">brief, not generated</span></flux:label>
+                <flux:label>Shell <span class="ds-label ms-1.5 font-normal">brief, not generated</span></flux:label>
                 <flux:radio.group wire:model.live="brief.shell" variant="segmented" size="sm">
                     <flux:radio value="sidebar" label="Sidebar" />
                     <flux:radio value="top-nav" label="Top nav" />
@@ -208,6 +230,10 @@ new #[Layout('layouts::tool')] class extends Component
                 <flux:button wire:click="save" variant="primary" size="sm" :disabled="! $dirty" class="flex-1">Save</flux:button>
                 <flux:button wire:click="revert" size="sm" :disabled="! $dirty">Revert</flux:button>
             </div>
+            <flux:button wire:click="regenerate" wire:confirm="Run the brief through the generator again? Unsaved changes here will be replaced." size="sm" icon="sparkles" class="w-full">
+                <span wire:loading.remove wire:target="regenerate">Regenerate from brief</span>
+                <span wire:loading wire:target="regenerate">Choosing again…</span>
+            </flux:button>
             <div class="flex gap-2">
                 <flux:button :href="route('designs.pack', $slug)" size="sm" icon="arrow-down-tray" class="flex-1">Download pack</flux:button>
                 <flux:button :href="route('designs.json', $slug)" size="sm" variant="ghost">JSON</flux:button>
