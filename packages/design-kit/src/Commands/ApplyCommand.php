@@ -151,20 +151,25 @@ class ApplyCommand extends Command
             $changes[] = ['path' => $to, 'from' => $from, 'action' => 'copy', 'changed' => File::exists($from) && (! File::exists($to) || md5_file($from) !== md5_file($to))];
         }
 
-        // Lucide names in the kit's own views become Heroicons, then the override
-        // files go. The order matters: renaming first keeps every icon resolvable.
-        $views = base_path('resources/views');
-        if (File::isDirectory($views)) {
-            foreach (File::allFiles($views) as $view) {
-                if (! str_ends_with($view->getFilename(), '.blade.php') || str_starts_with($view->getRelativePath(), 'flux')) {
+        // Lucide names become Heroicons wherever the app names one, then the
+        // override files go. The order matters: renaming first keeps every icon
+        // resolvable. Names live in Blade views and also in PHP arrays (nav
+        // definitions, Livewire classes, config), so all three trees are scanned.
+        foreach (['resources/views', 'app', 'config', 'routes'] as $dir) {
+            $root = base_path($dir);
+            if (! File::isDirectory($root)) {
+                continue;
+            }
+            foreach (File::allFiles($root) as $file) {
+                if (! str_ends_with($file->getFilename(), '.php') || ($dir === 'resources/views' && str_starts_with($file->getRelativePath(), 'flux'))) {
                     continue;
                 }
-                $before = File::get($view->getPathname());
+                $before = File::get($file->getPathname());
                 if (! Applier::mentionsLucide($before)) {
                     continue;
                 }
                 $after = Applier::renameLucide($before);
-                $changes[] = ['path' => $view->getPathname(), 'action' => 'write', 'after' => $after, 'changed' => $after !== $before];
+                $changes[] = ['path' => $file->getPathname(), 'action' => 'write', 'after' => $after, 'changed' => $after !== $before];
             }
         }
 

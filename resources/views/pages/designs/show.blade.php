@@ -252,6 +252,7 @@ new #[Layout('layouts::tool')] class extends Component
                 <flux:radio value="shell" label="Shell" />
                 <flux:radio value="dashboard" label="Dashboard" />
                 <flux:radio value="settings" label="Settings" />
+                <flux:radio value="components" label="Components" />
             </flux:radio.group>
             <div class="flex items-center gap-3">
                 <span class="text-xs text-(--ds-text-muted)">{{ $tokens['fonts']['sans']['family'] }} + {{ $tokens['fonts']['second']['family'] }} · {{ $decisions['temperature']['value'] }} · {{ $decisions['radius']['value'] }} · {{ $decisions['density']['value'] }} · {{ $decisions['motif']['value'] }}</span>
