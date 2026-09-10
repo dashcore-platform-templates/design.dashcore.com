@@ -11,7 +11,7 @@
     $eyebrow = $design->decisions['copy']['eyebrow'] ?? null;
     $nav = [
         ['Overview', 'home', true],
-        ['Schedule', 'calendar-days', false],
+        ['Activity', 'clock', false],
         ['People', 'users', false],
         ['Reports', 'chart-bar', false],
         ['Settings', 'cog-6-tooth', false],

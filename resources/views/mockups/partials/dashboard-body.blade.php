@@ -3,27 +3,27 @@
     $statFont = $second['kind'] === 'display' || $second['kind'] === 'mono' ? 'font-second' : '';
     $upper = $second['condensed'] ? 'uppercase tracking-[0.02em]' : '';
     $stats = [
-        ['Booked today', '148', '+12 on last Tuesday', 'up'],
-        ['Late arrivals', '9', '3 still waiting', 'warn'],
-        ['Cancellations', '6', 'Within the usual range', null],
-        ['Open slots', '23', 'Across three clinics', null],
+        ['Open items', '148', '+12 since yesterday', 'up'],
+        ['Needs attention', '9', '3 waiting on you', 'warn'],
+        ['Closed today', '6', 'Within the usual range', null],
+        ['Due this week', '23', 'Across all teams', null],
     ];
     $rows = [
-        ['HP-2041', 'Mara Ellison', 'Downtown', '09:00', 'Checked in', 'success'],
-        ['HP-2042', 'Devin Okafor', 'Riverside', '09:15', 'Running late', 'warning'],
-        ['HP-2043', 'Priya Natarajan', 'Downtown', '09:30', 'Scheduled', 'info'],
-        ['HP-2044', 'Tomas Reyes', 'Northgate', '09:30', 'Cancelled', 'danger'],
-        ['HP-2045', 'Ana Lindqvist', 'Riverside', '10:00', 'Scheduled', 'info'],
-        ['HP-2046', 'Samuel Adeyemi', 'Downtown', '10:15', 'Checked in', 'success'],
+        ['RF-2041', 'Mara Ellison', 'Sales', '09:00', 'Done', 'success'],
+        ['RF-2042', 'Devin Okafor', 'Operations', '09:15', 'Needs attention', 'warning'],
+        ['RF-2043', 'Priya Natarajan', 'Sales', '09:30', 'Scheduled', 'info'],
+        ['RF-2044', 'Tomas Reyes', 'Finance', '09:30', 'Cancelled', 'danger'],
+        ['RF-2045', 'Ana Lindqvist', 'Operations', '10:00', 'Scheduled', 'info'],
+        ['RF-2046', 'Samuel Adeyemi', 'Sales', '10:15', 'Done', 'success'],
     ];
     $selectedRow = 1;
     $mono = $second['kind'] === 'mono' ? 'font-second' : 'font-mono';
     $cardClass = $motif === 'hairline' ? 'bg-(--ds-surface)' : 'rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface)';
 @endphp
 
-@include('mockups.partials.page-header', ['title' => 'Today', 'description' => 'Tuesday 15 September. All three clinics.', 'eyebrow' => null, 'motif' => $motif, 'eyebrowClass' => $eyebrowClass, 'design' => $design, 'slot' => new \Illuminate\Support\HtmlString('
+@include('mockups.partials.page-header', ['title' => 'Today', 'description' => 'Tuesday 15 September. Everything since yesterday.', 'eyebrow' => null, 'motif' => $motif, 'eyebrowClass' => $eyebrowClass, 'design' => $design, 'slot' => new \Illuminate\Support\HtmlString('
     <button class="inline-flex h-(--ds-control) items-center gap-2 rounded-(--radius-lg) border border-(--ds-border-strong) bg-(--ds-surface) px-3 text-sm font-medium text-(--ds-text)">Export</button>
-    <button class="inline-flex h-(--ds-control) items-center gap-2 rounded-(--radius-lg) bg-(--ds-accent) px-3 text-sm font-medium text-(--ds-on-accent)">New appointment</button>
+    <button class="inline-flex h-(--ds-control) items-center gap-2 rounded-(--radius-lg) bg-(--ds-accent) px-3 text-sm font-medium text-(--ds-on-accent)">New item</button>
 ')])
 
 <div class="space-y-(--ds-section) px-(--ds-gutter) pb-(--ds-section) {{ $motif === 'hairline' ? 'pt-(--ds-section)' : '' }}">
@@ -59,9 +59,9 @@
         {{-- Table: head on sunken, 12px labels; body on surface; first column strong; numbers tabular (06). --}}
         <div class="lg:col-span-8 {{ $cardClass }} overflow-hidden {{ $motif === 'hairline' ? 'border-y border-(--ds-border)' : '' }}">
             <div class="flex items-center justify-between gap-3 border-b border-(--ds-border) px-(--ds-card) py-3">
-                <h2 class="text-lg font-semibold leading-tight text-(--ds-text-strong)">Arrivals</h2>
+                <h2 class="text-lg font-semibold leading-tight text-(--ds-text-strong)">Recent activity</h2>
                 <div class="flex overflow-hidden rounded-(--radius-md) border border-(--ds-border) text-xs">
-                    @foreach (['All', 'Downtown', 'Riverside', 'Northgate'] as $j => $tab)
+                    @foreach (['All', 'Sales', 'Operations', 'Finance'] as $j => $tab)
                         <span class="px-2.5 py-1 {{ $j === 0 ? 'bg-(--ds-sunken) font-medium text-(--ds-text-strong)' : 'text-(--ds-text-muted)' }} {{ $j > 0 ? 'border-s border-(--ds-border)' : '' }}">{{ $tab }}</span>
                     @endforeach
                 </div>
@@ -70,13 +70,13 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-(--ds-sunken)">
-                            @foreach (['Ref', 'Patient', 'Clinic', 'Time', 'Status'] as $h)
+                            @foreach (['Ref', 'Owner', 'Team', 'Time', 'Status'] as $h)
                                 <th class="{{ $eyebrowClass }} !text-(--ds-text-muted-on-sunken) px-(--ds-cell-x) py-2 text-start font-medium {{ $h === 'Time' ? 'text-end' : '' }}">{{ $h }}</th>
                             @endforeach
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($rows as $i => [$ref, $patient, $clinic, $time, $status, $tone])
+                        @foreach ($rows as $i => [$ref, $owner, $team, $time, $status, $tone])
                             @php $selected = $i === $selectedRow; @endphp
                             <tr @class([
                                 'border-t border-(--ds-border)',
@@ -84,8 +84,8 @@
                                 'bg-(--ds-accent-soft)' => $selected && $motif !== 'accent-bar',
                             ])>
                                 <td class="h-(--ds-row) px-(--ds-cell-x) {{ $mono }} text-xs text-(--ds-text-muted)">{{ $ref }}</td>
-                                <td class="h-(--ds-row) px-(--ds-cell-x) font-medium text-(--ds-text-strong)">{{ $patient }}</td>
-                                <td class="h-(--ds-row) px-(--ds-cell-x) text-(--ds-text)">{{ $clinic }}</td>
+                                <td class="h-(--ds-row) px-(--ds-cell-x) font-medium text-(--ds-text-strong)">{{ $owner }}</td>
+                                <td class="h-(--ds-row) px-(--ds-cell-x) text-(--ds-text)">{{ $team }}</td>
                                 <td class="h-(--ds-row) px-(--ds-cell-x) text-end tabular-nums text-(--ds-text)">{{ $time }}</td>
                                 <td class="h-(--ds-row) px-(--ds-cell-x)">
                                     <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-{{ $tone }}-soft); color: var(--ds-{{ $tone }});">{{ $status }}</span>
@@ -108,12 +108,12 @@
         {{-- Side panel: a small list and a callout. --}}
         <div class="space-y-(--ds-section) lg:col-span-4">
             <div class="{{ $cardClass }} p-(--ds-card) {{ $motif === 'hairline' ? 'border-y border-(--ds-border)' : '' }}">
-                <p class="{{ $eyebrowClass }}">By clinic</p>
+                <p class="{{ $eyebrowClass }}">By team</p>
                 <ul class="mt-3 space-y-3">
-                    @foreach ([['Downtown', 64, 72], ['Riverside', 48, 60], ['Northgate', 36, 52]] as [$clinic, $n, $of])
+                    @foreach ([['Sales', 64, 72], ['Operations', 48, 60], ['Finance', 36, 52]] as [$team, $n, $of])
                         <li>
                             <div class="flex items-baseline justify-between text-sm">
-                                <span class="text-(--ds-text)">{{ $clinic }}</span>
+                                <span class="text-(--ds-text)">{{ $team }}</span>
                                 <span class="tabular-nums text-(--ds-text-strong) {{ $mono }} text-xs">{{ $n }} / {{ $of }}</span>
                             </div>
                             <div class="mt-1.5 h-1 overflow-hidden rounded-full bg-(--ds-sunken)">
@@ -126,9 +126,9 @@
             <div class="flex gap-3 rounded-(--radius-lg) p-(--ds-card)" style="background: var(--ds-warning-soft);">
                 <flux:icon name="exclamation-triangle" variant="outline" class="mt-0.5 size-5 shrink-0" style="color: var(--ds-warning)" />
                 <div class="text-sm">
-                    <p class="font-medium" style="color: var(--ds-warning)">Riverside is short one therapist</p>
-                    <p class="mt-0.5 text-(--ds-text)">Two afternoon slots have no clinician assigned.</p>
-                    <p class="mt-2 text-sm font-medium" style="color: var(--ds-warning)">Assign now</p>
+                    <p class="font-medium" style="color: var(--ds-warning)">Two items have no owner</p>
+                    <p class="mt-0.5 text-(--ds-text)">They will slip past this week unless someone picks them up.</p>
+                    <p class="mt-2 text-sm font-medium" style="color: var(--ds-warning)">Assign an owner</p>
                 </div>
             </div>
         </div>

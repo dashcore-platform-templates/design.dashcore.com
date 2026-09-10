@@ -5,17 +5,19 @@
 | Design generator
 |--------------------------------------------------------------------------
 |
-| Phase 2 of design.dashcore.com. The model is a config value on purpose:
-| the decision was to build on Opus 5, compare with Sonnet 5 on the
-| acceptance test, and move to Fable only if the copy or reasoning is
-| visibly better. Change DESIGN_MODEL in .env, nothing else.
+| Phase 2 of design.dashcore.com. The model is a config value on purpose.
+| Built on Opus 5, then compared on one brief against Sonnet 5 and Fable 5.1
+| (DAS-2016, 11 Sep 2026): Fable gave the sharpest reasons and resolved the
+| split the others left open, so it is the default. A generation happens a
+| few times per project, so the price difference is cents. Change
+| DESIGN_MODEL in .env, nothing else.
 |
 */
 
 return [
     'api_key' => env('ANTHROPIC_API_KEY'),
 
-    'model' => env('DESIGN_MODEL', 'claude-opus-5'),
+    'model' => env('DESIGN_MODEL', 'claude-fable-5-1'),
 
     // Seven constrained picks and three lines of copy do not need deep thought.
     'effort' => env('DESIGN_EFFORT', 'medium'),
