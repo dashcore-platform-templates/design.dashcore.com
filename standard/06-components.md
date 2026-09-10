@@ -54,11 +54,11 @@ The inventory is Flux's, plus three custom components every fleet app needs and 
 
 ## Custom components
 
-The three components every fleet app needs that Flux does not ship. They live in the starter kit as Blade components and read only the `--ds-*` role variables.
+The three components every fleet app needs that Flux does not ship. They ship in the `dashcore/design-kit` package as Blade components and read only the `--ds-*` role variables and `config('brand')`.
 
-- **Page header** `x-ds-page-header`. Eyebrow, title, description, actions, as defined in 02.
-- **Stat tile** `x-ds-stat`. Label in the label style, value in the stat size and the display face if the pairing has one, an optional delta in success or danger text with an arrow icon, an optional one-line footnote in `text-muted`. Tiles sit in a row of two to four. Their surface treatment is set by the motif (07).
-- **Empty state** `x-ds-empty`. Centred in its region: one Heroicon at 24px in `text-muted`, one line saying what belongs here, one line saying how to add it, one default button. Never an illustration.
+- **Page header** `x-ds::page-header`. Eyebrow, title, description, actions, as defined in 02.
+- **Stat tile** `x-ds::stat`. Label in the label style, value in the stat size and the display face if the pairing has one, an optional delta in success or danger text with an arrow icon, an optional one-line footnote in `text-muted`. Tiles sit in a row of two to four inside `x-ds::stat-row`, which lays them out by motif (07): a one pixel grid for hairline, the section gap otherwise.
+- **Empty state** `x-ds::empty`. Centred in its region: one Heroicon at 24px in `text-muted`, one line saying what belongs here, one line saying how to add it, one default button. Never an illustration.
 
 ## Rules
 

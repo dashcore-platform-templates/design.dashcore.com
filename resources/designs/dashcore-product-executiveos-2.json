@@ -1,0 +1,56 @@
+{
+    "schema": "dashcore-design/1",
+    "generated_at": "2026-09-10T21:57:01+00:00",
+    "generator": {
+        "model": "claude-fable-5-1",
+        "prompt_sha1": "e86dd13dd39ea53e67c3b4d34da4add57bdc9c4a",
+        "duration_ms": 30428,
+        "usage": {
+            "input_tokens": 405,
+            "output_tokens": 1809,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 17076
+        }
+    },
+    "brief": {
+        "client": "Dashcore, product ExecutiveOS",
+        "product": "An AI executive assistant for one person. It reads their mail and calendar, writes a morning briefing, drafts replies, remembers people and commitments, and asks for approval before anything leaves with their name on it. Used all day by a busy executive or founder, in short glances between meetings rather than long sessions, plus an admin view for the person running the platform.",
+        "shell": "sidebar",
+        "brand_colour": null,
+        "logo": null,
+        "notes": "Most of the product happens in the background, so screens are mostly reading surfaces: a stat row, lists with counts, a chat panel beside a page being read. Amber is reserved for \"this wants you\" (Needs you rows, a drafted reply waiting, new chat bubbles) and must stay distinct from the accent. Dark mode is used a lot; muted text needs 4.5:1 measured against the dark surface, not eyeballed. Icons are Heroicons only, no Lucide mixing. It should feel like a quiet, competent assistant, not a dashboard and not a bank."
+    },
+    "decisions": {
+        "accent": {
+            "value": "#5b5bd6",
+            "why": "A muted indigo sits roughly opposite the amber the brief reserves for 'this wants you', so the two never compete, and it avoids the navy that banks and dashboards lean on."
+        },
+        "temperature": {
+            "value": "cool",
+            "why": "Slate greys suit a software assistant and give the dark register the brief says is used a lot a calm, even surface for long reading."
+        },
+        "pairing": {
+            "value": 7,
+            "why": "A morning briefing and drafted replies are read like an authored note, and Newsreader at title size gives that feel while Hanken Grotesk stays quiet in the lists and chat."
+        },
+        "radius": {
+            "value": "soft",
+            "why": "The brief wants neither the sharp edges of a data tool nor the rounded feel of a consumer app, so the default step fits."
+        },
+        "density": {
+            "value": "comfortable",
+            "why": "The executive uses it in short glances between meetings rather than working the screens all day as trained staff, so the larger spacing helps them find things fast."
+        },
+        "motif": {
+            "value": "accent-bar",
+            "why": "A thin bar marks the active item and selected row without filling anything, which keeps the accent quiet and leaves amber as the only colour that asks for attention in a row."
+        },
+        "copy": {
+            "eyebrow": "ExecutiveOS",
+            "headline": "Your morning, already read.",
+            "tagline": "Sign in to see what came in overnight and what needs your word.",
+            "footer": null,
+            "why": "It speaks to what the executive opens the app to do, catch up and approve, without describing the assistant or its features."
+        }
+    }
+}
