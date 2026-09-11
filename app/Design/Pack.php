@@ -129,9 +129,9 @@ final class Pack
         ## Order
 
         1. If the tree is not clean, commit, so every diff from here is readable.
-        2. `php artisan design:audit --fix`. Weights and off-scale spacing only, nothing with judgment in it. Run the app's tests and commit on its own: `Mechanical pass onto the standard`.
-        3. Screens, most-used first: the dashboard, then the sidebar's items in order, then settings, then admin. One commit per screen, named `Migrate <screen> onto the standard`.
-        4. Public pages, a landing page or legal documents, are outside the app standard. They still take the fonts and the neutral scale from the theme. If one should otherwise stay as it is, put `{{-- @ds-audit-ignore-file <reason> --}}` at the top and the audit skips it. Do not migrate them.
+        2. Mark the pages that are not app screens, before touching anything else. A landing page, legal documents, anything reachable signed out and composed on its own terms, sits outside the app standard. It still takes the fonts and the neutral scale from the theme, so it does not look foreign. Put `{{-- @ds-audit-ignore-file <reason> --}}` at the top of each, commit that on its own, and the audit leaves the file alone from here on, the mechanical pass included. Do this before step 3 or the mechanical pass rewrites the very pages this step exempts.
+        3. `php artisan design:audit --fix`. Weights and off-scale spacing only, nothing with judgment in it. Run the app's tests and commit on its own: `Mechanical pass onto the standard`.
+        4. Screens, most-used first: the dashboard, then the sidebar's items in order, then settings, then admin. One commit per screen, named `Migrate <screen> onto the standard`.
 
         ## Each kind of finding, and its rewrite
 
@@ -143,16 +143,29 @@ final class Pack
         text-green-600 dark:text-green-400      text-(--ds-success)
         text-sky-600 dark:text-sky-400          text-(--ds-info)
         bg-amber-50 dark:bg-amber-950           bg-(--ds-warning-soft)
-        text-zinc-500 / text-neutral-500        text-(--ds-text-muted)
+        text-neutral-500 / text-stone-500       text-(--ds-text-muted)
+        bg-neutral-50 / bg-gray-50              bg-(--ds-sunken)
+        ```
+
+        Secondary text sitting on a tinted row takes `text-(--ds-text-muted-on-sunken)` rather than `text-muted`, which fails the contrast floor on the danger and info tints in light. The status text itself is safe on its own tint, so a badge needs nothing special.
+
+        The roles: `page`, `surface`, `sunken`, `border`, `border-strong`, `text-strong`, `text`, `text-muted`, `text-muted-on-sunken`, `accent`, `accent-hover`, `accent-content`, `accent-soft`, `on-accent`, and for each of `success`, `warning`, `danger`, `info` the role itself for text, `-soft` for a background, `-fill` for a solid. Status colour marks status only: badges, callouts, toasts, form errors, deltas. Not a stat value, not a heading, not a button unless it is destructive. The accent appears once per region at most. A second grey family beside the design's own, stone or gray or neutral sitting next to zinc, is the drift itself: fold it into the roles.
+
+        **Zinc is already this design, and the audit is right not to report it.** `design:apply` redefines `--color-zinc-50` through `--color-zinc-950` as the chosen temperature's neutral ramp, and remaps `zinc-500` to the 400 step in dark. So `text-zinc-500` resolves to this design's muted grey in both registers without being touched. It is the seam the whole retheme runs through, not drift.
+
+        Moving zinc onto the roles is still worth doing on a line you are already editing, because one role replaces a hand-typed light and dark pair and says what the colour is for:
+
+        ```
+        text-zinc-500                           text-(--ds-text-muted)
         text-zinc-900 dark:text-white           text-(--ds-text-strong)
         bg-white dark:bg-zinc-900               bg-(--ds-surface)
         bg-zinc-50 dark:bg-zinc-950             bg-(--ds-page) or bg-(--ds-sunken)
         border-zinc-200 dark:border-zinc-700    border-(--ds-border)
         ```
 
-        Secondary text sitting on a tinted row takes `text-(--ds-text-muted-on-sunken)` rather than `text-muted`, which fails the contrast floor on the danger and info tints in light. The status text itself is safe on its own tint, so a badge needs nothing special.
+        That is polish, not a finding. Do not go hunting for it, and do not read a file the audit calls clean as one that still has work in it. The one case where it is more than polish is a hand-picked pair landing on a different step than the role does: the dark surface role is the 800 step, so `dark:bg-zinc-900` is a shade darker than every other surface in the app.
 
-        The roles: `page`, `surface`, `sunken`, `border`, `border-strong`, `text-strong`, `text`, `text-muted`, `text-muted-on-sunken`, `accent`, `accent-hover`, `accent-content`, `accent-soft`, `on-accent`, and for each of `success`, `warning`, `danger`, `info` the role itself for text, `-soft` for a background, `-fill` for a solid. Status colour marks status only: badges, callouts, toasts, form errors, deltas. Not a stat value, not a heading, not a button unless it is destructive. The accent appears once per region at most. A second grey family beside the design's own, stone next to zinc, is the drift itself: fold it into the roles.
+        **What the audit count is, and is not.** It counts what can be judged from the text of a file: colour families that are not this design's, spacing off the scale, weights, text under 12px, hardcoded hex, Flux badges, Lucide names, and page titles outside the page header. It does not count zinc, and it cannot see composition at all. A file at zero is on the standard as far as a text scan reaches, which is not the same as finished. Judge the screen, not the number.
 
         **Hardcoded colour.** A hex in a view or a `style=` moves to the role it means. If it is a brand identity colour the design does not carry, say so in the report rather than keeping it.
 
