@@ -50,9 +50,29 @@ php artisan design:apply design/design.json
 npm run build
 ```
 
-What it changes: a marked block at the end of `resources/css/app.css` (Flux theme variables, the `--ds-*` roles, the dark muted-text correction), the fonts array in `vite.config.js`, the brand and design keys in `.env` and `.env.example`, `resources/views/layouts/auth.blade.php` (now the two-panel sign-in), the logo copied to `public/images/` if the brief had one, and the four Lucide-named icon overrides deleted (it asks first; `--force` skips the question). Running it twice changes nothing. `--check` prints the plan and exits non-zero if anything would change.
+What it changes: a marked block at the end of `resources/css/app.css` (Flux theme variables, the `--ds-*` roles, the dark muted-text correction), the fonts array in `vite.config.js`, the brand and design keys in `.env` and `.env.example`, `resources/views/layouts/auth.blade.php` (now the two-panel sign-in), the logo copied to `public/images/` if the brief had one, the four Lucide-named icon overrides deleted, and the kit's three stock sign-in layouts under `layouts/auth/` deleted once nothing references them. It asks before each delete; `--force` skips the questions. Running it twice changes nothing. `--check` prints the plan and exits non-zero if anything would change.
 
 `php artisan design:check design/design.json` measures contrast on the file.
+
+## Audit and migrate
+
+```bash
+php artisan design:audit                                             # every view, the map
+php artisan design:audit resources/views/pages/dashboard.blade.php   # one screen, the check
+php artisan design:audit --fix                                       # weights and off-scale spacing, nothing needing judgment
+```
+
+It lists what is off the standard per file and by rule, and exits non-zero while anything is. It reports what a text scan can see; whether a screen is composed well is for a person with the screen open. The pack's `design/MIGRATION.md` is the procedure an agent follows to bring an existing app over, one screen per commit, using the audit on each file as its check.
+
+A line that is deliberately off says so, and the audit leaves it alone. A whole file that sits outside the app standard, a landing page or a legal document, says so once at the top and is listed as skipped:
+
+```blade
+<div class="p-5"> {{-- @ds-audit-ignore the brand mark is fixed at this size --}}
+
+{{-- @ds-audit-ignore-file public landing page, composed outside the app standard --}}
+```
+
+An ignore without a reason is worse than the finding.
 
 ## Components
 

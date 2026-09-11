@@ -35,6 +35,7 @@ Step by step, with what to look for at each stage: [docs/walkthrough.md](docs/wa
 3. Download the pack and unzip it into the target repo so `design/` exists.
 4. In the target repo: install the adapter, then `php artisan design:apply design/design.json`, then build.
 5. Commit `design/`. Every later agent session in that repo reads it before touching a screen.
+6. An existing app: hand the screens to the agent with `design/MIGRATION.md` as its brief. `design:audit` is its map and its check, one screen per commit, and you review each one.
 
 ## Running it
 

@@ -115,6 +115,27 @@ class DesignKitApplierTest extends TestCase
     }
 
     #[Test]
+    public function sign_in_layouts_nothing_references_are_dead_once_the_auth_layout_is_ours(): void
+    {
+        $base = sys_get_temp_dir().'/design-kit-'.uniqid();
+        mkdir("{$base}/resources/views/layouts/auth", 0777, true);
+        mkdir("{$base}/resources/views/pages", 0777, true);
+
+        $auth = "{$base}/resources/views/layouts/auth.blade.php";
+        file_put_contents($auth, '<x-layouts.auth.simple>{{ $slot }}</x-layouts.auth.simple>');
+        foreach (['simple', 'card', 'split'] as $name) {
+            file_put_contents("{$base}/resources/views/layouts/auth/{$name}.blade.php", '<div>{{ $slot }}</div>');
+        }
+        file_put_contents("{$base}/resources/views/pages/legal.blade.php", '<x-layouts.auth.card>{{ $slot }}</x-layouts.auth.card>');
+
+        $dead = array_map(fn (string $p) => basename($p), Applier::deadAuthLayouts($base, [$auth]));
+        sort($dead);
+
+        $this->assertSame(['simple.blade.php', 'split.blade.php'], $dead, 'card is still used by a page; simple is only used by the layout about to be replaced');
+        $this->assertSame([], Applier::deadAuthLayouts("{$base}/nowhere"), 'no auth layout, nothing to say');
+    }
+
+    #[Test]
     public function lucide_icon_names_become_heroicons_wherever_a_view_names_them(): void
     {
         $blade = "<flux:sidebar.item icon=\"folder-git-2\" href=\"#\">Repo</flux:sidebar.item>\n<flux:icon.book-open-text />\n@php \$icon = 'layout-grid'; @endphp\n<flux:icon name=\"chevrons-up-down\" />\n<p>book-open-text is also just text here</p>\n";

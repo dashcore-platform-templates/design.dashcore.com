@@ -93,4 +93,28 @@ class DesignKitAuditTest extends TestCase
 
         $this->assertSame([], Audit::file($blade));
     }
+
+    #[Test]
+    public function a_sign_in_view_keeps_its_own_heading(): void
+    {
+        $blade = '<flux:heading size="xl">Log in to your account</flux:heading>';
+
+        $this->assertSame(['page title not in the page header'], $this->rules($blade), 'anywhere else it is a page title');
+
+        foreach (['resources/views/components/auth-header.blade.php', 'resources/views/pages/auth/login.blade.php', 'resources/views/layouts/auth/card.blade.php', 'resources\\views\\layouts\\auth.blade.php'] as $path) {
+            $this->assertSame([], Audit::file($blade, $path), $path);
+        }
+
+        $this->assertNotSame([], Audit::file($blade, 'resources/views/pages/oauth/callback.blade.php'), 'only a whole auth segment counts');
+        $this->assertNotSame([], Audit::file($blade, 'resources/views/pages/author.blade.php'));
+    }
+
+    #[Test]
+    public function a_whole_file_can_opt_out(): void
+    {
+        $blade = "{{-- @ds-audit-ignore-file public landing page, composed outside the app standard --}}\n<h1 class=\"font-bold p-5 text-red-600\">Hello</h1>";
+
+        $this->assertTrue(Audit::optsOut($blade));
+        $this->assertSame([], Audit::file($blade));
+    }
 }

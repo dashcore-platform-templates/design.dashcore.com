@@ -207,6 +207,74 @@ final class Applier
     }
 
     /**
+     * The kit ships three sign-in layouts under layouts/auth/ and its auth
+     * layout picks one. Once design:apply points that layout at the package's
+     * two-panel sign-in, nothing references the three, and left in place they
+     * are dead code the audit keeps reporting. Returns the ones nothing else
+     * mentions.
+     *
+     * @param  list<string>  $ignore  Files about to be rewritten, whose current contents do not count as a reference.
+     * @return list<string>
+     */
+    public static function deadAuthLayouts(string $base, array $ignore = []): array
+    {
+        $auth = self::authLayoutPath($base);
+        if ($auth === null) {
+            return [];
+        }
+
+        $dir = substr($auth, 0, -strlen('.blade.php'));
+        $candidates = glob($dir.DIRECTORY_SEPARATOR.'*.blade.php') ?: [];
+        if ($candidates === []) {
+            return [];
+        }
+
+        $normalise = fn (string $p): string => str_replace('\\', '/', $p);
+        $ignore = array_map($normalise, $ignore);
+
+        $sources = [];
+        foreach (['resources/views', 'app', 'routes'] as $tree) {
+            $root = $base.DIRECTORY_SEPARATOR.$tree;
+            if (! is_dir($root)) {
+                continue;
+            }
+            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS));
+            foreach ($files as $file) {
+                $p = $normalise($file->getPathname());
+                if (str_ends_with($p, '.php') && ! in_array($p, $ignore, true)) {
+                    $sources[] = $p;
+                }
+            }
+        }
+
+        $dead = [];
+        foreach ($candidates as $candidate) {
+            $name = basename($candidate, '.blade.php');
+            $needles = ["auth.{$name}", "auth/{$name}"];
+            $referenced = false;
+
+            foreach ($sources as $p) {
+                if ($p === $normalise($candidate)) {
+                    continue;
+                }
+                $contents = (string) file_get_contents($p);
+                foreach ($needles as $needle) {
+                    if (str_contains($contents, $needle)) {
+                        $referenced = true;
+                        break 2;
+                    }
+                }
+            }
+
+            if (! $referenced) {
+                $dead[] = $candidate;
+            }
+        }
+
+        return $dead;
+    }
+
+    /**
      * Where the kit's auth layout lives: Laravel 13 kits under views/layouts,
      * Laravel 12 kits under views/components/layouts. Null when neither exists.
      */

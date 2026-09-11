@@ -22,7 +22,7 @@ class ApplyCommand extends Command
     protected $signature = 'design:apply
         {file=design/design.json : The design file exported from design.dashcore.com}
         {--check : Print what would change and exit 1 if anything would; write nothing}
-        {--force : Delete the Lucide icon overrides without asking}';
+        {--force : Delete the Lucide icon overrides and the unused sign-in layouts without asking}';
 
     protected $description = 'Apply a Dashcore design file to this kit: theme variables, fonts, brand copy, sign-in layout';
 
@@ -80,7 +80,7 @@ class ApplyCommand extends Command
             match ($c['action']) {
                 'write' => File::put($c['path'], $c['after']),
                 'copy' => $this->copy($c['from'], $c['path']),
-                'delete' => $this->delete($c['path']),
+                'delete' => $this->delete($c['path'], $c['why']),
                 default => throw new LogicException("Unknown change action {$c['action']}."),
             };
         }
@@ -140,6 +140,13 @@ class ApplyCommand extends Command
             $before = File::get($auth);
             $after = Applier::authLayout();
             $changes[] = ['path' => $auth, 'action' => 'write', 'after' => $after, 'changed' => $after !== $before];
+
+            // The kit's own sign-in layouts under layouts/auth/ have nothing
+            // pointing at them once the layout above is ours. Left in place they
+            // are dead code the audit keeps reporting.
+            foreach (Applier::deadAuthLayouts(base_path(), [$auth]) as $dead) {
+                $changes[] = ['path' => $dead, 'action' => 'delete', 'why' => 'Nothing references it now that the sign-in layout is the two-panel one.', 'changed' => true];
+            }
         } else {
             $this->components->warn('No auth layout found to point at the two-panel sign-in. Use <x-design-kit::layouts.auth> in your auth pages.');
         }
@@ -175,7 +182,7 @@ class ApplyCommand extends Command
 
         foreach (Applier::LUCIDE_ICONS as $icon) {
             $iconPath = base_path($icon);
-            $changes[] = ['path' => $iconPath, 'action' => 'delete', 'changed' => File::exists($iconPath)];
+            $changes[] = ['path' => $iconPath, 'action' => 'delete', 'why' => 'It is a Lucide-named icon override; the standard is Heroicons only.', 'changed' => File::exists($iconPath)];
         }
 
         return $changes;
@@ -187,10 +194,10 @@ class ApplyCommand extends Command
         File::copy($from, $to);
     }
 
-    private function delete(string $path): void
+    private function delete(string $path, string $why): void
     {
         $relative = str_replace(base_path().DIRECTORY_SEPARATOR, '', $path);
-        if (! $this->option('force') && ! $this->confirm("Delete {$relative}? It is a Lucide-named icon override; the standard is Heroicons only.", true)) {
+        if (! $this->option('force') && ! $this->confirm("Delete {$relative}? {$why}", true)) {
             $this->components->warn("Kept {$relative}.");
 
             return;

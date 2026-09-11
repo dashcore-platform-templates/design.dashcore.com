@@ -21,13 +21,24 @@ final class Audit
     /** Colour families the standard does not use directly in a view. */
     private const OFF_PALETTE = ['red', 'amber', 'green', 'blue', 'sky', 'emerald', 'rose', 'orange', 'yellow', 'indigo', 'violet', 'purple', 'pink', 'teal', 'cyan', 'lime', 'stone', 'slate', 'gray', 'neutral'];
 
+    /** A whole file that is deliberately outside the standard says so once, with a reason. */
+    public const IGNORE_FILE = '@ds-audit-ignore-file';
+
     /**
+     * @param  string|null  $path  Where the file lives, when known. A sign-in view
+     *                             keeps its own heading, so the page-title rule
+     *                             does not apply there.
      * @return list<array{rule: string, line: int, snippet: string, fix: string}>
      */
-    public static function file(string $contents): array
+    public static function file(string $contents, ?string $path = null): array
     {
+        if (self::optsOut($contents)) {
+            return [];
+        }
+
         $findings = [];
         $lines = preg_split('/\R/', $contents) ?: [];
+        $isAuth = $path !== null && self::isAuthView($path);
 
         foreach ($lines as $i => $line) {
             $n = $i + 1;
@@ -66,12 +77,31 @@ final class Audit
                 $findings[] = self::finding('Lucide icon name', $n, $m, 'Heroicons only. `design:apply` renames these.');
             }
 
-            foreach (self::matches($line, '/<flux:heading[^>]*size="xl"|<h1\b/') as $m) {
-                $findings[] = self::finding('page title not in the page header', $n, $m, 'Titles go through x-ds::page-header, which applies the pairing second face.');
+            if (! $isAuth) {
+                foreach (self::matches($line, '/<flux:heading[^>]*size="xl"|<h1\b/') as $m) {
+                    $findings[] = self::finding('page title not in the page header', $n, $m, 'Titles go through x-ds::page-header, which applies the pairing second face.');
+                }
             }
         }
 
         return $findings;
+    }
+
+    /** True when the file carries the whole-file opt-out marker. */
+    public static function optsOut(string $contents): bool
+    {
+        return str_contains($contents, self::IGNORE_FILE);
+    }
+
+    /**
+     * Sign-in, register, reset, and the layouts under them: a form on a page
+     * of its own, not an app screen, so a heading there is not a page title.
+     */
+    public static function isAuthView(string $path): bool
+    {
+        $path = str_replace('\\', '/', $path);
+
+        return (bool) preg_match('~(^|/)auth(/|\.blade\.php$|-[^/]*\.blade\.php$)~', $path);
     }
 
     /** @return list<string> */
