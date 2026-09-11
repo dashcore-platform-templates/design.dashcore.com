@@ -8,7 +8,7 @@ Three parts, and the order matters.
 
 **The generator** reads the standard and a two-sentence brief, then chooses only the seven things the standard leaves open, with a one-line reason for each that you can agree or disagree with. It never invents structure.
 
-**The adapter** is a Composer package, [`dashcore/design-kit`](packages/design-kit/README.md). One command applies a design to a Laravel Livewire Flux kit: theme variables, fonts, the two-panel sign-in, the custom components, icons.
+**The adapter** is a Composer package, [`dashcore/design-kit`](packages/design-kit/README.md). One command applies a design to a Laravel Livewire Flux kit: theme variables, fonts, the two-panel sign-in, the custom components, icons. It lives here and is mirrored to `dashcoretech/design-kit`, which is what kits install from.
 
 ## The seven decisions
 
@@ -29,7 +29,7 @@ Everything else is fixed. The shell is a human choice in the brief, never genera
 1. Open `/designs/new`, describe the client in two sentences, pick a shell, hit Generate.
 2. Look at the five mockups: sign-in, shell, dashboard, settings, and every component in that design. Change any decision and they update live.
 3. Download the pack and unzip it into the target repo so `design/` exists.
-4. In the target repo: `composer require dashcore/design-kit` then `php artisan design:apply design/design.json`, then build.
+4. In the target repo: install the adapter, then `php artisan design:apply design/design.json`, then build.
 5. Commit `design/`. Every later agent session in that repo reads it before touching a screen.
 
 ## Running it

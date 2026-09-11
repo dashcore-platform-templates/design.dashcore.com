@@ -4,7 +4,26 @@ Applies a design exported from design.dashcore.com to a Laravel Livewire Flux ki
 
 ## Install
 
-While the package lives inside the design repo, install it as a path dependency:
+The source of truth is `packages/design-kit` inside the design.dashcore.com repo. It is mirrored to `dashcoretech/design-kit` on GitHub, which is what a kit installs from. Never edit the mirror; the mirror is republished with:
+
+```bash
+git subtree push --prefix=packages/design-kit https://github.com/dashcoretech/design-kit.git master
+```
+
+In a kit:
+
+```bash
+composer config repositories.design-kit vcs https://github.com/dashcoretech/design-kit.git
+composer require dashcore/design-kit:dev-master
+```
+
+The mirror is private, so Composer needs its own GitHub credentials once per machine. The GitHub CLI's git credential helper is not enough: Composer runs git non-interactively and will fail with "Repository not found". Add a token once, and every private Dashcore package works afterwards:
+
+```bash
+composer config --global github-oauth.github.com <a GitHub token with repo scope>
+```
+
+Working on the design repo and a kit side by side, a path repository skips the mirror and picks up edits immediately:
 
 ```bash
 composer config repositories.design-kit path ../design.dashcore.com/packages/design-kit
