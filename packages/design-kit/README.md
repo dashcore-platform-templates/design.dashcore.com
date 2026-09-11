@@ -34,6 +34,12 @@ The mirror is private, so Composer needs its own GitHub credentials once per mac
 composer config --global github-oauth.github.com <a GitHub token with repo scope>
 ```
 
+## Versions
+
+Releases are tagged, and `composer require` writes `^1.0` for you. Every later 1.x release then reaches every kit on the next `composer update`, which is the whole point: a rule added to the standard should not need fifteen repos edited by hand to arrive. A change that would break an app already on the standard goes to 2.0 instead, so it stops and waits for a person rather than arriving quietly.
+
+Before 1.0 this was a 0.x package, where Composer reads each minor as breaking. A kit that had required `^0.2.0` never saw v0.3.0 at all, and said so as "Nothing to modify in lock file" rather than as an error. If you have one of those, change the constraint to `^1.0` once and it will keep up from then on.
+
 Working on the design repo and a kit side by side, a path repository skips the mirror and picks up edits immediately:
 
 ```bash
