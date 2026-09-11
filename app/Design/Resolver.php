@@ -203,8 +203,9 @@ final class Resolver
             }
         }
 
+        // No timestamp: the block is a function of the decisions, and stamping
+        // it made every export differ, so a kit pulling twice always saw a change.
         return [
-            'checked_at' => now()->toIso8601String(),
             'passes' => $passes,
             'lowest' => $lowest,
             'notes' => $notes,

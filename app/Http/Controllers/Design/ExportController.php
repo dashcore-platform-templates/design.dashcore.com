@@ -5,11 +5,25 @@ namespace App\Http\Controllers\Design;
 use App\Design\Design;
 use App\Design\Pack;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExportController extends Controller
 {
+    /**
+     * The pack as one JSON document: the same four files as the zip, for
+     * `php artisan design:apply <slug>` in a kit to pull into design/.
+     */
+    public function manifest(string $slug): JsonResponse
+    {
+        abort_unless(Design::exists($slug), 404);
+
+        $design = Design::load($slug);
+
+        return response()->json(Pack::manifest($design, route('designs.show', $slug)), 200, [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+
     public function json(string $slug): Response
     {
         abort_unless(Design::exists($slug), 404);

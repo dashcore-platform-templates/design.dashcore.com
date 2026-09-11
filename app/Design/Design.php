@@ -80,6 +80,9 @@ final class Design
 
     /**
      * The whole file as it is exported: schema, brief, decisions, tokens.
+     * Deterministic: the same design exports the same bytes every time, so a
+     * kit that pulls it twice has nothing to change. A design that was never
+     * generated has no generated_at rather than a fresh one per export.
      *
      * @return array<string,mixed>
      */
@@ -87,7 +90,7 @@ final class Design
     {
         return array_filter([
             'schema' => self::SCHEMA,
-            'generated_at' => $this->generatedAt ?? now()->toIso8601String(),
+            'generated_at' => $this->generatedAt,
             'generator' => $this->generator,
             'brief' => $this->brief,
             'decisions' => $this->decisions,

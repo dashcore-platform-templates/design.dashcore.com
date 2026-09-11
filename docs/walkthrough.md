@@ -57,31 +57,32 @@ Look at both registers. The light and dark toggle is top right, and a design tha
 
 The contrast panel at the bottom of the controls is measured, not estimated. A design that fails is not exportable.
 
-## 6. Download the pack, and apply it
+## 6. Apply it
 
-Download pack gives a zip with four files.
+The design page serves the pack at `/designs/<slug>/pack.json`: four files, which the apply command in the target repo pulls into `design/` before it changes anything.
 
 | File | Who reads it |
 |---|---|
 | `design.json` | The apply command, and you |
 | `STANDARD.md` | An agent or a person building a screen |
 | `CLAUDE.snippet.md` | Paste into the target repo's `CLAUDE.md` |
-| `MIGRATION.md` | Only for an app that already exists |
+| `MIGRATION.md` | The agent's procedure for an app that already exists |
 
 In the target repo:
 
 ```bash
-unzip ~/Downloads/<client>-design-pack.zip -d .
 composer config repositories.design-kit vcs https://github.com/dashcoretech/design-kit.git
 composer require dashcore/design-kit
-php artisan design:apply design/design.json
+php artisan design:apply https://design.dashcore.com/designs/<slug>/pack.json
 npm install
 npm run build
 ```
 
+With `DESIGN_SOURCE` in the kit's `.env` pointing at the design.dashcore.com you use, the slug alone is enough: `php artisan design:apply <slug>`. Download pack on the design page is the same four files as a zip, for anyone offline: unzip it into the repo root and run `php artisan design:apply design/design.json`.
+
 Composer needs its own GitHub token once per machine for the private package: `composer config --global github-oauth.github.com <token>`. The GitHub CLI's credentials are not enough, because Composer runs git non-interactively. `npm install` matters only on a fresh clone, and it is the step everyone forgets on one.
 
-`design:apply` prints its plan before writing: the theme block in `app.css`, the fonts, the brand keys in `.env`, the sign-in layout, the logo, and the Lucide icon names renamed to Heroicons. It also offers to delete the kit's three stock sign-in layouts under `layouts/auth/`, which nothing references once the sign-in layout is the two-panel one. Run it with `--check` first if you want to see the plan without writing. Running it twice changes nothing, and it refuses a design that fails contrast.
+`design:apply` prints its plan before writing: the four pack files under `design/`, the theme block in `app.css`, the fonts, the brand keys in `.env`, the sign-in layout, the logo, and the Lucide icon names renamed to Heroicons. It also offers to delete the kit's three stock sign-in layouts under `layouts/auth/`, which nothing references once the sign-in layout is the two-panel one. Run it with `--check` first if you want to see the plan without writing. Running it twice changes nothing, and it refuses a design that fails contrast.
 
 Then paste the CLAUDE snippet into the repo's `CLAUDE.md` and commit `design/`. That is what keeps every later session on the design.
 

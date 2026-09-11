@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Design\Design;
+use App\Design\Pack;
 use App\Design\Standard;
+use Dashcore\DesignKit\Source;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use ZipArchive;
@@ -43,6 +45,27 @@ class DesignViewerTest extends TestCase
         $this->assertArrayHasKey('tokens', $json);
         $this->assertSame('warm', $json['decisions']['temperature']['value']);
         $this->assertSame($json['tokens']['neutral']['50'], $json['tokens']['light']['sunken']);
+    }
+
+    #[Test]
+    public function the_pack_manifest_is_what_a_kit_pulls(): void
+    {
+        $response = $this->get('/designs/harbor-point/pack.json')->assertOk();
+        $manifest = $response->json();
+
+        $this->assertSame(Source::MANIFEST_SCHEMA, $manifest['schema'], 'the tool and the package must agree on the schema name');
+        $this->assertSame('harbor-point', $manifest['slug']);
+        $this->assertStringEndsWith('/designs/harbor-point', $manifest['source']);
+
+        // The package reads it back into the files that go under design/.
+        $files = Source::files($manifest);
+        $this->assertSame(['design.json', 'STANDARD.md', 'CLAUDE.snippet.md', 'MIGRATION.md'], array_keys($files));
+        $this->assertArrayHasKey('tokens', json_decode($files['design.json'], true));
+        $this->assertStringContainsString('Migrating Harbor Point', $files['MIGRATION.md']);
+        $this->assertSame(Pack::files(Design::load('harbor-point')), $files, 'byte for byte what the zip holds');
+        $this->assertSame($manifest, $this->get('/designs/harbor-point/pack.json')->json(), 'pulling twice must give the same bytes, or design:apply is never a no-op');
+
+        $this->get('/designs/does-not-exist/pack.json')->assertNotFound();
     }
 
     #[Test]

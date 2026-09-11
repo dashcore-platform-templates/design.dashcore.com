@@ -4,23 +4,30 @@ namespace Dashcore\DesignKit\Commands;
 
 use Dashcore\DesignKit\Applier;
 use Dashcore\DesignKit\Contrast;
+use Dashcore\DesignKit\Source;
 use Illuminate\Console\Command;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use JsonException;
 use LogicException;
 
 /**
+ * php artisan design:apply meridian-credit-union
+ * php artisan design:apply https://design.dashcore.com/designs/meridian-credit-union/pack.json
  * php artisan design:apply design/design.json
  *
- * Plans every change first, prints it, then writes. --check prints the plan
+ * A slug or a URL pulls the pack from design.dashcore.com into design/ first,
+ * so the repo ends up with the same four files a downloaded zip would give it.
+ * Then it plans every change, prints it, and writes. --check prints the plan
  * and exits non-zero if anything would change, for CI. Running it twice with
- * the same file is a no-op.
+ * the same source is a no-op.
  */
 class ApplyCommand extends Command
 {
     protected $signature = 'design:apply
-        {file=design/design.json : The design file exported from design.dashcore.com}
+        {source=design/design.json : A design slug, a pack URL from design.dashcore.com, or a local design file}
         {--check : Print what would change and exit 1 if anything would; write nothing}
         {--force : Delete the Lucide icon overrides and the unused sign-in layouts without asking}';
 
@@ -30,25 +37,47 @@ class ApplyCommand extends Command
 
     public function handle(): int
     {
-        $file = $this->argument('file');
-        if (! is_string($file) || $file === '') {
-            $this->components->error('Give the path to one design file.');
+        $source = $this->argument('source');
+        if (! is_string($source) || $source === '') {
+            $this->components->error('Give a design slug, a pack URL, or the path to a design file.');
 
             return self::FAILURE;
         }
-        $this->file = $file;
 
-        $path = base_path($file);
-        if (! File::exists($path)) {
-            $this->components->error("No file at {$file}. Unzip the pack from design.dashcore.com into the repo root first.");
-
-            return self::FAILURE;
-        }
+        $packFiles = [];
 
         try {
-            $design = json_decode(File::get($path), true, 512, JSON_THROW_ON_ERROR);
+            if (Source::kind($source) === 'file') {
+                $path = base_path($source);
+                if (! File::exists($path)) {
+                    $this->components->error("No file at {$source}. Give the design's slug or its pack URL from design.dashcore.com instead, or unzip the pack into the repo root first.");
+
+                    return self::FAILURE;
+                }
+                $design = json_decode(File::get($path), true, 512, JSON_THROW_ON_ERROR);
+                $this->file = $source;
+            } else {
+                $url = Source::kind($source) === 'url' ? $source : Source::url($source, (string) config('design-kit.source'));
+                $response = Http::timeout(30)->acceptJson()->get($url);
+                if ($response->failed()) {
+                    $this->components->error("Could not fetch {$url} (HTTP {$response->status()}). Check the slug, and that design.dashcore.com is reachable from here.");
+
+                    return self::FAILURE;
+                }
+                $document = $response->json();
+                if (! is_array($document)) {
+                    $this->components->error("{$url} did not return a design pack.");
+
+                    return self::FAILURE;
+                }
+                $packFiles = Source::files($document);
+                $design = json_decode($packFiles['design.json'], true, 512, JSON_THROW_ON_ERROR);
+                $this->file = 'design/design.json';
+                $this->line("  <fg=gray>Fetched {$url}</>");
+            }
+
             $tokens = Applier::tokens($design);
-        } catch (JsonException|InvalidArgumentException $e) {
+        } catch (JsonException|InvalidArgumentException|ConnectionException $e) {
             $this->components->error($e->getMessage());
 
             return self::FAILURE;
@@ -61,7 +90,7 @@ class ApplyCommand extends Command
             return self::FAILURE;
         }
 
-        $changes = $this->plan($design, $tokens);
+        $changes = $this->plan($design, $tokens, $packFiles);
         $changed = array_filter($changes, fn (array $c) => $c['changed']);
 
         $this->components->info(sprintf('%s: %s, %s, %s.', $design['brief']['client'] ?? 'Design', $tokens['fonts']['sans']['family'].' + '.$tokens['fonts']['second']['family'], $design['decisions']['temperature']['value'] ?? '', $design['decisions']['motif']['value'] ?? ''));
@@ -78,7 +107,7 @@ class ApplyCommand extends Command
 
         foreach ($changed as $c) {
             match ($c['action']) {
-                'write' => File::put($c['path'], $c['after']),
+                'write' => $this->write($c['path'], $c['after']),
                 'copy' => $this->copy($c['from'], $c['path']),
                 'delete' => $this->delete($c['path'], $c['why']),
                 default => throw new LogicException("Unknown change action {$c['action']}."),
@@ -94,11 +123,19 @@ class ApplyCommand extends Command
     /**
      * @param  array<string,mixed>  $design
      * @param  array<string,mixed>  $tokens
+     * @param  array<string,string>  $packFiles  Pulled pack files to land under design/, keyed by name.
      * @return list<array<string,mixed>>
      */
-    private function plan(array $design, array $tokens): array
+    private function plan(array $design, array $tokens, array $packFiles = []): array
     {
         $changes = [];
+
+        // A pulled pack lands in design/ first, so the repo commits the same
+        // four files a downloaded zip would have given it.
+        foreach ($packFiles as $name => $contents) {
+            $path = base_path('design/'.$name);
+            $changes[] = ['path' => $path, 'action' => 'write', 'after' => $contents, 'changed' => ! File::exists($path) || File::get($path) !== $contents];
+        }
 
         $css = base_path('resources/css/app.css');
         $before = File::exists($css) ? File::get($css) : '';
@@ -186,6 +223,12 @@ class ApplyCommand extends Command
         }
 
         return $changes;
+    }
+
+    private function write(string $path, string $contents): void
+    {
+        File::ensureDirectoryExists(dirname($path));
+        File::put($path, $contents);
     }
 
     private function copy(string $from, string $to): void

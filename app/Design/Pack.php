@@ -22,13 +22,48 @@ final class Pack
             throw new RuntimeException('Could not open zip for writing.');
         }
 
-        $zip->addFromString('design/design.json', $design->toJson());
-        $zip->addFromString('design/STANDARD.md', self::standardFile());
-        $zip->addFromString('design/CLAUDE.snippet.md', self::claudeSnippet($design));
-        $zip->addFromString('design/MIGRATION.md', self::migration($design));
+        foreach (self::files($design) as $name => $contents) {
+            $zip->addFromString('design/'.$name, $contents);
+        }
         $zip->close();
 
         return $path;
+    }
+
+    /**
+     * The four files, keyed by name under design/. The zip and the manifest
+     * both come from here, so a pulled pack is byte for byte the downloaded one.
+     *
+     * @return array<string,string>
+     */
+    public static function files(Design $design): array
+    {
+        return [
+            'design.json' => $design->toJson(),
+            'STANDARD.md' => self::standardFile(),
+            'CLAUDE.snippet.md' => self::claudeSnippet($design),
+            'MIGRATION.md' => self::migration($design),
+        ];
+    }
+
+    /** Must match Dashcore\DesignKit\Source::MANIFEST_SCHEMA in the package. */
+    public const MANIFEST_SCHEMA = 'dashcore-design-pack/1';
+
+    /**
+     * The pack as one JSON document, served at /designs/{slug}/pack.json for
+     * `php artisan design:apply <slug>` to pull.
+     *
+     * @return array<string,mixed>
+     */
+    public static function manifest(Design $design, ?string $source = null): array
+    {
+        return array_filter([
+            'schema' => self::MANIFEST_SCHEMA,
+            'slug' => $design->slug,
+            'name' => $design->name(),
+            'source' => $source,
+            'files' => self::files($design),
+        ], fn ($value) => $value !== null);
     }
 
     public static function filename(Design $design): string

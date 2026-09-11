@@ -25,7 +25,7 @@ In a kit:
 
 ```bash
 composer config repositories.design-kit vcs https://github.com/dashcoretech/design-kit.git
-composer require dashcore/design-kit:dev-master
+composer require dashcore/design-kit
 ```
 
 The mirror is private, so Composer needs its own GitHub credentials once per machine. The GitHub CLI's git credential helper is not enough: Composer runs git non-interactively and will fail with "Repository not found". Add a token once, and every private Dashcore package works afterwards:
@@ -43,14 +43,18 @@ composer require dashcore/design-kit:@dev
 
 ## Apply a design
 
-Unzip the pack from design.dashcore.com into the repo root so `design/design.json` exists, then:
+Give it the design's slug, its pack URL from design.dashcore.com, or a local design file:
 
 ```bash
-php artisan design:apply design/design.json
+php artisan design:apply https://design.dashcore.com/designs/meridian-credit-union/pack.json
+php artisan design:apply meridian-credit-union      # with DESIGN_SOURCE in .env pointing at your design.dashcore.com
+php artisan design:apply design/design.json         # a pack unzipped into the repo root
 npm run build
 ```
 
-What it changes: a marked block at the end of `resources/css/app.css` (Flux theme variables, the `--ds-*` roles, the dark muted-text correction), the fonts array in `vite.config.js`, the brand and design keys in `.env` and `.env.example`, `resources/views/layouts/auth.blade.php` (now the two-panel sign-in), the logo copied to `public/images/` if the brief had one, the four Lucide-named icon overrides deleted, and the kit's three stock sign-in layouts under `layouts/auth/` deleted once nothing references them. It asks before each delete; `--force` skips the questions. Running it twice changes nothing. `--check` prints the plan and exits non-zero if anything would change.
+A slug or a URL pulls the pack's four files into `design/` first, so the repo ends up with exactly what a downloaded zip would have given it, then applies.
+
+What it changes: the four pack files under `design/` when pulled, a marked block at the end of `resources/css/app.css` (Flux theme variables, the `--ds-*` roles, the dark muted-text correction), the fonts array in `vite.config.js`, the brand and design keys in `.env` and `.env.example`, `resources/views/layouts/auth.blade.php` (now the two-panel sign-in), the logo copied to `public/images/` if the brief had one, the four Lucide-named icon overrides deleted, and the kit's three stock sign-in layouts under `layouts/auth/` deleted once nothing references them. It asks before each delete; `--force` skips the questions. Running it twice changes nothing. `--check` prints the plan and exits non-zero if anything would change.
 
 `php artisan design:check design/design.json` measures contrast on the file.
 

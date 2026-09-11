@@ -101,7 +101,6 @@ Two layers. `decisions` is what the generator wrote and a person may edit. `toke
       "info":    { "text-light": "#1d4ed8", "text-dark": "#60a5fa", "fill": "#1d4ed8" }
     },
     "contrast": {
-      "checked_at": "2026-09-11T10:00:00Z",
       "passes": true,
       "lowest": { "pair": "text-muted on page, light", "ratio": 4.8 }
     }

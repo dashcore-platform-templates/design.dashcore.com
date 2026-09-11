@@ -16,3 +16,4 @@ Route::livewire('designs/{slug}', 'pages::designs.show')->name('designs.show');
 
 Route::get('designs/{slug}/design.json', [ExportController::class, 'json'])->name('designs.json');
 Route::get('designs/{slug}/pack.zip', [ExportController::class, 'pack'])->name('designs.pack');
+Route::get('designs/{slug}/pack.json', [ExportController::class, 'manifest'])->name('designs.manifest');
