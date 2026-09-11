@@ -8,7 +8,9 @@ Three parts, and the order matters.
 
 **The generator** reads the standard and a two-sentence brief, then chooses only the seven things the standard leaves open, with a one-line reason for each that you can agree or disagree with. It never invents structure.
 
-**The adapter** is a Composer package, [`dashcore/design-kit`](packages/design-kit/README.md). One command applies a design to a Laravel Livewire Flux kit: theme variables, fonts, the two-panel sign-in, the custom components, icons. It lives here and is mirrored to `dashcoretech/design-kit`, which is what kits install from.
+**The adapter** is a Composer package, [`dashcore/design-kit`](packages/design-kit/README.md). One command applies a design to a Laravel Livewire Flux kit: theme variables, fonts, the two-panel sign-in, the custom components, icons.
+
+It is written here, in `packages/design-kit`, because it changes with the standard and the two should move in one commit. Composer cannot install from a subdirectory, so it is published to `dashcoretech/design-kit` by subtree push, and that is what kits install. The published repo is a mirror: edit it there and the change is lost on the next publish.
 
 ## The seven decisions
 
@@ -25,6 +27,8 @@ Everything else is fixed. The shell is a human choice in the brief, never genera
 | copy | the sign-in eyebrow, headline, tagline and footer |
 
 ## The loop
+
+Step by step, with what to look for at each stage: [docs/walkthrough.md](docs/walkthrough.md).
 
 1. Open `/designs/new`, describe the client in two sentences, pick a shell, hit Generate.
 2. Look at the five mockups: sign-in, shell, dashboard, settings, and every component in that design. Change any decision and they update live.

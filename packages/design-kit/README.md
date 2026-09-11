@@ -1,10 +1,21 @@
 # dashcore/design-kit
 
-Applies a design exported from design.dashcore.com to a Laravel Livewire Flux kit, and ships the three custom components the Dashcore Standard defines.
+> **This is a mirror. Do not edit it here.** The source is `packages/design-kit` in
+> [design.dashcore.com](https://github.com/dashcoretech/design.dashcore.com). Edits made
+> to this repo are overwritten the next time it is republished. Change it there, then
+> republish with the command below.
+
+Applies a design exported from design.dashcore.com to a Laravel Livewire Flux kit, and ships the five custom components the Dashcore Standard defines.
+
+## Why two places
+
+The package lives in the design repo because it changes with the standard: a rule and the code that applies it move together, in one commit, tested against the real design files. But Composer cannot install a package from a subdirectory, so kits need it as a repo of its own. That repo is this one, published from the other by subtree push, with history.
+
+One is written, the other is published. Never the reverse.
 
 ## Install
 
-The source of truth is `packages/design-kit` inside the design.dashcore.com repo. It is mirrored to `dashcoretech/design-kit` on GitHub, which is what a kit installs from. Never edit the mirror; the mirror is republished with:
+Republish the mirror after changing the package in the design repo:
 
 ```bash
 git subtree push --prefix=packages/design-kit https://github.com/dashcoretech/design-kit.git master
