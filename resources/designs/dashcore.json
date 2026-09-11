@@ -19,7 +19,7 @@
             "why": "True grey so a client's chosen temperature is judged against neutral, not against a tint."
         },
         "pairing": {
-            "value": "5",
+            "value": 1,
             "why": "IBM Plex Sans with Plex Mono: neutral, technical, and the mono face carries the labels and hex values this tool is full of."
         },
         "radius": {

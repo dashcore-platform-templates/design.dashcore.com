@@ -74,6 +74,34 @@ class GenerationRulesTest extends TestCase
     }
 
     #[Test]
+    public function a_retired_pairing_falls_back_and_says_why(): void
+    {
+        $in = FakeDecisionSource::sample();
+        // 5 was Archivo, retired on 11 Sep 2026. Ids are stable, so it is a gap now.
+        $in['pairing'] = ['value' => 5, 'why' => 'The narrow cut suits dense data.'];
+
+        $out = Rules::apply($in, []);
+
+        $this->assertSame(Pairings::defaultId(), $out['pairing']['value']);
+        $this->assertStringContainsString('not on the approved list', $out['pairing']['why']);
+        $this->assertStringStartsWith('The narrow cut suits dense data.', $out['pairing']['why']);
+    }
+
+    #[Test]
+    public function every_approved_pairing_survives_the_rules_untouched(): void
+    {
+        foreach (array_keys(Pairings::all()) as $id) {
+            $in = FakeDecisionSource::sample();
+            $in['pairing'] = ['value' => $id, 'why' => 'Fits the brief.'];
+
+            $out = Rules::apply($in, []);
+
+            $this->assertSame($id, $out['pairing']['value']);
+            $this->assertSame('Fits the brief.', $out['pairing']['why']);
+        }
+    }
+
+    #[Test]
     public function off_list_values_fall_back_and_are_noted(): void
     {
         $in = FakeDecisionSource::sample();

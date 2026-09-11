@@ -10,12 +10,30 @@
         "notes": "Warm, hospitable, nothing that reads as a spreadsheet. The brand colour is a terracotta they already use in print."
     },
     "decisions": {
-        "accent": { "value": "#b5542d", "why": "The client's terracotta, kept as given. Its hue sits at 20 degrees, inside the zone reserved for danger and warning, so the resolver keeps it but this is the one rule the brief overrides." },
-        "temperature": { "value": "warm", "why": "Warm greys sit naturally beside terracotta and suit hospitality." },
-        "pairing": { "value": 4, "why": "Public Sans is plain and readable for a weekly visitor; Fraunces at title size gives the portal a hotel's warmth without decoration." },
-        "radius": { "value": "round", "why": "A portal opened by managers between guests, not a tool for data entry." },
-        "density": { "value": "comfortable", "why": "Weekly use by people who are not at a desk all day." },
-        "motif": { "value": "filled-stat", "why": "A top-nav shell and a warm accent suit one welcoming block of colour in the stat row." },
+        "accent": {
+            "value": "#b5542d",
+            "why": "The client's terracotta, kept as given. Its hue sits at 20 degrees, inside the zone reserved for danger and warning, so the resolver keeps it but this is the one rule the brief overrides."
+        },
+        "temperature": {
+            "value": "warm",
+            "why": "Warm greys sit naturally beside terracotta and suit hospitality."
+        },
+        "pairing": {
+            "value": 7,
+            "why": "Hanken Grotesk is plain and readable for a weekly visitor; Newsreader at title size gives the portal a hotel's warmth without decoration."
+        },
+        "radius": {
+            "value": "round",
+            "why": "A portal opened by managers between guests, not a tool for data entry."
+        },
+        "density": {
+            "value": "comfortable",
+            "why": "Weekly use by people who are not at a desk all day."
+        },
+        "motif": {
+            "value": "filled-stat",
+            "why": "A top-nav shell and a warm accent suit one welcoming block of colour in the stat row."
+        },
         "copy": {
             "eyebrow": "Northline",
             "headline": "How your hotels did this week.",

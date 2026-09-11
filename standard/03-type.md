@@ -29,7 +29,7 @@ Every pairing is a body face and a second face. The body face carries all UI tex
 - **A serif face** is used for the page title and the sign-in headline only. Never for body, UI, or anything under 24px.
 - **A display sans face** (a narrow, condensed or expressive cut) is used for the page title, stat values and the sign-in headline. Never for body or UI.
 
-If the second face is condensed or narrow, page titles may be set uppercase with 0.02em spacing. No other face is set uppercase at title size.
+No face is set uppercase at title size. (The rule that allowed it existed for one condensed pairing, retired on 11 September 2026; the resolver still carries the flag in case a condensed face returns.)
 
 ## Loading
 
@@ -37,20 +37,21 @@ Fonts load through the starter kit's Vite font pipeline from Bunny Fonts, with w
 
 ## The approved pairings
 
-The generator picks one. This is the shortlist of ten for John to cut to between four and six. All of them exist on Bunny Fonts with the weights listed. Marked with what kind of project each suits, so the generator has something to reason from besides mood.
+The generator picks one, a person may change it, and there is nothing else. Approved means someone has looked at the pairing rendered, at every size, in both registers, on the Components screen. A face nobody has seen is not on this list.
+
+Five is not a limit on how different two projects can be. The seven decisions give 360 structural combinations against fifteen apps in the fleet, before the accent is counted at all.
+
+All of these exist on Bunny Fonts with the weights listed. Marked with what kind of project each suits, so the generator has something to reason from besides mood. Ids are stored in every design file and exported pack, so they are stable: a retired pairing leaves a gap rather than renumbering the ones after it.
 
 | # | Body | Second face | Kind | Suits |
 |---|---|---|---|---|
 | 1 | IBM Plex Sans | IBM Plex Mono | mono | Operations, logistics, anything with IDs and codes in every row. Neutral and slightly technical. |
 | 2 | Source Sans 3 | Source Serif 4 | serif | Clinics, law, accounting, professional services. Quiet and trustworthy. |
 | 3 | Manrope | JetBrains Mono | mono | Modern product tools, dashboards with lots of numbers. Rounder and warmer than 1. |
-| 4 | Public Sans | Fraunces | serif | Hospitality, publishing, civic, anything with a warm brand. Fraunces only at title size. |
-| 5 | Archivo | Archivo Narrow | display | Dense data, field operations, dispatch. Narrow cut for titles and stat values, uppercase allowed. |
-| 6 | Figtree | Geist Mono | mono | Friendly internal tools, HR, people-facing apps. |
 | 7 | Hanken Grotesk | Newsreader | serif | Consulting, editorial, strategy. Newsreader at title size gives an authored feel. |
-| 8 | Red Hat Text | Red Hat Display | display | Corporate, finance, anything that must read as safe. One family in two cuts, hard to get wrong. |
-| 9 | Albert Sans | Bricolage Grotesque | display | Marketing-adjacent apps, agencies, brands with some personality. |
 | 10 | Atkinson Hyperlegible Next | Spline Sans Mono | mono | Healthcare, older or mixed-ability users, anything where legibility beats character. |
+
+Retired on 11 September 2026, after the first three projects: Public Sans with Fraunces and Red Hat in two cuts both overlapped the serif and safe-corporate ground that 2 and 7 already hold; Figtree with Geist Mono was a softer 3; Archivo Narrow was the only condensed face and carried an uppercase-title rule that existed for it alone; Albert Sans with Bricolage Grotesque was the one with personality, and the fleet is admin tools. Adding a pairing back is an entry in `App\Design\Pairings` and a row here, once someone has looked at it.
 
 Excluded by name, so the generator never reaches for them: Inter, Instrument Sans, Space Grotesk, Instrument Serif, Barlow Condensed, Bebas Neue, Space Mono, DM Sans. The first four are on the tells list or are the starter default. The last four are the retired OS Plus set.
 

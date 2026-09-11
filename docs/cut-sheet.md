@@ -120,20 +120,22 @@ Recommendations in the last column are mine; the decision is yours.
 | 9.4 | JSON example and adapter behaviour | code | cut from prompt, keep in doc |
 | 9.5 | The export pack | people | cut from prompt |
 
-## Pairings, 03
+## Pairings, 03 — decided 11 September 2026
 
-| # | Pairing | Recommend |
+Cut to five. The ids stay as they were, because every design file and exported pack stores one, so a retired pairing leaves a gap rather than renumbering.
+
+| # | Pairing | Outcome |
 |---|---|---|
-| P1 | IBM Plex Sans + Plex Mono | keep |
-| P2 | Source Sans 3 + Source Serif 4 | keep |
-| P3 | Manrope + JetBrains Mono | keep |
-| P4 | Public Sans + Fraunces | cut, overlaps 2 and 7 |
-| P5 | Archivo + Archivo Narrow | cut, only condensed face, drags rule 3.6 |
-| P6 | Figtree + Geist Mono | cut, softer 3 |
-| P7 | Hanken Grotesk + Newsreader | keep, two models chose it |
-| P8 | Red Hat Text + Display | cut, never chosen while 1 exists |
-| P9 | Albert Sans + Bricolage Grotesque | your call, the only one with personality |
-| P10 | Atkinson Hyperlegible Next + Spline Sans Mono | keep |
+| P1 | IBM Plex Sans + Plex Mono | kept |
+| P2 | Source Sans 3 + Source Serif 4 | kept |
+| P3 | Manrope + JetBrains Mono | kept |
+| P4 | Public Sans + Fraunces | retired, overlapped 2 and 7. Northline moved to 7 |
+| P5 | Archivo + Archivo Narrow | retired, only condensed face. The tool own design moved to 1 |
+| P6 | Figtree + Geist Mono | retired, softer 3 |
+| P7 | Hanken Grotesk + Newsreader | kept |
+| P8 | Red Hat Text + Display | retired, never chosen while 1 exists |
+| P9 | Albert Sans + Bricolage Grotesque | retired, the fleet is admin tools |
+| P10 | Atkinson Hyperlegible Next + Spline Sans Mono | kept |
 
 ## What happens after your marks
 

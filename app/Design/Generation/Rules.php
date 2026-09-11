@@ -113,10 +113,13 @@ final class Rules
     private static function pairing(array $decisions): array
     {
         $id = (int) ($decisions['pairing']['value'] ?? 0);
+        $fallback = Pairings::defaultId();
+
         if (! array_key_exists($id, Pairings::all())) {
-            $decisions['pairing']['why'] = self::note($decisions['pairing']['why'] ?? '', "Pairing {$id} does not exist; pairing 1 stands in.");
-            $id = 1;
+            $decisions['pairing']['why'] = self::note($decisions['pairing']['why'] ?? '', "Pairing {$id} is not on the approved list; pairing {$fallback} stands in.");
+            $id = $fallback;
         }
+
         $decisions['pairing']['value'] = $id;
 
         return $decisions;

@@ -69,7 +69,7 @@ class DesignKitApplierTest extends TestCase
 
         $other = Applier::applyCss($once, Applier::cssBlock($this->exported('northline')['tokens']));
         $this->assertSame(1, substr_count($other, Applier::START));
-        $this->assertStringContainsString("--font-sans: 'Public Sans'", $other);
+        $this->assertStringContainsString("--font-sans: 'Hanken Grotesk'", $other);
         $this->assertStringNotContainsString('Atkinson', $other);
     }
 
