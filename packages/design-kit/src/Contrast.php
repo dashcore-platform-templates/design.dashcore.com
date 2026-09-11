@@ -42,8 +42,15 @@ final class Contrast
                 'accent-content on page' => [$r['accent-content'], $r['page']],
                 'on-accent on accent' => [$r['on-accent'], $r['accent']],
             ];
+            $mutedOnQuiet = $r['text-muted-on-sunken'] ?? $r['text-muted'];
             foreach ($tokens['status'] ?? [] as $name => $s) {
+                $soft = $s["soft-{$register}"];
                 $checks["{$name} text on page"] = [$s["text-{$register}"], $r['page']];
+                // The badge, and secondary text on a tinted row. Plain text-muted
+                // fails the second of those in light, so 04 sends it to the
+                // on-sunken step and both are measured here.
+                $checks["{$name} text on {$name}-soft"] = [$s["text-{$register}"], $soft];
+                $checks["text-muted-on-sunken on {$name}-soft"] = [$mutedOnQuiet, $soft];
             }
             foreach ($checks as $label => [$fg, $bg]) {
                 $ratio = self::ratio($fg, $bg);

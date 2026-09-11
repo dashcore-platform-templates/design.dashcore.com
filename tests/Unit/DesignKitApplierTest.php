@@ -29,6 +29,14 @@ class DesignKitApplierTest extends TestCase
         $ours = Contrast::measure($tokens);
         $this->assertTrue($ours['passes']);
         $this->assertSame($design['tokens']['contrast']['passes'], $ours['passes']);
+
+        // The package carries its own copy of the pair list so a kit can check a
+        // design without the tool. Two copies drift, so compare them by name: a
+        // pair added in one and not the other is the gate quietly weakening.
+        $theirs = array_column($design['tokens']['contrast']['pairs'], 'pair');
+        $mine = array_column($ours['pairs'], 'pair');
+        $this->assertSame([], array_values(array_diff($theirs, $mine, ['light: border-strong on surface', 'dark: border-strong on surface'])), 'the tool measures pairs the kit does not');
+        $this->assertSame([], array_values(array_diff($mine, $theirs)), 'the kit measures pairs the tool does not');
     }
 
     #[Test]

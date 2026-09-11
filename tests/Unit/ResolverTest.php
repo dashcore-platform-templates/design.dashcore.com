@@ -110,4 +110,34 @@ class ResolverTest extends TestCase
             $this->assertGreaterThanOrEqual(4.5, Color::contrast('#ffffff', $s['fill']), "$name fill");
         }
     }
+
+    #[Test]
+    #[DataProvider('temperatures')]
+    public function text_on_a_status_tint_is_measured_and_passes(string $temperature): void
+    {
+        $tokens = Resolver::resolve($this->decisions(temperature: $temperature));
+        $measured = array_column($tokens['contrast']['pairs'], 'ratio', 'pair');
+
+        foreach (['success', 'warning', 'danger', 'info'] as $name) {
+            foreach (['light', 'dark'] as $register) {
+                foreach (["{$register}: {$name} text on {$name}-soft", "{$register}: text-muted-on-sunken on {$name}-soft"] as $pair) {
+                    $this->assertArrayHasKey($pair, $measured, "not measured: {$pair}");
+                    $this->assertGreaterThanOrEqual(4.5, $measured[$pair], "{$pair} in {$temperature}");
+                }
+            }
+        }
+    }
+
+    #[Test]
+    public function plain_muted_text_is_the_wrong_role_on_a_tint_which_is_why_the_rule_exists(): void
+    {
+        $tokens = Resolver::resolve($this->decisions(temperature: 'pure'));
+
+        // The finding from the first agent migration: 04 sanctions a status tint
+        // as a row background, and muted text at the 500 step fails on it. If
+        // this ever starts passing, the tints or the ramp moved and the extra
+        // role in 04 can be reconsidered.
+        $this->assertLessThan(4.5, Color::contrast($tokens['light']['text-muted'], $tokens['status']['danger']['soft-light']));
+        $this->assertGreaterThanOrEqual(4.5, Color::contrast($tokens['light']['text-muted-on-sunken'], $tokens['status']['danger']['soft-light']));
+    }
 }

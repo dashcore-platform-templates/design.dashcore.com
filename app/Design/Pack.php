@@ -150,6 +150,8 @@ final class Pack
         border-zinc-200 dark:border-zinc-700    border-(--ds-border)
         ```
 
+        Secondary text sitting on a tinted row takes `text-(--ds-text-muted-on-sunken)` rather than `text-muted`, which fails the contrast floor on the danger and info tints in light. The status text itself is safe on its own tint, so a badge needs nothing special.
+
         The roles: `page`, `surface`, `sunken`, `border`, `border-strong`, `text-strong`, `text`, `text-muted`, `text-muted-on-sunken`, `accent`, `accent-hover`, `accent-content`, `accent-soft`, `on-accent`, and for each of `success`, `warning`, `danger`, `info` the role itself for text, `-soft` for a background, `-fill` for a solid. Status colour marks status only: badges, callouts, toasts, form errors, deltas. Not a stat value, not a heading, not a button unless it is destructive. The accent appears once per region at most. A second grey family beside the design's own, stone next to zinc, is the drift itself: fold it into the roles.
 
         **Hardcoded colour.** A hex in a view or a `style=` moves to the role it means. If it is a brand identity colour the design does not carry, say so in the report rather than keeping it.

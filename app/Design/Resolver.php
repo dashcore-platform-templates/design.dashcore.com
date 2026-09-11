@@ -181,7 +181,15 @@ final class Resolver
             $pairs["{$register}: on-accent on accent"] = [$r['on-accent'], $r['accent'], 4.5];
             $pairs["{$register}: border-strong on surface"] = [$r['border-strong'], $r['surface'], 1.5];
             foreach (self::STATUS as $name => $s) {
+                $soft = $s["soft-{$register}"];
                 $pairs["{$register}: {$name} text on page"] = [$s["text-{$register}"], $r['page'], 4.5];
+                // The badge, which is status text on its own tint.
+                $pairs["{$register}: {$name} text on {$name}-soft"] = [$s["text-{$register}"], $soft, 4.5];
+                // Secondary text on a tinted row. Plain text-muted fails here in
+                // light, at 4.35:1 on the danger tint and 4.37:1 on the info one,
+                // so 04 sends it to the same 600 step as on sunken. Measured, or
+                // it goes quietly wrong again.
+                $pairs["{$register}: text-muted-on-sunken on {$name}-soft"] = [$r['text-muted-on-sunken'], $soft, 4.5];
             }
         }
 

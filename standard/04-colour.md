@@ -85,7 +85,7 @@ These are Tailwind's neutral, slate and stone scales. They are used because they
 | `border-strong` | 300 | 600 |
 | `text-strong` | 950 | 50 |
 | `text` | 800 | 200 |
-| `text-muted` | 500 on page or surface, 600 on sunken | 400 |
+| `text-muted` | 500 on page or surface, 600 on sunken or a status tint | 400 |
 
 `accent-hover` moves the accent's lightness six points. `accent-content` moves it until it reaches 4.5:1 on the page. `accent-soft` is the accent at 10 percent alpha in light and 16 in dark. `on-accent` is white or near-black, whichever passes on the fill; if neither does, the fill itself moves until one does. In dark the accent is lightened until it reaches 3:1 on the dark page before any of that.
 
@@ -112,8 +112,12 @@ Flux's own badge colours come from Tailwind's palette rather than these, so the 
 | text-muted on page | 4.74 to 4.80 | 6.9 to 7.1 |
 | text-muted on surface | same | 5.7 to 6.0 |
 | text-muted on sunken | 4.54 to 4.59 using 500; 6.9 to 7.2 using 600 | n/a, sunken is darker than page |
+| text-muted on a status tint | 4.35 to 4.59 using 500, which fails on danger and info; 5.7 or better using 600 | 5.7 to 6.4 |
+| status text on its own tint | 4.79 to 6.16 | 5.7 to 9.0 |
 
-Two things fall out of the numbers. Muted text at 500 only just passes on white and fails on neutral 100, so muted text on any sunken surface uses 600 in light. And Flux's default of neutral 500 for muted text in dark fails at 3.07 to 3.19:1 on neutral 800, so the standard sets dark muted text to 400 and the adapter overrides Flux there.
+Three things fall out of the numbers. Muted text at 500 only just passes on white and fails on neutral 100, so muted text on any sunken surface uses 600 in light. Flux's default of neutral 500 for muted text in dark fails at 3.07 to 3.19:1 on neutral 800, so the standard sets dark muted text to 400 and the adapter overrides Flux there.
+
+And a status tint is a quiet surface like any other. Muted text at 500 measures 4.35:1 on the danger tint and 4.37:1 on the info tint in light, so secondary text on a tinted row takes the same 600 step as on sunken. The role carries the name `text-muted-on-sunken` from where it was first needed; read it as muted text on any quiet surface that is not page or surface. A badge is safe as it stands, because status text on its own tint never drops below 4.79:1. Both pairs are measured for every status, in both registers, so neither can go quietly wrong again.
 
 The resting outline of an input measures about 1.5:1 at the 300 step. That is deliberate, decided on 11 September 2026: the two pixel accent focus ring carries the meaning, and the control already announces itself by shape, label and placeholder. The contrast command reports the pair as information rather than a failure.
 
