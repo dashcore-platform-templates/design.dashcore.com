@@ -1,8 +1,10 @@
 # 08. Motion and icons
 
-## Motion
+Motion marks a state change and nothing else. Icons are Heroicons, and only Heroicons. Nothing in a fleet app is illustrated except an optional hero image on sign-in.
 
-Motion marks a state change and nothing else. Nothing on a screen moves because it is decorative.
+<!-- prompt-end -->
+
+## Motion
 
 | What | Duration | Easing |
 |---|---|---|
@@ -20,7 +22,7 @@ Alpine transitions and Flux's own hover states are the implementation. No animat
 
 ## Icons
 
-Heroicons, and only Heroicons. Flux ships them and also resolves Lucide names, which is exactly how a project ends up mixing two sets. Lucide names are not used, and the four custom icon files the starter kit ships for Lucide names are deleted by the adapter.
+Flux ships Heroicons and also resolves Lucide names, which is exactly how a project ends up mixing two sets. Lucide names are not used, and the adapter renames any it finds before deleting the four icon files the starter kit ships.
 
 | Where | Style | Size |
 |---|---|---|
@@ -35,4 +37,4 @@ No emoji in headings, labels, buttons or nav. Emoji are allowed only in content 
 
 ## Imagery
 
-Sign-in may carry one hero image supplied by the client. Nothing else in a fleet app is illustrated. Empty states use an icon. Dashboards do not have banners.
+Sign-in may carry one hero image supplied by the client. Empty states use an icon. Dashboards do not have banners.

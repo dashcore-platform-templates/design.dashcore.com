@@ -36,6 +36,8 @@ Each decision carries a `why`: one sentence, in plain language, that a person ca
 - Two briefs that differ should produce decisions that differ in at least three of the seven, unless the briefs are near-identical.
 - When the brief gives a `brand_colour` that fails the accent rules, the generator says so in `why` and returns the nearest passing value.
 
+<!-- prompt-end -->
+
 ## The JSON
 
 Two layers. `decisions` is what the generator wrote and a person may edit. `tokens` is what the resolver derived and nobody edits by hand.

@@ -1,6 +1,6 @@
 {
     "schema": "dashcore-design/1",
-    "generated_at": "2026-09-11T12:00:00+08:00",
+    "generated_at": "2026-09-11T15:42:07+00:00",
     "brief": {
         "client": "Harbor Point Physical Therapy",
         "product": "Front-desk and clinician scheduling for a three-location PT practice. Used all day by reception and therapists.",
@@ -10,12 +10,30 @@
         "notes": "Older patients see the sign-in page. Nothing that looks like a bank."
     },
     "decisions": {
-        "accent": { "value": "#0f766e", "why": "A deep teal reads as clinical without being cold, and is far from the reds and ambers used for alerts." },
-        "temperature": { "value": "warm", "why": "Warm greys soften a screen used by patients and staff in a care setting." },
-        "pairing": { "value": 10, "why": "Atkinson Hyperlegible Next for an older audience; the mono second face handles appointment codes." },
-        "radius": { "value": "soft", "why": "No reason in the brief to go sharp or round." },
-        "density": { "value": "compact", "why": "Reception uses it all day and works from the schedule table." },
-        "motif": { "value": "eyebrow", "why": "A mono pairing and a schedule full of codes suit uppercase labels." },
+        "accent": {
+            "value": "#0f766e",
+            "why": "A deep teal reads as clinical without being cold, and is far from the reds and ambers used for alerts."
+        },
+        "temperature": {
+            "value": "warm",
+            "why": "Warm greys soften a screen used by patients and staff in a care setting."
+        },
+        "pairing": {
+            "value": 10,
+            "why": "Atkinson Hyperlegible Next for an older audience; the mono second face handles appointment codes."
+        },
+        "radius": {
+            "value": "soft",
+            "why": "No reason in the brief to go sharp or round."
+        },
+        "density": {
+            "value": "compact",
+            "why": "Reception uses it all day and works from the schedule table."
+        },
+        "motif": {
+            "value": "eyebrow",
+            "why": "A mono pairing and a schedule full of codes suit uppercase labels."
+        },
         "copy": {
             "eyebrow": "Harbor Point",
             "headline": "Today's schedule, all three clinics.",

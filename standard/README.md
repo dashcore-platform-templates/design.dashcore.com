@@ -27,7 +27,13 @@ The generator varies identity, and only these seven things: accent colour, neutr
 
 ## How it becomes the system prompt
 
-Files 01 through 09 are concatenated in order and handed to Claude Fable as its instructions, followed by the project brief. File 00 is left out; it is history for people, not rules for the model. The schema in 09 is also enforced as the structured output shape, so the model cannot return a decision that is off the list.
+Files 01 through 09 are handed to the generator as its instructions, followed by the project brief. File 00 is left out; it is history for people, not rules for the model.
+
+Each file is cut at a `<!-- prompt-end -->` marker. Above it is what the generator reasons from: the principles, the shells in one paragraph, the type scale and pairings, the colour roles and accent rules, density and radius, the motifs, the seven decisions. Below it is what only a person or an agent building a screen acts on: component behaviour, shell geometry, motion, icon sizes, the measured contrast tables, the mapping onto Flux. The generator never builds a screen, so those rules would cost tokens on every call and steer nothing.
+
+Nothing is lost by the cut. The Standard page and the `STANDARD.md` in every exported pack read the whole file, marker and all. `docs/cut-sheet.md` records which rule sits on which side and why.
+
+The schema in 09 is also enforced as the structured output shape, so the model cannot return a decision that is off the list, whatever the prose says.
 
 ## Vocabulary
 

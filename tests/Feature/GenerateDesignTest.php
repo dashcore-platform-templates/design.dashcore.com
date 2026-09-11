@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Design\Design;
 use App\Design\Generation\DecisionSource;
 use App\Design\Generation\DesignGenerator;
+use App\Design\Standard;
 use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
@@ -43,8 +44,20 @@ class GenerateDesignTest extends TestCase
 
         $this->assertSame('tidewater-port-services', $design->slug);
         $this->assertSame('claude-test-model', $this->source->lastModel);
-        $this->assertStringContainsString('# 01. Principles', $this->source->lastSystem[0]['text']);
-        $this->assertStringNotContainsString('# 00. Audit', $this->source->lastSystem[0]['text']);
+        $prompt = $this->source->lastSystem[0]['text'];
+        $this->assertStringContainsString('# 01. Principles', $prompt);
+        $this->assertStringNotContainsString('# 00. Audit', $prompt);
+
+        // Cut at the marker: the rules the model reasons from are in, the rules
+        // only a screen-builder acts on are out. See docs/cut-sheet.md.
+        $this->assertStringNotContainsString(Standard::PROMPT_END, $prompt);
+        foreach (['Accent bar', 'IBM Plex Sans', 'Comfortable is for apps used occasionally', 'hue must sit at least 30 degrees'] as $kept) {
+            $this->assertStringContainsString($kept, $prompt, "the generator still needs: {$kept}");
+        }
+        foreach (['flux:sidebar', 'prefers-reduced-motion', '--color-zinc-50', 'Skeleton shimmer'] as $cut) {
+            $this->assertStringNotContainsString($cut, $prompt, "the generator should not be paying for: {$cut}");
+        }
+        $this->assertLessThan(strlen(Standard::readme()) * 12, strlen($prompt), 'the prompt should stay short');
         $this->assertSame(['type' => 'ephemeral'], $this->source->lastSystem[1]['cacheControl']);
         $this->assertStringContainsString('Tidewater Port Services', $this->source->lastUser);
         $this->assertSame('#1d6f8a', $design->decision('accent'));

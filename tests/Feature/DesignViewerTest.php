@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Design\Design;
+use App\Design\Standard;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use ZipArchive;
@@ -61,8 +62,15 @@ class DesignViewerTest extends TestCase
             $names,
         );
         $this->assertStringContainsString('Harbor Point', $zip->getFromName('design/CLAUDE.snippet.md'));
-        $this->assertStringContainsString('# 01. Principles', $zip->getFromName('design/STANDARD.md'));
-        $this->assertStringNotContainsString('# 00. Audit', $zip->getFromName('design/STANDARD.md'));
+        $standard = $zip->getFromName('design/STANDARD.md');
+        $this->assertStringContainsString('# 01. Principles', $standard);
+        $this->assertStringNotContainsString('# 00. Audit', $standard);
+        // The pack carries the whole standard, not the cut prompt: an agent
+        // building a screen needs the component rules the generator skips.
+        $this->assertStringContainsString('flux:sidebar', $standard);
+        $this->assertStringContainsString('prefers-reduced-motion', $standard);
+        $this->assertStringNotContainsString(Standard::PROMPT_END, $standard);
+        $this->assertGreaterThan(strlen(Standard::prompt()) * 2, strlen($standard));
         $zip->close();
     }
 

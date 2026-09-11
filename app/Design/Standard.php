@@ -38,13 +38,46 @@ final class Standard
             ->all();
     }
 
-    /** Files 01 to 09 joined. The audit (00) is history for people and stays out. */
+    /**
+     * The marker that ends the part of a file the generator reads. Everything
+     * after it is for a person or an agent building a screen: component
+     * behaviour, shell geometry, motion, the mapping onto Flux. The generator
+     * never builds a screen, so those rules would cost tokens and steer
+     * nothing. See docs/cut-sheet.md for which rule sits on which side.
+     */
+    public const PROMPT_END = '<!-- prompt-end -->';
+
+    /**
+     * Files 01 to 09, each truncated at the marker, joined. The audit (00) is
+     * history for people and stays out entirely.
+     */
     public static function prompt(): string
     {
         return collect(self::sections())
             ->reject(fn (array $s) => str_starts_with($s['file'], '00-'))
-            ->map(fn (array $s) => $s['markdown'])
+            ->map(fn (array $s) => self::beforeMarker($s['markdown']))
             ->implode("\n\n---\n\n");
+    }
+
+    /**
+     * Files 01 to 09 whole, markers and all. This is what ships in the export
+     * pack, because an agent building a screen needs the rules the generator
+     * does not: component behaviour, shell geometry, motion, the Flux mapping.
+     */
+    public static function full(): string
+    {
+        return collect(self::sections())
+            ->reject(fn (array $s) => str_starts_with($s['file'], '00-'))
+            ->map(fn (array $s) => str_replace(self::PROMPT_END."\n", '', $s['markdown']))
+            ->implode("\n\n---\n\n");
+    }
+
+    /** One file's generator-facing part: everything above the marker. */
+    public static function beforeMarker(string $markdown): string
+    {
+        $at = strpos($markdown, self::PROMPT_END);
+
+        return rtrim($at === false ? $markdown : substr($markdown, 0, $at));
     }
 
     public static function readme(): string

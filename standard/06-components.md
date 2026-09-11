@@ -1,6 +1,10 @@
 # 06. Components
 
-The inventory is Flux's, free and Pro, plus four custom components every fleet app needs and Flux does not ship. Each entry is the Flux component and the rule the standard adds: what it is for, what the standard fixes about it, and what it is never used for. A project does not add components; it asks for a change to the standard. The coverage table at the end lists every component Flux ships so nothing is left to guesswork.
+The component inventory is fixed and is not something a project or a generator chooses. It is Flux's set, free and Pro, plus five custom components: page header, stat tile, stat row, empty state and status badge. Page titles go through the page header component, because that is what applies the pairing's second face at title size.
+
+<!-- prompt-end -->
+
+Each entry below is the Flux component and the rule the standard adds: what it is for, what the standard fixes about it, and what it is never used for. A project does not add components; it asks for a change to the standard. The coverage table at the end lists every component Flux ships so nothing is left to guesswork.
 
 ## Navigation
 
@@ -52,7 +56,7 @@ The inventory is Flux's, free and Pro, plus four custom components every fleet a
 
 - **Table** `flux:table`, `table.columns`, `table.column`, `table.rows`, `table.row`, `table.cell`. Head row sits on `sunken`, 12px labels, `text-muted`. Body rows on `surface`, 14px, separated by one pixel `border`. Row hover is `sunken`. The first column is `text-strong`. Numbers right aligned and tabular. Row height from density. A table with more than twenty-five rows paginates. Tables scroll horizontally inside their own container and never widen the page. Sortable columns show the arrow only on the sorted column.
 - **Pagination** `flux:pagination`. Below the table, right aligned.
-- **Badge** `flux:badge`. Status only, soft style: status soft background, status text. Never for categories or counts, and never in accent. One badge per cell. Pill shape only when the radius step is round.
+- **Badge** `x-ds::badge`, not `flux:badge`. Status only, soft style: status soft background, status text. Never for categories or counts, and never in accent. One badge per cell. Flux's badge paints from Tailwind's palette across six steps per colour, so it shows a different green from the standard's and matching it would mean repainting four colour families for the whole app. The custom badge reads the status roles instead.
 - **Avatar** `flux:avatar`, `avatar.group`. Initials on `sunken` when there is no image. Never in accent. Groups overlap by a quarter and stop at four plus a count.
 - **Progress** `flux:progress`. Track is `sunken`, fill is accent. Determinate only; for unknown duration use a skeleton or a spinner in a button.
 - **Chart** `flux:chart` (Pro). Lines and bars only in the standard's palette: series one is accent, series two is `text-muted`, further series are status colours only when they mean that status. Axes and grid lines are `border`. No gradients under lines, no shadows, no animation beyond the 200ms reveal. Every chart has a title in the label style and a unit.
@@ -75,12 +79,13 @@ The inventory is Flux's, free and Pro, plus four custom components every fleet a
 
 ## Custom components
 
-The four components every fleet app needs that Flux does not ship. They ship in the `dashcore/design-kit` package as Blade components and read only the `--ds-*` role variables and `config('brand')`.
+The five components every fleet app needs that Flux does not ship, or does not ship on the standard's colours. They ship in the `dashcore/design-kit` package as Blade components and read only the `--ds-*` role variables and `config('brand')`.
 
-- **Page header** `x-ds::page-header`. Eyebrow, title, description, actions, as defined in 02.
+- **Page header** `x-ds::page-header`. Eyebrow, title, description, actions, as defined in 02. Every page title goes through it. A bare `flux:heading` does not take the pairing's second face, so a serif or display pairing is invisible on any screen that skips this component.
 - **Stat tile** `x-ds::stat`. Label in the label style, value in the stat size and the display face if the pairing has one, an optional delta in success or danger text with an arrow icon, an optional one-line footnote in `text-muted`.
 - **Stat row** `x-ds::stat-row`. The grid for two to four tiles, laid out by motif (07): a one pixel grid for hairline, the section gap otherwise.
 - **Empty state** `x-ds::empty`. Centred in its region: one Heroicon at 24px in `text-muted`, one line saying what belongs here, one line saying how to add it, one default button. Never an illustration.
+- **Status badge** `x-ds::badge`. One of the four statuses, soft style, from the `--ds-*` roles.
 
 ## Rules
 

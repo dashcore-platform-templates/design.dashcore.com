@@ -1,6 +1,15 @@
 # 07. Motifs
 
-A motif is one structural habit that runs through a whole project and gives it a recognisable hand without changing the components. The generator picks exactly one. A project never combines two.
+A motif is one structural habit that runs through a whole project and gives it a recognisable hand without changing the components. The generator picks exactly one. A project never combines two. A motif never adds a component or a colour; it only redistributes what the standard already allows.
+
+- **Accent bar.** A two pixel accent bar marks the active nav item, the selected row and the active tab, with no background fill. Suits the sidebar shell, dense tools, and a saturated accent that would overwhelm as a fill.
+- **Hairline.** Regions and rows are separated by one pixel lines instead of card boxes. Suits data-heavy screens, compact density and sharp radius.
+- **Eyebrow.** Every page title and stat tile carries an uppercase label above it, in the pairing's mono face if it has one. Suits mono pairings, operations and technical work, anything with reference codes.
+- **Filled stat.** The first stat tile is filled accent, the rest tinted, and active nav items take a soft accent background. Suits the top nav shell, comfortable density, round radius, and people-facing apps where one warm block of colour reads as welcome rather than alarm.
+
+If neither the brief nor the generator has a reason to prefer one, the default is accent bar for the sidebar shell and filled stat for the top nav shell.
+
+<!-- prompt-end -->
 
 Each motif is defined by where it appears and what it forbids, so it can be checked in the dashboard mockup.
 
@@ -10,34 +19,27 @@ The active nav item carries a two pixel accent bar on its leading edge, full ite
 
 Forbids: filled active nav items, accent-soft row selection.
 
-Suits: sidebar shell, dense tools, projects with a saturated accent that would overwhelm as a fill.
-
 ## 2. Hairline
 
-Regions and rows are separated by one pixel `border` lines instead of card boxes. Cards lose their border and radius and sit flush; the grid between stat tiles is a one pixel line of `border` with tiles on `surface` inside it. Page header has a one pixel bottom border. Tables have no outer border, only row lines.
+Cards lose their border and radius and sit flush; the grid between stat tiles is a one pixel line of `border` with tiles on `surface` inside it. Page header has a one pixel bottom border. Tables have no outer border, only row lines.
 
 Forbids: bordered cards, shadows anywhere except overlays, gaps between stat tiles.
 
-Suits: data-heavy screens, compact density, sharp radius. The closest of the four to the retired OS Plus grid, kept because it earned it.
+Closest of the four to the retired OS Plus grid, kept because it earned it.
 
 ## 3. Eyebrow
 
-Every page title and every stat tile carries an uppercase label above it: 12px, 0.08em spacing, weight 500, `text-muted`, set in the pairing's mono face if it has one and the body face otherwise. Table heads are set the same way. Section headings inside cards are replaced by an eyebrow.
+Labels are 12px, 0.08em spacing, weight 500, `text-muted`, set in the pairing's mono face if it has one and the body face otherwise. Table heads are set the same way. Section headings inside cards are replaced by an eyebrow.
 
 Forbids: mixed-case labels, section headings at 18px inside cards.
 
-Suits: pairings with a mono second face, operations and technical work, anything with reference codes.
-
 ## 4. Filled stat
 
-The stat row is the one place the accent is allowed as a surface. The first tile is filled `accent` with `on-accent` text; the rest are `accent-soft` with `text-strong` values. Active nav items take an `accent-soft` background with `accent-content` text. No accent bars anywhere.
+The stat row is the one place the accent is allowed as a surface. The first tile is filled `accent` with `on-accent` text; the rest are `accent-soft` with `text-strong` values. Active nav items take an `accent-soft` background with `accent-content` text.
 
 Forbids: accent bars, accent-soft anywhere outside nav and the stat row.
-
-Suits: top nav shell, comfortable density, round radius, people-facing apps where one warm block of colour reads as welcome rather than alarm.
 
 ## Rules
 
 - The motif is chosen once. A screen that does not have a nav, a table or a stat row simply shows less of it.
-- A motif never adds a component or a colour. It only redistributes what the standard already allows.
-- If neither the brief nor the generator has a reason to prefer one, the default is accent bar for the sidebar shell and filled stat for the top nav shell.
+- The suits lines above are guidance the generator reasons from, not hard pairings. A motif and a radius step are chosen separately and a person may overrule either.

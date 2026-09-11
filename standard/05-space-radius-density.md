@@ -2,15 +2,28 @@
 
 ## The spacing scale
 
-Eight steps on a 4px base. Every gap, padding and gutter on every screen is one of these.
-
-4, 8, 12, 16, 24, 32, 48, 64
-
-Tailwind: `1 2 3 4 6 8 12 16`. Nothing in between. If a layout seems to need 20 or 40, the layout is wrong, not the scale.
+Eight steps on a 4px base, and nothing in between: 4, 8, 12, 16, 24, 32, 48, 64. If a layout seems to need 20 or 40, the layout is wrong, not the scale.
 
 ## Density
 
-Two densities. The generator picks one from the brief: comfortable for apps used occasionally or by the public, compact for tools used all day by trained staff. Density sets these values and nothing else:
+Two densities. Comfortable is for apps used occasionally or by the public. Compact is for tools used all day by trained staff, and only then. Density sets spacing, never type: UI text stays 14px in both.
+
+| Measure | Comfortable | Compact |
+|---|---|---|
+| Page gutter and section gap | 32 | 24 |
+| Card, panel and stat tile padding | 24 | 16 |
+| Table row height | 48 | 40 |
+| Control height | 40 | 36 |
+| Gap between form fields | 24 | 16 |
+| Prose and input text size | 16 | 14 |
+
+## Radius
+
+Three steps. **Sharp** suits dense data and technical work. **Soft** is the default when the brief gives no reason. **Round** suits consumer-facing and people-facing apps. Radius never varies within a project: a sharp table beside a round card is the inconsistency the principles call a bug.
+
+<!-- prompt-end -->
+
+## The density table in full
 
 | Measure | Comfortable | Compact |
 |---|---|---|
@@ -27,11 +40,9 @@ Two densities. The generator picks one from the brief: comfortable for apps used
 | Brand block height | 56 | 48 |
 | Prose and input text size | 16 | 14 |
 
-UI text stays 14px in both. Density is spacing, not type.
+## The radius steps
 
-## Radius
-
-Three steps. The generator picks one per project. Each step sets Tailwind's radius variables so every `rounded-*` in Flux follows at once.
+Each step sets Tailwind's radius variables so every `rounded-*` in Flux follows at once.
 
 | Variable | Sharp | Soft | Round |
 |---|---|---|---|
@@ -42,8 +53,6 @@ Three steps. The generator picks one per project. Each step sets Tailwind's radi
 | `--radius-2xl` | 8 | 16 | 24 |
 
 Values in pixels. `rounded-full` is unaffected and stays a pill or circle. Flux uses `rounded-lg` for buttons, inputs and cards and `rounded-md` for smaller controls, so the step is felt everywhere without touching a component.
-
-Sharp suits dense data and technical work. Soft is the default when the brief gives no reason. Round suits consumer-facing and people-facing apps. Radius never varies within a project: a sharp table beside a round card is the inconsistency the principles call a bug.
 
 ## Rules
 
