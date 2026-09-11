@@ -22,3 +22,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Personal project notes, kept on disk and out of this repo
+/docs/build-guide-nextjs-shadcn.md
