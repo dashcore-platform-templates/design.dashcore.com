@@ -70,7 +70,7 @@ final class Audit
             }
 
             foreach (self::matches($line, '/<flux:badge\b/') as $m) {
-                $findings[] = self::finding('Flux badge', $n, $m, 'Use x-ds::badge: Flux paints badges from Tailwind, not the standard status colours.');
+                $findings[] = self::finding('Flux badge', $n, $m, 'Use x-ds::badge: a status for the four the standard names, no status for a category, a role or a plan. Flux paints badges from Tailwind, not the standard roles.');
             }
 
             foreach (self::matches($line, '/\b(?:'.implode('|', array_keys(Applier::LUCIDE_RENAMES)).')\b/') as $m) {

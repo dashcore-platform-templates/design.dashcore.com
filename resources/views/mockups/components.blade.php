@@ -84,6 +84,8 @@
                 <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-warning-soft); color: var(--ds-warning)">Needs attention</span>
                 <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-danger-soft); color: var(--ds-danger)">Cancelled</span>
                 <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-info-soft); color: var(--ds-info)">Scheduled</span>
+                <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-sunken); color: var(--ds-text-muted-on-sunken)">Admin</span>
+                <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-sunken); color: var(--ds-text-muted-on-sunken)">Rejected</span>
             </div>
             <div class="flex flex-wrap gap-2">
                 <flux:badge color="green" size="sm">Flux badge</flux:badge>

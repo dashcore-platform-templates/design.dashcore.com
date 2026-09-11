@@ -166,13 +166,14 @@ final class Pack
 
         Props: `title`, `description` (a prop, or `<x-slot:description>` when it holds a link), `eyebrow`. The slot is the actions, on the right. Remove the heading and subtitle it replaces.
 
-        **Flux badge.** Status becomes the standard badge, one per cell:
+        **Flux badge.** Every Flux badge becomes the standard badge, one per cell:
 
         ```blade
         <x-ds::badge status="success">Done</x-ds::badge>
+        <x-ds::badge>Admin</x-ds::badge>
         ```
 
-        `status` is `success`, `warning`, `danger` or `info`. A badge for a category, a role, a plan or a count is not a status, and the standard has no rule for those yet. Leave it as it is and list it in the report; do not invent a component or an ignore for it.
+        With a `status` of `success`, `warning`, `danger` or `info` it takes that status's colours. Without one it is neutral, and neutral is what a category, a role, a plan, a type, or a state the four colours do not cover takes: rejected, retired, not configured. Do not reach for a colour to make one of those stand out. A count is not a badge at all, so unwrap it and leave the number as text beside its label.
 
         **Spacing off the scale.** The mechanical pass rewrote the utility classes. What remains is in `style=` or arbitrary values. The scale is Tailwind steps 1 2 3 4 6 8 12 16, or a density value: `--ds-gutter`, `--ds-section`, `--ds-card`, `--ds-stat`, `--ds-row`, `--ds-cell-x`, `--ds-control`, `--ds-label-gap`, `--ds-field-gap`, `--ds-nav-item`, `--ds-brand`, `--ds-prose`. `p-(--ds-card)` pads a card; `gap-(--ds-section)` separates regions.
 

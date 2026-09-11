@@ -18,6 +18,10 @@ The **Enforced by** column is why cutting length does not cost output quality. R
 
 **6.5, headings and the display face.** The standard now requires page titles to go through `x-ds::page-header`. Why: Flux's heading does not take the pairing's second face, so a serif or display pairing is invisible without it, which makes one of the seven decisions half inert. The rule is one line in 02 and one in 06.
 
+**6.6, a badge with no status.** Added on 12 September 2026, after the first two migrations of Executive OS both stalled on it. The old rule allowed badges for the four statuses and forbade them for anything else without offering a replacement, so 25 findings sat unfixable and the audit could never reach zero on an app that followed the instructions exactly. A badge given no status is now neutral: sunken background, muted text at the step 04 measures against a quiet surface. Neutral carries categories, roles, plans and types, and also the states the four colours have no room for, which the agent migration found in an outcome set of executed, failed, rejected and pending. Rejected is not danger. The same change makes an unrecognised status render neutral instead of falling back to info, because painting an unknown state blue asserts something untrue about it. Colour on a badge still means status and nothing else, and a count stops being a badge at all, since a number beside a label is text.
+
+**4.10, text on a status tint.** Added on 12 September 2026, from the same migration. 04 sanctions a status tint as a row background and the migration guide recommends it, but muted text at the 500 step measures 4.35:1 on the danger tint and 4.37:1 on the info tint in light, under the floor, with success and warning only scraping past at 4.55 and 4.59. Nothing caught it because `design:check` measured text against page, surface and sunken but never against a tint. No new colour was needed: `text-muted-on-sunken` clears every tint in every design at 5.73:1 or better, so 04 now reads that role as muted text on any quiet surface rather than on sunken alone. Status text on its own tint was never at risk, at 4.79:1 or better, but is measured now too. Both pairs are checked for every status in both registers, in the tool and in the package's copy of the gate, with a test comparing the two lists by name so they cannot drift apart again.
+
 ## 01 Principles
 
 | # | Rule | Enforced by | Decision |
@@ -73,6 +77,7 @@ The **Enforced by** column is why cutting length does not cost output quality. R
 | 4.7 | Contrast floor: 4.5 text, 3 meaning-carrying, none decorative | code | keep three lines |
 | 4.8 | Measured results table and the two findings | code | cut from prompt |
 | 4.9 | Input outlines at 1.5:1 against the 3:1 floor | you | decided above: the focus ring carries the meaning |
+| 4.10 | Muted text on a status tint is under the floor | the resolver | decided above: the on-sunken step, and both tint pairs measured |
 | 4.10 | Mapping onto Flux variables | code | cut from prompt |
 
 ## 05 Spacing, radius, density
@@ -95,6 +100,7 @@ The **Enforced by** column is why cutting length does not cost output quality. R
 | 6.3 | Coverage table | people | cut from prompt |
 | 6.4 | Flux badge colours are not the standard's status colours | you | decided above: the package overrides them |
 | 6.5 | Flux headings do not take the display face | you | decided above: titles go through the page header |
+| 6.6 | Badges are status only, with no rule for categories | you | decided above: no status means neutral |
 
 ## 07 Motifs
 
