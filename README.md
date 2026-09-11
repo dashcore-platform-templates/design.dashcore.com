@@ -10,7 +10,9 @@ Three parts, and the order matters.
 
 **The adapter** is a Composer package, [`dashcore/design-kit`](packages/design-kit/README.md). One command applies a design to a Laravel Livewire Flux kit: theme variables, fonts, the two-panel sign-in, the custom components, icons.
 
-It is written here, in `packages/design-kit`, because it changes with the standard and the two should move in one commit. Composer cannot install from a subdirectory, so it is published to `dashcoretech/design-kit` by subtree push, and that is what kits install. The published repo is a mirror: edit it there and the change is lost on the next publish.
+It is written here, in `packages/design-kit`, because it changes with the standard and the two should move in one commit. Composer cannot install from a subdirectory, so it is published to `dashcoretech/design-kit`, and that is what kits install. The published repo is a mirror: edit it there and the change is lost on the next publish.
+
+Publishing is automatic. A push to master updates the mirror, and a `design-kit/vX.Y.Z` tag releases that version. Kits are on `^1.0`, so a release reaches them on the next `composer update`; anything that would break an app already on the standard goes to 2.0 and stops for a person.
 
 ## The seven decisions
 

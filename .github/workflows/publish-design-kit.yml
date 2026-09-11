@@ -1,0 +1,69 @@
+name: publish design-kit
+
+# Composer cannot install a package from a subdirectory, so packages/design-kit
+# is written here and published to dashcoretech/design-kit as a repo of its own.
+# That used to be a subtree push somebody ran by hand and forgot. Now a push to
+# master republishes the mirror, and a design-kit/vX.Y.Z tag releases it.
+#
+# Releasing:
+#   git tag design-kit/v1.1.0 && git push origin design-kit/v1.1.0
+#
+# Needs a DESIGN_KIT_TOKEN secret: a token that can write to the mirror. The
+# built-in GITHUB_TOKEN cannot, because it only ever reaches this repo.
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'design-kit/v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-design-kit
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # subtree split rewrites the whole history of the prefix, so a shallow
+          # clone produces a different sha and the push is rejected.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Publish the package to its own repo
+        env:
+          DESIGN_KIT_TOKEN: ${{ secrets.DESIGN_KIT_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${DESIGN_KIT_TOKEN}" ]; then
+            echo "DESIGN_KIT_TOKEN is not set."
+            echo "Add a repository secret holding a token that can write to dashcoretech/design-kit."
+            exit 1
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          mirror="https://x-access-token:${DESIGN_KIT_TOKEN}@github.com/dashcoretech/design-kit.git"
+          split=$(git subtree split --prefix=packages/design-kit)
+          echo "split commit: ${split}"
+
+          # A push with nothing new in it is already up to date, so this is safe
+          # to run on every master push rather than guessing at changed paths.
+          git push "${mirror}" "${split}:refs/heads/master"
+
+          if [ "${GITHUB_REF_TYPE}" = 'tag' ]; then
+            version="${GITHUB_REF_NAME#design-kit/}"
+            echo "releasing ${version}"
+            git push "${mirror}" "${split}:refs/tags/${version}"
+          fi

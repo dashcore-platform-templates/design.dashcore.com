@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Design\Design;
 use Illuminate\Support\Facades\Blade;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -59,7 +60,7 @@ class DesignKitBadgeTest extends TestCase
         // Neutral is muted-on-sunken text on the sunken surface, which is a pair
         // in every design's contrast block, so it cannot drift below the floor
         // without design:check failing first.
-        $pairs = array_column(\App\Design\Design::load('harbor-point')->tokens()['contrast']['pairs'], 'ratio', 'pair');
+        $pairs = array_column(Design::load('harbor-point')->tokens()['contrast']['pairs'], 'ratio', 'pair');
 
         foreach (['light', 'dark'] as $register) {
             $this->assertArrayHasKey("{$register}: text-muted-on-sunken on sunken", $pairs);

@@ -15,7 +15,13 @@ One is written, the other is published. Never the reverse.
 
 ## Install
 
-Republish the mirror after changing the package in the design repo:
+This repo is republished automatically. A push to master in the design repo updates it, and a `design-kit/vX.Y.Z` tag there releases that version here:
+
+```bash
+git tag design-kit/v1.1.0 && git push origin design-kit/v1.1.0
+```
+
+If the workflow is down, the same thing by hand:
 
 ```bash
 git subtree push --prefix=packages/design-kit https://github.com/dashcoretech/design-kit.git master
