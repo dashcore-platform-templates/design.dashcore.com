@@ -33,6 +33,8 @@ new #[Layout('layouts::tool')] class extends Component
     #[Url]
     public string $register = 'light';
 
+    public ?string $generatedAt = null;
+
     public ?array $generator = null;
 
     public bool $dirty = false;
@@ -78,6 +80,7 @@ new #[Layout('layouts::tool')] class extends Component
         }
 
         $this->decisions = $fresh->decisions;
+        $this->generatedAt = $fresh->generatedAt;
         $this->generator = $fresh->generator;
         $this->dirty = true;
         $this->notice = 'Regenerated with '.$fresh->generator['model'].'. Save to keep it.';
@@ -88,13 +91,14 @@ new #[Layout('layouts::tool')] class extends Component
         $design = Design::load($this->slug);
         $this->brief = $design->brief;
         $this->decisions = $design->decisions;
+        $this->generatedAt = $design->generatedAt;
         $this->generator = $design->generator;
         $this->dirty = false;
     }
 
     protected function design(): Design
     {
-        return new Design($this->slug, $this->brief, $this->decisions, generator: $this->generator);
+        return new Design($this->slug, $this->brief, $this->decisions, generatedAt: $this->generatedAt, generator: $this->generator);
     }
 
     public function with(): array

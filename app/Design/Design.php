@@ -115,9 +115,12 @@ final class Design
         }
 
         File::ensureDirectoryExists(self::directory());
+        // generated_at is when the model chose, not when a person last hit Save.
+        // Stamping it here rewrote the file on every save and changed the pack's
+        // bytes, so a kit that had pulled the design saw a change that was not one.
         File::put(self::path($this->slug), json_encode(array_filter([
             'schema' => self::SCHEMA,
-            'generated_at' => $this->generatedAt ?? now()->toIso8601String(),
+            'generated_at' => $this->generatedAt,
             'generator' => $this->generator,
             'brief' => $this->brief,
             'decisions' => $this->decisions,

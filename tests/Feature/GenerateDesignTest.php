@@ -132,6 +132,26 @@ class GenerateDesignTest extends TestCase
     }
 
     #[Test]
+    public function saving_from_the_design_page_keeps_when_the_model_chose(): void
+    {
+        $this->artisan('design:generate', ['client' => 'Tidewater', 'product' => 'Berth scheduling for a port, used all shift.'])->assertSuccessful();
+
+        $generatedAt = Design::load('tidewater')->generatedAt;
+        $this->assertNotNull($generatedAt);
+
+        Livewire::test('pages::designs.show', ['slug' => 'tidewater'])
+            ->set('decisions.radius.value', 'round')
+            ->call('save')
+            ->assertSet('dirty', false);
+
+        $saved = Design::load('tidewater');
+        $this->assertSame('round', $saved->decisions['radius']['value']);
+        // A save is a person editing a decision, not the model choosing again.
+        $this->assertSame($generatedAt, $saved->generatedAt);
+        $this->assertSame('claude-test-model', $saved->generator['model']);
+    }
+
+    #[Test]
     public function the_new_design_page_renders(): void
     {
         $this->get('/designs/new')->assertOk()->assertSee('Describe the project');
