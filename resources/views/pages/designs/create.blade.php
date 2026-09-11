@@ -80,7 +80,13 @@ new #[Layout('layouts::tool')] #[Title('New design')] class extends Component
             <flux:field>
                 <flux:label>Shell <span class="ds-label ms-1.5 font-normal">a person decides this</span></flux:label>
                 <flux:description>Sidebar for tools used for hours with many destinations. Top nav for a portal opened now and then with six or fewer.</flux:description>
-                <flux:radio.group wire:model="shell" variant="segmented">
+                {{--
+                    Live, not deferred. The shell is the one field whose wrong
+                    value still passes validation, so a click that does not
+                    reach the server would generate a sidebar design silently.
+                    Live means the server holds what is on screen.
+                --}}
+                <flux:radio.group wire:model.live="shell" variant="segmented">
                     <flux:radio value="sidebar" label="Sidebar" />
                     <flux:radio value="top-nav" label="Top nav" />
                 </flux:radio.group>

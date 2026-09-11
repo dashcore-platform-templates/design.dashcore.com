@@ -1,0 +1,56 @@
+{
+    "schema": "dashcore-design/1",
+    "generated_at": "2026-09-11T15:59:56+00:00",
+    "generator": {
+        "model": "claude-fable-5-1",
+        "prompt_sha1": "34ed8f6d419920e828870b9cb94e6911ea416119",
+        "duration_ms": 10420,
+        "usage": {
+            "input_tokens": 153,
+            "output_tokens": 490,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 7655
+        }
+    },
+    "brief": {
+        "client": "Calder Street Veterinary",
+        "product": "An owner portal for a small animal veterinary practice. Owners sign in after a visit to read the vet's notes, see vaccination dates and pay an invoice.",
+        "shell": "top-nav",
+        "brand_colour": null,
+        "logo": null,
+        "notes": null
+    },
+    "decisions": {
+        "accent": {
+            "value": "#2a7f6f",
+            "why": "A calm teal suits a veterinary practice serving anxious pet owners, sits well clear of red and amber, and avoids the sky blue most clinic portals use."
+        },
+        "temperature": {
+            "value": "warm",
+            "why": "Pet owners reading notes about their own animals are people-facing health work, which the standard gives warm greys."
+        },
+        "pairing": {
+            "value": 2,
+            "why": "Owners come to read a vet's notes and trust what they say, so a quiet serif at title size fits better than a mono face for a portal with no reference codes in every row."
+        },
+        "radius": {
+            "value": "round",
+            "why": "The users are the public checking on a pet, not staff working with dense data, so round corners fit a consumer-facing portal."
+        },
+        "density": {
+            "value": "comfortable",
+            "why": "Owners open the portal occasionally after a visit and are not trained staff working all day, so comfortable spacing is the only allowed choice."
+        },
+        "motif": {
+            "value": "filled-stat",
+            "why": "The brief chooses the top nav shell for a people-facing app, where one warm block of colour on the first tile reads as welcome rather than alarm."
+        },
+        "copy": {
+            "eyebrow": "Calder Street Veterinary",
+            "headline": "Everything from your pet's last visit",
+            "tagline": "Read the vet's notes, check upcoming vaccinations and settle your invoice in one place.",
+            "footer": null,
+            "why": "It names the three things an owner actually came to do after a visit, in the practice's own voice rather than software terms."
+        }
+    }
+}
