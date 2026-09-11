@@ -4,7 +4,9 @@ use App\Design\Css;
 use App\Design\Design;
 use App\Design\Generation\DesignGenerator;
 use App\Design\Generation\GenerationFailed;
+use App\Design\Handoff;
 use App\Design\Neutrals;
+use App\Design\Pack;
 use App\Design\Pairings;
 use App\Design\Resolver;
 use Livewire\Attributes\Layout;
@@ -107,6 +109,14 @@ new #[Layout('layouts::tool')] class extends Component
             'radii' => Resolver::RADII,
             'densities' => Resolver::DENSITIES,
             'motifs' => Resolver::MOTIFS,
+            // The handoff panel. Everything in it comes from one class so the
+            // panel, the walkthrough and the pack cannot say different things.
+            'handoff' => [
+                'prompt' => Handoff::prompt($design),
+                'token' => Handoff::tokenCommand(),
+                'commands' => implode(PHP_EOL, Handoff::commands(Handoff::packUrl($design))),
+                'snippet' => Pack::claudeSnippet($design),
+            ],
         ];
     }
 }; ?>
@@ -234,15 +244,48 @@ new #[Layout('layouts::tool')] class extends Component
                 <span wire:loading.remove wire:target="regenerate">Regenerate from brief</span>
                 <span wire:loading wire:target="regenerate">Choosing again…</span>
             </flux:button>
-            <div class="flex gap-2">
-                <flux:button :href="route('designs.pack', $slug)" size="sm" icon="arrow-down-tray" class="flex-1">Download pack</flux:button>
-                <flux:button :href="route('designs.json', $slug)" size="sm" variant="ghost">JSON</flux:button>
-            </div>
+            <flux:modal.trigger name="use-design">
+                <flux:button size="sm" icon="command-line" class="w-full">Use this design</flux:button>
+            </flux:modal.trigger>
             @if ($dirty)
-                <p class="text-xs text-(--ds-warning)">Unsaved changes. Downloads use the saved file.</p>
+                <p class="text-xs text-(--ds-warning)">Unsaved changes. The pack is built from the saved file.</p>
             @endif
         </div>
     </aside>
+
+    {{-- The handoff: one prompt for the agent, the by-hand path folded away --}}
+    <flux:modal name="use-design" class="md:w-[44rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Use this design</flux:heading>
+                <flux:text class="mt-1">Paste the prompt into Claude Code opened in the target repo. The agent installs the adapter, applies {{ $title }}, builds, commits, and if the app already has screens, migrates them one commit at a time. You review the commits.</flux:text>
+            </div>
+
+            <x-copy-block label="Prompt for the agent" :text="$handoff['prompt']" />
+
+            <div>
+                <x-copy-block label="Once per machine" :text="$handoff['token']" />
+                <p class="mt-1.5 text-xs leading-snug text-(--ds-text-muted)">The package is private, so Composer needs its own GitHub token. The agent is never given it: if Composer cannot reach the repository, the agent stops and asks you to run this.</p>
+            </div>
+
+            <flux:accordion>
+                <flux:accordion.item>
+                    <flux:accordion.heading>By hand</flux:accordion.heading>
+                    <flux:accordion.content>
+                        <div class="space-y-4 pt-1">
+                            <x-copy-block label="In the target repo" :text="$handoff['commands']" />
+                            <x-copy-block label="For the repo's CLAUDE.md" :text="$handoff['snippet']" />
+                            <div class="flex flex-wrap items-center gap-2">
+                                <flux:button :href="route('designs.pack', $slug)" size="sm" icon="arrow-down-tray">Download pack</flux:button>
+                                <flux:button :href="route('designs.json', $slug)" size="sm" variant="ghost">JSON</flux:button>
+                            </div>
+                            <p class="text-xs leading-snug text-(--ds-text-muted)">The zip is the same four files, for anyone offline. Unzip it into the repo root, then <code>php artisan design:apply design/design.json</code>.</p>
+                        </div>
+                    </flux:accordion.content>
+                </flux:accordion.item>
+            </flux:accordion>
+        </div>
+    </flux:modal>
 
     {{-- Mockups --}}
     <section class="flex min-w-0 flex-1 flex-col bg-(--ds-sunken)">

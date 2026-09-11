@@ -57,9 +57,19 @@ Look at both registers. The light and dark toggle is top right, and a design tha
 
 The contrast panel at the bottom of the controls is measured, not estimated. A design that fails is not exportable.
 
-## 6. Apply it
+## 6. Use this design
 
-The design page serves the pack at `/designs/<slug>/pack.json`: four files, which the apply command in the target repo pulls into `design/` before it changes anything.
+The button at the bottom of the controls opens the handoff. The main thing in it is a prompt, already filled in for this design. Paste it into Claude Code opened in the target repo, and the agent installs the adapter, pulls the pack, applies it, builds, adds the CLAUDE snippet, commits, and if the app already has screens, migrates them one commit at a time and ends with a report. Your part is reviewing the commits, which is step 7.
+
+One thing stays with you, once per machine. The package is private, so Composer needs its own GitHub token. The GitHub CLI's credentials are not enough, because Composer runs git non-interactively. The prompt tells the agent that if Composer cannot reach the repository it stops and asks you to run this, and that it never asks for the token itself:
+
+```bash
+composer config --global github-oauth.github.com <token>
+```
+
+### By hand
+
+The same panel folds the manual path away. The design page serves the pack at `/designs/<slug>/pack.json`: four files, which the apply command in the target repo pulls into `design/` before it changes anything.
 
 | File | Who reads it |
 |---|---|
@@ -80,7 +90,7 @@ npm run build
 
 With `DESIGN_SOURCE` in the kit's `.env` pointing at the design.dashcore.com you use, the slug alone is enough: `php artisan design:apply <slug>`. Download pack on the design page is the same four files as a zip, for anyone offline: unzip it into the repo root and run `php artisan design:apply design/design.json`.
 
-Composer needs its own GitHub token once per machine for the private package: `composer config --global github-oauth.github.com <token>`. The GitHub CLI's credentials are not enough, because Composer runs git non-interactively. `npm install` matters only on a fresh clone, and it is the step everyone forgets on one.
+`npm install` matters only on a fresh clone, and it is the step everyone forgets on one.
 
 `design:apply` prints its plan before writing: the four pack files under `design/`, the theme block in `app.css`, the fonts, the brand keys in `.env`, the sign-in layout, the logo, and the Lucide icon names renamed to Heroicons. It also offers to delete the kit's three stock sign-in layouts under `layouts/auth/`, which nothing references once the sign-in layout is the two-panel one. Run it with `--check` first if you want to see the plan without writing. Running it twice changes nothing, and it refuses a design that fails contrast.
 
@@ -88,9 +98,9 @@ Then paste the CLAUDE snippet into the repo's `CLAUDE.md` and commit `design/`. 
 
 **A new project stops here.** Open it: the sign-in page carries the generated copy in the chosen faces, and every Flux component already follows.
 
-## 7. An existing app: hand the screens to the agent
+## 7. An existing app: review the migration
 
-Applying a design rethemes an app. It does not restructure it. An older app still has its own headings, its own colour utilities typed into views, its own spacing and its own badges. Bringing the screens over is a judgment job, and it is the agent's job, with you reviewing one commit per screen. On Executive OS, about seventy views, the first agent pass brought the audit from 326 findings to 42 in one session. What was left was judgment calls and one gap in the standard.
+Applying a design rethemes an app. It does not restructure it. An older app still has its own headings, its own colour utilities typed into views, its own spacing and its own badges. Bringing the screens over is a judgment job, and the prompt from step 6 makes it the agent's, with you reviewing one commit per screen. On Executive OS, about seventy views, the first agent pass brought the audit from 326 findings to 42 in one session. What was left was judgment calls and one gap in the standard.
 
 ### 7a. Look at the map
 
@@ -112,13 +122,9 @@ A single line that is deliberately off says the same without `-file`:
 <div class="p-5"> {{-- @ds-audit-ignore the brand mark is fixed at this size --}}
 ```
 
-### 7b. Hand it over
+### 7b. What the agent does
 
-Commit first if the tree is not clean, so every diff from here is readable. Then open Claude Code in the target repo and give it the brief:
-
-> Migrate this app onto the design in `design/`. Follow `design/MIGRATION.md`: read the design and the standard first, run `design:audit` for the map, do the mechanical pass in a commit of its own, then one screen per commit, most-used first, checking each with `design:audit` on that file before committing. When done, report what is left and anything the standard has no rule for.
-
-MIGRATION.md is the whole procedure: the order, the rewrite for each kind of finding, the five components with their props, and how to check a screen. The CLAUDE snippet you pasted in step 6 keeps every later session on the design too.
+It follows `design/MIGRATION.md`, which the pack put in the repo: the mechanical pass in a commit of its own, then one screen per commit, most-used first, checking each with `design:audit` on that file before committing. MIGRATION.md is the whole procedure, the order, the rewrite for each kind of finding, the five components with their props, and how to check a screen, so there is nothing to brief beyond the prompt. Commit first if the tree is not clean, so every diff from here is readable.
 
 ### 7c. Review each commit
 

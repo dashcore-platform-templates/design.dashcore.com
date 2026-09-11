@@ -32,9 +32,9 @@ Step by step, with what to look for at each stage: [docs/walkthrough.md](docs/wa
 
 1. Open `/designs/new`, describe the client in two sentences, pick a shell, hit Generate.
 2. Look at the five mockups: sign-in, shell, dashboard, settings, and every component in that design. Change any decision and they update live.
-3. In the target repo: install the adapter, then `php artisan design:apply https://design.dashcore.com/designs/<slug>/pack.json`. It pulls the four pack files into `design/` and applies them. Then build. Download pack is the same four files as a zip, for anyone offline.
-4. Commit `design/`. Every later agent session in that repo reads it before touching a screen.
-5. An existing app: hand the screens to the agent with `design/MIGRATION.md` as its brief. `design:audit` is its map and its check, one screen per commit, and you review each one.
+3. Open Use this design and paste the prompt into Claude Code in the target repo. The agent installs the adapter, pulls and applies the pack, builds, commits, and migrates existing screens one commit at a time. The same panel holds the five by-hand commands and the zip.
+4. `design/` is committed in that repo. Every later agent session there reads it before touching a screen.
+5. An existing app: review the agent's migration commits, one per screen, against the mockups here.
 
 ## Running it
 
