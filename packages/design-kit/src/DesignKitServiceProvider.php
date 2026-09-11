@@ -3,6 +3,7 @@
 namespace Dashcore\DesignKit;
 
 use Dashcore\DesignKit\Commands\ApplyCommand;
+use Dashcore\DesignKit\Commands\AuditCommand;
 use Dashcore\DesignKit\Commands\CheckCommand;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -29,7 +30,7 @@ class DesignKitServiceProvider extends ServiceProvider
         $this->publishes([__DIR__.'/../resources/views' => resource_path('views/vendor/design-kit')], 'design-kit-views');
 
         if ($this->app->runningInConsole()) {
-            $this->commands([ApplyCommand::class, CheckCommand::class]);
+            $this->commands([ApplyCommand::class, AuditCommand::class, CheckCommand::class]);
         }
     }
 }
