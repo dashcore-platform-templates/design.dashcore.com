@@ -51,10 +51,20 @@ jobs:
             exit 1
           fi
 
+          # A token pasted into the secret box picks up a trailing newline more
+          # often than not, and git refuses a URL whose password holds one:
+          # "credential url cannot be parsed". No token has whitespace in it, so
+          # taking it out is always safe and saves re-pasting the secret.
+          token=$(printf '%s' "${DASHCORE_DESIGN}" | tr -d '[:space:]')
+          if [ -z "${token}" ]; then
+            echo "DASHCORE_DESIGN is only whitespace."
+            exit 1
+          fi
+
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          mirror="https://x-access-token:${DASHCORE_DESIGN}@github.com/dashcoretech/design-kit.git"
+          mirror="https://x-access-token:${token}@github.com/dashcoretech/design-kit.git"
           split=$(git subtree split --prefix=packages/design-kit)
           echo "split commit: ${split}"
 
