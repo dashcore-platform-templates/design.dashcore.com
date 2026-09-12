@@ -71,6 +71,31 @@ jobs:
               exit 1 ;;
           esac
 
+          # Ask GitHub what this token can do before pushing. A push that is
+          # refused says only "Write access to repository not granted", which
+          # does not say whether the scope is wrong, the repository was never
+          # selected, or an org owner has yet to approve it.
+          echo 'what this token can do:'
+          status=$(curl -sS -o /tmp/repo.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${token}" \
+            -H 'Accept: application/vnd.github+json' \
+            https://api.github.com/repos/dashcoretech/design-kit || echo 000)
+          echo "  repository lookup: HTTP ${status}"
+          if [ "${status}" = '200' ]; then
+            echo "  push permission: $(jq -r '.permissions.push // "not reported"' /tmp/repo.json)"
+          else
+            echo '  the token cannot see dashcoretech/design-kit at all'
+          fi
+          scopes=$(curl -sS -I -H "Authorization: Bearer ${token}" https://api.github.com/user 2>/dev/null | tr -d '\r' | grep -i '^x-oauth-scopes:' || true)
+          echo "  ${scopes:-x-oauth-scopes: none reported, which is normal for a fine-grained token}"
+
+          if [ "${status}" = '200' ] && [ "$(jq -r '.permissions.push // "false"' /tmp/repo.json)" != 'true' ]; then
+            echo 'This token cannot write to dashcoretech/design-kit.'
+            echo 'A classic token needs the repo scope. A fine-grained one needs that repository selected,'
+            echo 'Contents set to read and write, and approval from an organisation owner.'
+            exit 1
+          fi
+
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
