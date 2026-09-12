@@ -52,28 +52,42 @@ jobs:
           fi
 
           # A token pasted into the secret box picks up a trailing newline more
-          # often than not, and git refuses a URL whose password holds one:
-          # "credential url cannot be parsed". No token has whitespace in it, so
-          # taking it out is always safe and saves re-pasting the secret.
+          # often than not. No token has whitespace in it, so taking it out is
+          # always safe and saves re-pasting the secret.
           token=$(printf '%s' "${DASHCORE_DESIGN}" | tr -d '[:space:]')
           if [ -z "${token}" ]; then
-            echo "DASHCORE_DESIGN is only whitespace."
+            echo 'DASHCORE_DESIGN is empty or only whitespace.'
             exit 1
           fi
+
+          # A GitHub token is letters, digits and underscores, and nothing else.
+          # Checking that here turns "URL rejected: Bad hostname", which sounds
+          # like a network fault, into a sentence about the secret.
+          case "${token}" in
+            *[!A-Za-z0-9_]*)
+              echo 'DASHCORE_DESIGN does not look like a GitHub token.'
+              echo 'A token is letters, digits and underscores only, and begins ghp_ or github_pat_.'
+              echo 'The stored value has other characters in it, so it is probably not the token.'
+              exit 1 ;;
+          esac
 
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          mirror="https://x-access-token:${token}@github.com/dashcoretech/design-kit.git"
+          # The credential goes in a header rather than the URL. Git parses a
+          # URL before it authenticates, so anything unexpected in the token
+          # fails as a malformed address instead of as a rejected credential.
+          auth=$(printf 'x-access-token:%s' "${token}" | base64 -w0)
+          mirror='https://github.com/dashcoretech/design-kit.git'
           split=$(git subtree split --prefix=packages/design-kit)
           echo "split commit: ${split}"
 
           # A push with nothing new in it is already up to date, so this is safe
           # to run on every master push rather than guessing at changed paths.
-          git push "${mirror}" "${split}:refs/heads/master"
+          git -c "http.extraheader=Authorization: Basic ${auth}" push "${mirror}" "${split}:refs/heads/master"
 
           if [ "${GITHUB_REF_TYPE}" = 'tag' ]; then
             version="${GITHUB_REF_NAME#design-kit/}"
             echo "releasing ${version}"
-            git push "${mirror}" "${split}:refs/tags/${version}"
+            git -c "http.extraheader=Authorization: Basic ${auth}" push "${mirror}" "${split}:refs/tags/${version}"
           fi
