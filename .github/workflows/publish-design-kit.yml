@@ -8,7 +8,7 @@ name: publish design-kit
 # Releasing:
 #   git tag design-kit/v1.1.0 && git push origin design-kit/v1.1.0
 #
-# Needs a DESIGN_KIT_TOKEN secret: a token that can write to the mirror. The
+# Needs a DASHCORE_DESIGN secret: a token that can write to the mirror. The
 # built-in GITHUB_TOKEN cannot, because it only ever reaches this repo.
 
 on:
@@ -41,12 +41,12 @@ jobs:
 
       - name: Publish the package to its own repo
         env:
-          DESIGN_KIT_TOKEN: ${{ secrets.DESIGN_KIT_TOKEN }}
+          DASHCORE_DESIGN: ${{ secrets.DASHCORE_DESIGN }}
         run: |
           set -euo pipefail
 
-          if [ -z "${DESIGN_KIT_TOKEN}" ]; then
-            echo "DESIGN_KIT_TOKEN is not set."
+          if [ -z "${DASHCORE_DESIGN}" ]; then
+            echo "DASHCORE_DESIGN is not set."
             echo "Add a repository secret holding a token that can write to dashcoretech/design-kit."
             exit 1
           fi
@@ -54,7 +54,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          mirror="https://x-access-token:${DESIGN_KIT_TOKEN}@github.com/dashcoretech/design-kit.git"
+          mirror="https://x-access-token:${DASHCORE_DESIGN}@github.com/dashcoretech/design-kit.git"
           split=$(git subtree split --prefix=packages/design-kit)
           echo "split commit: ${split}"
 
