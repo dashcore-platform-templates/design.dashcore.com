@@ -67,7 +67,12 @@ jobs:
             *[!A-Za-z0-9_]*)
               echo 'DASHCORE_DESIGN does not look like a GitHub token.'
               echo 'A token is letters, digits and underscores only, and begins ghp_ or github_pat_.'
-              echo 'The stored value has other characters in it, so it is probably not the token.'
+              # Name the punctuation and the length rather than the value, so the
+              # next attempt is aimed rather than another guess. An @ means an
+              # email went in, a : means a pair, quotes mean the paste kept them.
+              stray=$(printf '%s' "${token}" | tr -d 'A-Za-z0-9_' | fold -w1 | sort -u | tr -d '\n')
+              echo "  characters in it that a token never has: ${stray}"
+              echo "  its length is ${#token}; a classic token is 40 and a fine-grained one about 93"
               exit 1 ;;
           esac
 
