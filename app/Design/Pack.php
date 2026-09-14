@@ -73,7 +73,7 @@ final class Pack
 
     public static function standardFile(): string
     {
-        return "# The Dashcore Standard\n\nExported from design.dashcore.com. Files 01 to 09 of the standard in full, including the rules the generator does not read: component behaviour, shell geometry, motion, the mapping onto Flux. Read alongside design.json before building or changing any screen.\n\n---\n\n".Standard::full();
+        return "# The Dashcore Standard\n\nExported from design.dashcore.com. Files 01 to 09 of the standard in full, including the rules the generator does not read: component behaviour, shell geometry, motion, the mapping onto Flux. Read alongside design.json before building or changing any screen.\n\nThe text below says \"the fleet\" throughout. The fleet is every app Dashcore runs, about fifteen of them, which have to look and work the same without looking like one client's app repainted. That number is the test a rule has to pass, and it is why a rule here is not open to a project: what suits one client is a preference, and the seven decisions in design.json are where a project differs.\n\n---\n\n".Standard::full();
     }
 
     public static function claudeSnippet(Design $design): string

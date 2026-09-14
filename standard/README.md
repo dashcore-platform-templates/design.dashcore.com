@@ -2,6 +2,8 @@
 
 This folder is the design standard for every app in the Dashcore fleet. It is two things at once: the rules a person follows when building a screen, and the instructions Claude Fable is given when it generates a design for a new project. Both read the same text, so a rule that cannot be checked against a mockup does not belong here.
 
+The fleet is every app Dashcore runs, about fifteen of them, which have to look and work the same without looking like one client's app repainted. That number is the test a rule has to pass. A rule that holds on fifteen products belongs here; one that suits a single client is a preference and belongs in that project's design file, where the seven decisions live.
+
 Status: draft zero, September 2026. Written whole so John can cut it in one sitting. Nothing in it is settled until he has.
 
 ## How it is organised
