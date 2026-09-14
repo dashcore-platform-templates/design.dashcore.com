@@ -7,8 +7,8 @@
 > An edit made here is not overwritten and is not lost. It stops every release
 > instead: the publish is an ordinary push, so a commit this repo has and the
 > source does not makes the next one a non-fast-forward, and it is refused.
-> Publishing stays broken until that commit is copied into `packages/design-kit`
-> and pushed from there.
+> Getting publishing working again takes two steps, both under "If somebody
+> edits the mirror anyway" below.
 
 Applies a design exported from design.dashcore.com to a Laravel Livewire Flux kit, and ships the five custom components the Dashcore Standard defines.
 
@@ -19,6 +19,23 @@ The package lives in the design repo because it changes with the standard: a rul
 One is written, the other is published. Never the reverse. It is the same arrangement Symfony and Laravel use, where every component you install is an automatic read-only split of one repository.
 
 This repo is a build artefact. `git subtree split` rewrites the package's folder history into a standalone one, and it is deterministic: the same source always produces the same commits. That is why a normal push is always a fast-forward here, and why a rejection means somebody edited this repo rather than something going wrong with the machinery.
+
+## If somebody edits the mirror anyway
+
+Recovery is two steps, and copying the work across is only the first of them.
+
+```bash
+# 1. in design.dashcore.com, put the change where it belongs
+#    (copy the file, commit, push)
+
+# 2. then reset this repo onto the split, from design.dashcore.com
+git push --force https://github.com/dashcoretech/design-kit.git \
+  "$(git subtree split --prefix=packages/design-kit):refs/heads/master"
+```
+
+Step 1 alone does not unblock publishing. A split can only ever contain commits the source has, so a commit made here is never in one, and it stays ahead of every future split forever. Step 2 alone would destroy the work. Together they keep it and clear the block.
+
+Step 2 needs write access to this repo, so after the lock below it is an owner's job.
 
 ## Locking the mirror
 

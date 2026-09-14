@@ -161,8 +161,15 @@ jobs:
             if ! git merge-base --is-ancestor FETCH_HEAD "${split}"; then
               echo 'The mirror has a commit this repo does not.'
               echo 'Somebody edited the mirror directly. That commit is still there and nothing is lost.'
-              echo 'Copy it into packages/design-kit here, commit, and push again. Publishing stays'
-              echo 'broken until then, on purpose, rather than overwriting their work.'
+              echo ''
+              echo 'Recovery is two steps. Copying the work across is only the first:'
+              echo '  1. copy the change into packages/design-kit here, commit, and push'
+              echo '  2. then reset the mirror onto the new split, from a checkout of this repo:'
+              echo '     git push --force '"${mirror}"' \'
+              echo '       "$(git subtree split --prefix=packages/design-kit):refs/heads/master"'
+              echo ''
+              echo 'Step 1 alone leaves this job failing, because a split can only contain commits'
+              echo 'this repo has, so their commit is never in one. Step 2 alone destroys their work.'
               echo ''
               echo 'What is on the mirror and not here:'
               git --no-pager log --oneline "${split}..FETCH_HEAD" || true
