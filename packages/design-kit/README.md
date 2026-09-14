@@ -1,7 +1,7 @@
 # dashcore/design-kit
 
 > **This is a mirror. Do not edit it here.** The source is `packages/design-kit` in
-> [design.dashcore.com](https://github.com/dashcoretech/design.dashcore.com). Edits made
+> [design.dashcore.com](https://github.com/kengervacio/design.dashcore.com). Edits made
 > to this repo are overwritten the next time it is republished. Change it there, then
 > republish with the command below.
 
@@ -24,7 +24,7 @@ git tag design-kit/v1.1.0 && git push origin design-kit/v1.1.0
 If the workflow is down, the same thing by hand:
 
 ```bash
-git subtree push --prefix=packages/design-kit https://github.com/dashcoretech/design-kit.git master
+git subtree push --prefix=packages/design-kit https://github.com/kengervacio/design-kit.git master
 ```
 
 In a kit:
@@ -32,7 +32,7 @@ In a kit:
 ```bash
 composer config repositories.flux-pro composer https://composer.fluxui.dev
 composer require livewire/flux-pro
-composer config repositories.design-kit vcs https://github.com/dashcoretech/design-kit.git
+composer config repositories.design-kit vcs https://github.com/kengervacio/design-kit.git
 composer require dashcore/design-kit
 ```
 
