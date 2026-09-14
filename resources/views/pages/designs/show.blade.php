@@ -9,6 +9,7 @@ use App\Design\Neutrals;
 use App\Design\Pack;
 use App\Design\Pairings;
 use App\Design\Resolver;
+use App\Design\Screens;
 use App\Design\Standard;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -29,7 +30,7 @@ new #[Layout('layouts::tool')] class extends Component
     public array $decisions = [];
 
     #[Url]
-    public string $screen = 'dashboard';
+    public string $screen = Screens::DEFAULT;
 
     #[Url]
     public string $register = 'light';
@@ -45,7 +46,15 @@ new #[Layout('layouts::tool')] class extends Component
     public function mount(string $slug): void
     {
         abort_unless(Design::exists($slug), 404);
+        // The screen comes off the URL and ends up in a Blade include, so it is
+        // checked against the list rather than trusted.
+        $this->screen = Screens::resolve($this->screen);
         $this->load();
+    }
+
+    public function updatedScreen(string $value): void
+    {
+        $this->screen = Screens::resolve($value);
     }
 
     public function updated(string $property): void
@@ -310,11 +319,9 @@ new #[Layout('layouts::tool')] class extends Component
     <section class="flex min-w-0 flex-1 flex-col bg-(--ds-sunken)">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-(--ds-border) bg-(--ds-surface) px-(--ds-gutter) py-3">
             <flux:radio.group wire:model.live="screen" variant="segmented" size="sm">
-                <flux:radio value="sign-in" label="Sign-in" />
-                <flux:radio value="shell" label="Shell" />
-                <flux:radio value="dashboard" label="Dashboard" />
-                <flux:radio value="settings" label="Settings" />
-                <flux:radio value="components" label="Components" />
+                @foreach (Screens::ALL as $value => $label)
+                    <flux:radio :value="$value" :label="$label" />
+                @endforeach
             </flux:radio.group>
             <div class="flex items-center gap-3">
                 <span class="text-xs text-(--ds-text-muted)">{{ $tokens['fonts']['sans']['family'] }} + {{ $tokens['fonts']['second']['family'] }} · {{ $decisions['temperature']['value'] }} · {{ $decisions['radius']['value'] }} · {{ $decisions['density']['value'] }} · {{ $decisions['motif']['value'] }}</span>
