@@ -1,6 +1,6 @@
 <?php
 
-use App\Design\Css;
+use App\Design\Artboard;
 use App\Design\Design;
 use App\Design\Generation\DesignGenerator;
 use App\Design\Generation\GenerationFailed;
@@ -141,7 +141,6 @@ new #[Layout('layouts::tool')] class extends Component
 
 <div class="flex min-h-screen" x-data>
     @php
-        $frameId = 'mock-'.$slug;
         $title = $design->name();
     @endphp
     @push('fonts')
@@ -333,21 +332,53 @@ new #[Layout('layouts::tool')] class extends Component
         </div>
 
         <div class="flex-1 p-(--ds-gutter)">
-            <style>{!! Css::scoped('#'.$frameId, $tokens) !!}</style>
             {{--
-                The mockup is laid out at a fixed desktop width (1280px) and scaled to
-                fit the panel, so what you see is the desktop screen, not a responsive
-                collapse of it. The wrapper takes the scaled height so the page scrolls
-                naturally.
+                The canvas: every width the standard names, side by side, always on
+                screen. A width behind a toggle is a width nobody presses, so it rots.
+
+                Each artboard is an iframe, because only an iframe has a viewport of
+                its own. A scaled div keeps measuring the browser window, so a 375px
+                artboard would render the desktop layout squeezed and look checked
+                when it is not.
             --}}
-            <div class="relative"
-                 x-data="{ scale: 1, height: 720, fit() { const w = $el.clientWidth || 1280; this.scale = Math.min(1, w / 1280); this.height = ($refs.frame?.offsetHeight || 720) * this.scale; } }"
-                 x-init="fit(); new ResizeObserver(() => fit()).observe($el); new MutationObserver(() => fit()).observe($el, { childList: true, subtree: true })"
-                 x-bind:style="`height: ${height}px`">
-                <div id="{{ $frameId }}" x-ref="frame" wire:key="frame-{{ $screen }}-{{ $register }}"
-                     @class(['ds-frame absolute start-0 top-0 w-[1280px] origin-top-left overflow-hidden rounded-(--radius-lg) border border-(--ds-border) shadow-lg', 'dark' => $register === 'dark'])
-                     x-bind:style="`transform: scale(${scale}); font-family: var(--font-sans); color: var(--ds-text); background: var(--ds-page); color-scheme: {{ $register }};`">
-                    @include('mockups.'.$screen, ['t' => $tokens, 'design' => $design, 'motif' => $decisions['motif']['value'], 'shell' => $brief['shell'] ?? 'sidebar', 'register' => $register])
+            @php
+                $markup = view('mockups.'.$screen, ['t' => $tokens, 'design' => $design, 'motif' => $decisions['motif']['value'], 'shell' => $brief['shell'] ?? 'sidebar', 'register' => $register])->render();
+                $doc = Artboard::document($markup, $tokens, $register);
+                $gap = 32;
+                $total = array_sum(array_map(fn (string $k) => Artboard::WIDTHS[$k], Artboard::SHOWN)) + $gap * (count(Artboard::SHOWN) - 1);
+            @endphp
+
+            <div x-data="{
+                    scale: 1,
+                    zoomed: null,
+                    total: {{ $total }},
+                    fit() {
+                        const available = $el.clientWidth || this.total;
+                        this.scale = Math.min(1, available / (this.zoomed ?? this.total));
+                    },
+                    zoom(width) {
+                        this.zoomed = this.zoomed === width ? null : width;
+                        this.fit();
+                    },
+                 }"
+                 x-init="fit(); new ResizeObserver(() => fit()).observe($el)">
+                <div class="flex origin-top-left items-start gap-8" x-bind:style="`transform: scale(${scale})`">
+                    @foreach (Artboard::SHOWN as $name)
+                        @php $width = Artboard::WIDTHS[$name]; @endphp
+                        <div x-show="zoomed === null || zoomed === {{ $width }}" class="shrink-0" style="width: {{ $width }}px">
+                            <button type="button" x-on:click="zoom({{ $width }})" class="mb-2 flex w-full items-center justify-between text-start">
+                                <span class="ds-label">{{ ucfirst($name) }}</span>
+                                <span class="text-xs tabular-nums text-(--ds-text-muted)" x-text="zoomed === {{ $width }} ? 'Back to both' : '{{ $width }}'">{{ $width }}</span>
+                            </button>
+                            {{-- Keyed on what changes the document. A token change rewrites
+                                 srcdoc as well, which reloads the frame, but the accent
+                                 input is debounced so that happens at most twice a second. --}}
+                            <iframe wire:key="artboard-{{ $name }}-{{ $screen }}-{{ $register }}"
+                                    title="{{ ucfirst($name) }}, {{ $width }} pixels wide"
+                                    srcdoc="{{ $doc }}"
+                                    class="block h-[900px] w-full rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-page) shadow-lg"></iframe>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>

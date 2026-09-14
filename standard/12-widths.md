@@ -40,7 +40,7 @@ The two differ on purpose. Five nav items fit across 768px; a 16rem sidebar besi
 
 **Sign-in.** The brand panel sits above the form below `lg`, carrying the wordmark and the headline only. The tagline and footer line are dropped rather than stacked, because a phone sign-in is a form and everything above it is delay.
 
-**Forms.** One column below `lg`. A two-column form at phone width is two narrow columns, which is worse than long.
+**Forms.** Fields are one column below `md`. Two columns are allowed from `md`, where each column still holds a label and its control without wrapping. A two-column form at phone width is two narrow columns, which is worse than long. Below `lg` the form spans the full content width rather than the eight columns 06 gives it, since there is nothing beside it to make room for.
 
 **Cards and regions.** A row of regions becomes one column below `md`. Below `lg` it may stay two if each half still holds its content without wrapping a heading.
 

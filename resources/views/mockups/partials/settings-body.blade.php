@@ -16,7 +16,7 @@
             @else
                 <h2 class="mb-4 text-lg font-semibold leading-tight text-(--ds-text-strong)">Workspace</h2>
             @endif
-            <div class="grid gap-(--ds-field-gap) sm:grid-cols-2">
+            <div class="grid gap-(--ds-field-gap) md:grid-cols-2">
                 <label class="block">
                     <span class="ds-label block text-(--ds-text)">Workspace name</span>
                     <input class="{{ $input }} mt-(--ds-label-gap)" value="{{ $design->name() }}">
@@ -25,7 +25,7 @@
                     <span class="ds-label block text-(--ds-text)">Contact phone</span>
                     <input class="{{ $input }} mt-(--ds-label-gap)" value="(555) 014-2200">
                 </label>
-                <label class="block sm:col-span-2">
+                <label class="block md:col-span-2">
                     <span class="ds-label block text-(--ds-text)">Notification email</span>
                     <span class="mt-0.5 block text-xs text-(--ds-text-muted)">Where summaries and alerts are sent from.</span>
                     <input class="{{ $input }} mt-(--ds-label-gap)" value="hello@example.com">

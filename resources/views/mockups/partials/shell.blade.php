@@ -27,27 +27,47 @@
 
 @if ($shell === 'top-nav')
     <div class="flex min-h-[720px] flex-col">
-        <header class="sticky top-0 flex h-14 items-center gap-6 border-b border-(--ds-border) bg-(--ds-surface) px-(--ds-gutter)">
+        {{-- 12: the items stay inline down to md. Below that they move into a
+             navmenu behind a toggle, and the brand block stays. --}}
+        <header class="sticky top-0 flex h-14 items-center gap-4 border-b border-(--ds-border) bg-(--ds-surface) px-(--ds-gutter) md:gap-6">
             <div class="flex items-center gap-2.5">
                 <span class="grid size-7 place-items-center rounded-(--radius-sm) bg-(--ds-accent) text-xs font-medium text-(--ds-on-accent)">{{ mb_substr($name, 0, 1) }}</span>
                 <span class="text-sm font-medium text-(--ds-text-strong)">{{ $name }}</span>
             </div>
-            <nav class="flex items-center gap-1 text-sm">
+            <nav class="hidden items-center gap-1 text-sm md:flex">
                 @foreach ($nav as [$label, $icon, $active])
-                    <span class="flex h-9 items-center gap-2 px-3 {{ $active ? ($motif === 'accent-bar' ? 'border-b-2 border-(--ds-accent) text-(--ds-text-strong) font-medium' : $activeClass) : 'text-(--ds-text) rounded-(--radius-md)' }}">{{ $label }}</span>
+                    <span class="flex h-(--ds-control) items-center gap-2 px-3 {{ $active ? ($motif === 'accent-bar' ? 'border-b-2 border-(--ds-accent) text-(--ds-text-strong) font-medium' : $activeClass) : 'text-(--ds-text) rounded-(--radius-md)' }}">{{ $label }}</span>
                 @endforeach
             </nav>
             <span class="flex-1"></span>
             <flux:icon name="bell" variant="outline" class="size-5 text-(--ds-text-muted)" />
             <span class="grid size-8 place-items-center rounded-full bg-(--ds-sunken) text-xs font-medium text-(--ds-text)">JK</span>
+            {{-- The navmenu toggle, which only exists below md. --}}
+            <span class="grid size-(--ds-control) place-items-center rounded-(--radius-md) text-(--ds-text) md:hidden">
+                <flux:icon name="bars-3" variant="outline" class="size-5" />
+            </span>
         </header>
         <main class="mx-auto w-full max-w-[80rem] flex-1">
             @include($page, ['t' => $t, 'design' => $design, 'motif' => $motif, 'shell' => $shell, 'eyebrowClass' => $eyebrowClass])
         </main>
     </div>
 @else
-    <div class="flex min-h-[720px]">
-        <aside class="flex w-64 shrink-0 flex-col border-e border-(--ds-border) bg-(--ds-sunken) dark:bg-(--ds-surface)">
+    <div class="flex min-h-[720px] flex-col lg:flex-row">
+        {{-- 12: the sidebar is a drawer below lg, opened from a header that only
+             exists at that width. It is never narrowed and never simply hidden,
+             because a nav that disappears leaves somebody with no map. A mockup
+             cannot open a drawer, so what is shown here is the closed state. --}}
+        <header class="flex h-14 shrink-0 items-center gap-3 border-b border-(--ds-border) bg-(--ds-surface) px-(--ds-card) lg:hidden">
+            <span class="grid size-(--ds-control) place-items-center rounded-(--radius-md) text-(--ds-text)">
+                <flux:icon name="bars-3" variant="outline" class="size-5" />
+            </span>
+            <span class="grid size-7 place-items-center rounded-(--radius-sm) bg-(--ds-accent) text-xs font-medium text-(--ds-on-accent)">{{ mb_substr($name, 0, 1) }}</span>
+            <span class="truncate text-sm font-medium text-(--ds-text-strong)">{{ $name }}</span>
+            <span class="flex-1"></span>
+            <span class="grid size-8 place-items-center rounded-full bg-(--ds-sunken) text-xs font-medium text-(--ds-text)">JK</span>
+        </header>
+
+        <aside class="hidden w-64 shrink-0 flex-col border-e border-(--ds-border) bg-(--ds-sunken) lg:flex dark:bg-(--ds-surface)">
             <div class="flex h-(--ds-brand) items-center gap-2.5 border-b border-(--ds-border) px-4">
                 <span class="grid size-7 place-items-center rounded-(--radius-sm) bg-(--ds-accent) text-xs font-medium text-(--ds-on-accent)">{{ mb_substr($name, 0, 1) }}</span>
                 <div class="min-w-0 leading-tight">

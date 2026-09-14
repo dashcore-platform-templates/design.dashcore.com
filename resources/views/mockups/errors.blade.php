@@ -40,8 +40,11 @@
         {{-- The wording changes and nothing else does. --}}
         <section>
             <p class="ds-label mb-1.5">The other four, wording only</p>
-            <div class="overflow-hidden rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface)">
-                <table class="w-full text-sm">
+            {{-- A reference table for people reading the standard, so it scrolls
+                 below md rather than stacking. 12 allows that where nobody
+                 reaches the screen on a phone. --}}
+            <div class="overflow-x-auto rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface)">
+                <table class="w-full min-w-[34rem] text-sm">
                     <thead>
                         <tr class="border-b border-(--ds-border) text-start">
                             <th class="ds-label px-(--ds-cell-x) py-2.5 text-start font-normal">Code</th>

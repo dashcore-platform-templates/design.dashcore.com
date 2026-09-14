@@ -18,9 +18,11 @@
                 <p class="{{ $eyebrowClass ?? ($motif === 'eyebrow' ? 'ds-eyebrow' : 'ds-label') }} mb-3">{{ $copy['eyebrow'] }}</p>
             @endif
             <h1 class="text-4xl font-semibold leading-[1.1] text-(--ds-text-strong) {{ $headlineFont }} {{ $upper }}">{{ $copy['headline'] ?? 'Welcome back.' }}</h1>
-            <p class="mt-4 max-w-prose text-[length:var(--ds-prose)] text-(--ds-text-muted)">{{ $copy['tagline'] ?? '' }}</p>
+            {{-- 12: below lg the brand panel carries the wordmark and headline
+                 only. A phone sign-in is a form, and everything above it is delay. --}}
+            <p class="mt-4 hidden max-w-prose text-[length:var(--ds-prose)] text-(--ds-text-muted) lg:block">{{ $copy['tagline'] ?? '' }}</p>
         </div>
-        <p class="text-xs text-(--ds-text-muted)">{{ $copy['footer'] ?? '© '.date('Y').' '.$name }}</p>
+        <p class="hidden text-xs text-(--ds-text-muted) lg:block">{{ $copy['footer'] ?? '© '.date('Y').' '.$name }}</p>
     </section>
 
     <section class="flex items-center justify-center bg-(--ds-page) p-(--ds-gutter) lg:col-span-3">
