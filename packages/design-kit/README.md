@@ -44,6 +44,28 @@ The mirror is private, so Composer needs its own GitHub credentials once per mac
 composer config --global github-oauth.github.com <a GitHub token with repo scope>
 ```
 
+## Upgrading to 2.0
+
+Three things change in a way that can break an app that works on 1.0. None of them is a bug; they are fixes arriving.
+
+**Re-apply by slug, not by file.** `design:apply` measures contrast before it writes, and 2.0 measures two pairs 1.0 never did: text on the accent tint that sits behind every selected row and active list item. A `design/design.json` produced by 1.0 fails them, at about 3.40:1 in dark against a floor of 4.5. Checked against three real apps, all three fail. So this refuses:
+
+```bash
+php artisan design:apply design/design.json
+```
+
+and this is the upgrade, because it re-pulls the design and gets corrected values:
+
+```bash
+php artisan design:update <slug>
+```
+
+**A badge with no status is now neutral rather than blue.** Any screen using a bare `<x-ds::badge>` changes appearance. That is the rule in 06: colour on a badge means status, and a category is not a status.
+
+**The audit has a new rule.** It reports an interactive element sized under 36px, which 05 has always required and nothing enforced. A build that runs `design:audit` and passed on 1.0 can fail on 2.0. It found nothing on the apps tested here.
+
+The Flux table also picks up the styling 06 always specified, and the empty state gains a compact size. Neither breaks anything.
+
 ## Versions
 
 Releases are tagged, and `composer require` writes `^1.0` for you. Every later 1.x release then reaches every kit on the next `composer update`, which is the whole point: a rule added to the standard should not need fifteen repos edited by hand to arrive. A change that would break an app already on the standard goes to 2.0 instead, so it stops and waits for a person rather than arriving quietly.
