@@ -1,7 +1,7 @@
 name: publish design-kit
 
 # Composer cannot install a package from a subdirectory, so packages/design-kit
-# is written here and published to kengervacio/design-kit as a repo of its own.
+# is written here and published to dashcoretech/design-kit as a repo of its own.
 # That used to be a subtree push somebody ran by hand and forgot. Now a push to
 # master republishes the mirror, and a design-kit/vX.Y.Z tag releases it.
 #
@@ -47,7 +47,7 @@ jobs:
 
           if [ -z "${DASHCORE_DESIGN}" ]; then
             echo "DASHCORE_DESIGN is not set."
-            echo "Add a repository secret holding a token that can write to kengervacio/design-kit."
+            echo "Add a repository secret holding a token that can write to dashcoretech/design-kit."
             exit 1
           fi
 
@@ -84,20 +84,20 @@ jobs:
           status=$(curl -sS -o /tmp/repo.json -w '%{http_code}' \
             -H "Authorization: Bearer ${token}" \
             -H 'Accept: application/vnd.github+json' \
-            https://api.github.com/repos/kengervacio/design-kit || echo 000)
+            https://api.github.com/repos/dashcoretech/design-kit || echo 000)
           echo "  repository lookup: HTTP ${status}"
           if [ "${status}" = '200' ]; then
             echo "  push permission: $(jq -r '.permissions.push // "not reported"' /tmp/repo.json)"
           else
-            echo '  the token cannot see kengervacio/design-kit at all'
+            echo '  the token cannot see dashcoretech/design-kit at all'
           fi
           scopes=$(curl -sS -I -H "Authorization: Bearer ${token}" https://api.github.com/user 2>/dev/null | tr -d '\r' | grep -i '^x-oauth-scopes:' || true)
           echo "  ${scopes:-x-oauth-scopes: none reported, which is normal for a fine-grained token}"
 
           if [ "${status}" = '200' ] && [ "$(jq -r '.permissions.push // "false"' /tmp/repo.json)" != 'true' ]; then
-            echo 'This token cannot write to kengervacio/design-kit.'
+            echo 'This token cannot write to dashcoretech/design-kit.'
             echo 'A classic token needs the repo scope. A fine-grained one needs that repository selected,'
-            echo 'Contents set to read and write.'
+            echo 'Contents set to read and write, and approval from an organisation owner.'
             exit 1
           fi
 
@@ -108,7 +108,7 @@ jobs:
           # URL before it authenticates, so anything unexpected in the token
           # fails as a malformed address instead of as a rejected credential.
           auth=$(printf 'x-access-token:%s' "${token}" | base64 -w0)
-          mirror='https://github.com/kengervacio/design-kit.git'
+          mirror='https://github.com/dashcoretech/design-kit.git'
           split=$(git subtree split --prefix=packages/design-kit)
           echo "split commit: ${split}"
 

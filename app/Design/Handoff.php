@@ -11,7 +11,7 @@ namespace App\Design;
  */
 final class Handoff
 {
-    public const REPO = 'https://github.com/kengervacio/design-kit.git';
+    public const REPO = 'https://github.com/dashcoretech/design-kit.git';
 
     /** Where a kit pulls this design's pack from. */
     public static function packUrl(Design $design): string
