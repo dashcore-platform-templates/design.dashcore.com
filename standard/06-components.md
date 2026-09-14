@@ -10,7 +10,7 @@ Each entry below is the Flux component and the rule the standard adds: what it i
 
 - **Sidebar** `flux:sidebar` with `sidebar.header`, `sidebar.nav`, `sidebar.group`, `sidebar.item`. Regions and limits are in 02. Active item styling is set by the motif (07).
 - **Navbar** `flux:navbar` and `flux:navbar.item` for the top nav shell only.
-- **Navlist and navmenu** `flux:navlist`, `flux:navmenu`. Navlist is the vertical list inside the sidebar; navmenu is the dropdown form of a nav for the top nav shell on small screens. Neither appears in content.
+- **Navlist and navmenu** `flux:navlist`, `flux:navmenu`. Navlist is the vertical list inside the sidebar; navmenu is the dropdown form of a nav for the top nav shell on small screens. Navmenu never appears in content. Navlist appears in content in one case only: a section with its own destinations, such as settings, where it sits vertically beside the panel it switches and carries one level with no nesting. That is a sub-navigation and never a second main nav, so the sidebar or top nav still says which section you are in.
 - **Header** `flux:header` appears on mobile in the sidebar shell and always in the top nav shell.
 - **Breadcrumbs** `flux:breadcrumbs`. Only at three or more levels deep.
 - **Tabs** `flux:tabs`, `flux:tab`, `flux:tab.panel` (Pro). Selected tab is underlined in accent, two pixels, or takes the accent bar when that motif is chosen. Tabs never nest, never exceed six, and never hold a primary action. Segmented variant only for two to three options that behave like a toggle.
@@ -84,7 +84,7 @@ The five components every fleet app needs that Flux does not ship, or does not s
 - **Page header** `x-ds::page-header`. Eyebrow, title, description, actions, as defined in 02. Every page title goes through it. A bare `flux:heading` does not take the pairing's second face, so a serif or display pairing is invisible on any screen that skips this component.
 - **Stat tile** `x-ds::stat`. Label in the label style, value in the stat size and the display face if the pairing has one, an optional delta in success or danger text with an arrow icon, an optional one-line footnote in `text-muted`.
 - **Stat row** `x-ds::stat-row`. The grid for two to four tiles, laid out by motif (07): a one pixel grid for hairline, the section gap otherwise.
-- **Empty state** `x-ds::empty`. Centred in its region: one Heroicon at 24px in `text-muted`, one line saying what belongs here, one line saying how to add it, one default button. Never an illustration.
+- **Empty state** `x-ds::empty`. Centred in its region: one Heroicon at 24px in `text-muted`, one line saying what belongs here, one line saying how to add it, one default button. Never an illustration. Two sizes. The default fills a whole region and stands 320px tall. `size="compact"` drops the minimum height and the button, for a panel inside a split region, where the full size pushes everything below it off the screen.
 - **Badge** `x-ds::badge`. One of the four statuses in soft style from the `--ds-*` roles, or neutral when no status is given.
 
 ## Rules

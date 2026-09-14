@@ -188,6 +188,12 @@ final class Pack
 
         With a `status` of `success`, `warning`, `danger` or `info` it takes that status's colours. Without one it is neutral, and neutral is what a category, a role, a plan, a type, or a state the four colours do not cover takes: rejected, retired, not configured. Do not reach for a colour to make one of those stand out. A count is not a badge at all, so unwrap it and leave the number as text beside its label.
 
+        **A count marker.** An unread count on a nav item or a notification bell fills with the accent and takes `on-accent` text. It is never red, because red says something has gone wrong and a pile of unread items has not. It sits at `text-xs` like everything else.
+
+        ```
+        bg-red-600 text-white text-[10px]       bg-(--ds-accent) text-(--ds-on-accent) text-xs
+        ```
+
         **Spacing off the scale.** The mechanical pass rewrote the utility classes. What remains is in `style=` or arbitrary values. The scale is Tailwind steps 1 2 3 4 6 8 12 16, or a density value: `--ds-gutter`, `--ds-section`, `--ds-card`, `--ds-stat`, `--ds-row`, `--ds-cell-x`, `--ds-control`, `--ds-label-gap`, `--ds-field-gap`, `--ds-nav-item`, `--ds-brand`, `--ds-prose`. `p-(--ds-card)` pads a card; `gap-(--ds-section)` separates regions.
 
         **Weight off the scale.** Three weights: `font-normal`, `font-medium`, `font-semibold`. The mechanical pass handles the classes; anything in `style=` is yours.
@@ -217,7 +223,11 @@ final class Pack
         <x-ds::empty icon="inbox" title="Nothing here yet." description="Add one from the button above.">
             <flux:button variant="primary">New item</flux:button>
         </x-ds::empty>
+
+        <x-ds::empty size="compact" icon="inbox" title="Nothing waiting." />
         ```
+
+        The default fills a whole region and stands 320px tall. Use `size="compact"` for a panel inside a split region, where the full size pushes everything below it off the screen. Compact has no button, so a slot passed to it is dropped.
 
         And the rest of the composition:
 
