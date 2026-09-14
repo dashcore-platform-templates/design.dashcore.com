@@ -28,6 +28,28 @@ final class Source
         return preg_match($pattern, $standard, $m) === 1 ? $m[1] : null;
     }
 
+    /**
+     * The stamp a fetched pack is carrying, without unpacking it.
+     *
+     * The manifest states it outright. A pack made before it did still has the
+     * stamp inside its STANDARD.md, so read that rather than reporting nothing
+     * and leaving the app unable to tell whether it is behind.
+     *
+     * @param  array<string,mixed>  $document
+     */
+    public static function publishedStandardVersion(array $document): ?string
+    {
+        $stated = $document['standard_version'] ?? null;
+        if (is_string($stated) && preg_match('/^[0-9a-f]{6,40}$/', $stated) === 1) {
+            return $stated;
+        }
+
+        $files = $document['files'] ?? null;
+        $standard = is_array($files) ? ($files['STANDARD.md'] ?? null) : null;
+
+        return is_string($standard) ? self::standardVersion($standard) : null;
+    }
+
     /** 'file', 'url' or 'slug'. */
     public static function kind(string $argument): string
     {

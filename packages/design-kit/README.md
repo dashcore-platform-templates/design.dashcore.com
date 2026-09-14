@@ -140,6 +140,14 @@ What it changes: the four pack files under `design/` when pulled, a marked block
 
 `php artisan design:check design/design.json` measures contrast on the file.
 
+Add `--against=<slug>` and it also says whether the standard moved since this app applied, without changing anything:
+
+```bash
+php artisan design:check --against=harbor-point
+```
+
+It compares the stamp in `design/STANDARD.md` with the version the tool is publishing now. Until this, the only way to find out was to re-apply, which is a change made to answer a question. It never alters the exit code, because half the entries in the changelog are relaxations with nothing to do.
+
 ## Update an app that is already on the standard
 
 Setting an app up happens once. When the standard changes afterwards, do not repeat it:

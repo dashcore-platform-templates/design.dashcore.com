@@ -46,6 +46,31 @@ class SourceTest extends TestCase
     }
 
     #[Test]
+    public function a_pack_states_its_standard_version_or_the_stamp_is_read_out_of_the_standard(): void
+    {
+        $stamped = '# The Dashcore Standard'."\n\n".Source::VERSION_LINE.'a1b2c3d4'."\n";
+
+        $this->assertSame('a1b2c3d4', Source::publishedStandardVersion(['standard_version' => 'a1b2c3d4']));
+
+        // Packs made before the manifest stated it still carry the stamp inside
+        // STANDARD.md. Reading that keeps an older app able to tell it is behind.
+        $this->assertSame('a1b2c3d4', Source::publishedStandardVersion(['files' => ['STANDARD.md' => $stamped]]));
+
+        // What the manifest states wins, because it is what the tool published,
+        // and a file inside the pack could have been edited after the fact.
+        $this->assertSame('a1b2c3d4', Source::publishedStandardVersion(['standard_version' => 'a1b2c3d4', 'files' => ['STANDARD.md' => str_replace('a1b2c3d4', 'deadbeef', $stamped)]]));
+    }
+
+    #[Test]
+    public function a_pack_that_states_no_version_says_so_rather_than_guessing(): void
+    {
+        $this->assertNull(Source::publishedStandardVersion([]));
+        $this->assertNull(Source::publishedStandardVersion(['standard_version' => 'not a hash']));
+        $this->assertNull(Source::publishedStandardVersion(['files' => ['STANDARD.md' => '# The Dashcore Standard, unstamped']]));
+        $this->assertNull(Source::publishedStandardVersion(['files' => 'not an array']));
+    }
+
+    #[Test]
     public function anything_else_is_refused(): void
     {
         $this->expectExceptionMessage('neither a design pack nor a design file');
