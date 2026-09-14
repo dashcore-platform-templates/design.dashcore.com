@@ -167,9 +167,11 @@ Every component Flux ships as of 2.19, with where its rule lives. Free unless ma
 | tooltip | free | Actions |
 | with-container, with-field, with-inline-field, with-reversed-inline-field, with-tooltip | free | internal wrappers |
 
-## An app without Flux Pro
+## An app that has not installed Flux Pro yet
 
-Nineteen rows above are Pro. A Flux licence covers one project unless it is the Unlimited or Team tier, so an app is not off the standard for having the free package alone. Most of the fleet does today. Executive OS does.
+Nineteen rows above are Pro. Dashcore's licence covers every site in the fleet, so Pro is the expected end state and a site should install it. Eleven projects have not yet, Executive OS among them, and a new site starts on the free package before anyone applies the licence.
+
+Such an app is still on the standard. It is behind on an install, not outside the rules, and its screens are not exceptions.
 
 Eleven of the nineteen have a free stand-in, and the rule for each is the Pro one, unchanged. Only the component differs.
 
@@ -185,4 +187,4 @@ Eleven of the nineteen have a free stand-in, and the rule for each is the Pro on
 
 The other eight have no stand-in and need none: carousel, chart, color-picker, command, composer, kanban, slider and timeline. No screen in the fleet uses one. If a screen ever needs a chart or a kanban, that is a rule to write then, against the real screen, rather than a guess now.
 
-A screen built on a stand-in is on the standard. Do not mark it as an exception, and do not rebuild it if the app later gets Pro, unless the Pro component does something the screen actually needs.
+A screen built on a stand-in is on the standard. Do not mark it as an exception, and do not rebuild it when the app installs Pro, unless the Pro component does something the screen actually needs. Installing Pro is worth doing on its own; rewriting working screens afterwards is not.

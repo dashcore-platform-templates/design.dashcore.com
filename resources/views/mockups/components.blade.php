@@ -21,7 +21,7 @@
                  installs the free package only. Without this line somebody can
                  judge a design here and promise an app a component it cannot
                  install. Section 06 names a free stand-in for eleven of them. --}}
-            <p class="mt-1 text-sm text-(--ds-text-muted)">Accordion, chart, composer, date picker, editor, file upload, pillbox, slider, tabs and timeline need a Flux Pro licence. An app on the free package is still on the standard, and section 06 says what it uses instead.</p>
+            <p class="mt-1 text-sm text-(--ds-text-muted)">Accordion, chart, composer, date picker, editor, file upload, pillbox, slider, tabs and timeline come from Flux Pro. The licence covers every fleet site, but a site that has not installed it yet is still on the standard, and section 06 says what it uses meanwhile.</p>
         </div>
     </div>
 
