@@ -34,6 +34,7 @@ Every change also gets an entry in [`CHANGELOG.md`](CHANGELOG.md), saying what m
 | 09-decisions.md | The seven things the generator is allowed to decide, the JSON it produces, and the export pack a project receives. |
 | 10-email.md | Email, which is the one surface where the rest of this standard cannot apply directly. |
 | 11-errors.md | The error pages, first run, and the other screens nobody styles until they are the ones giving an app away. |
+| 12-widths.md | The three widths the fleet designs at, and what each shell and component does at each. |
 
 ## Fixed versus varied
 

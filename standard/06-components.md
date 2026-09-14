@@ -11,7 +11,7 @@ Each entry below is the Flux component and the rule the standard adds: what it i
 - **Sidebar** `flux:sidebar` with `sidebar.header`, `sidebar.nav`, `sidebar.group`, `sidebar.item`. Regions and limits are in 02. Active item styling is set by the motif (07).
 - **Navbar** `flux:navbar` and `flux:navbar.item` for the top nav shell only.
 - **Navlist and navmenu** `flux:navlist`, `flux:navmenu`. Navlist is the vertical list inside the sidebar; navmenu is the dropdown form of a nav for the top nav shell on small screens. Navmenu never appears in content. Navlist appears in content in one case only: a section with its own destinations, such as settings, where it sits vertically beside the panel it switches and carries one level with no nesting. That is a sub-navigation and never a second main nav, so the sidebar or top nav still says which section you are in.
-- **Header** `flux:header` appears on mobile in the sidebar shell and always in the top nav shell.
+- **Header** `flux:header` appears below `lg` in the sidebar shell, where it carries the drawer toggle, and always in the top nav shell.
 - **Breadcrumbs** `flux:breadcrumbs`. Only at three or more levels deep.
 - **Tabs** `flux:tabs`, `flux:tab`, `flux:tab.panel` (Pro). Selected tab is underlined in accent, two pixels, or takes the accent bar when that motif is chosen. Tabs never nest, never exceed six, and never hold a primary action. Segmented variant only for two to three options that behave like a toggle.
 - **Command palette** `flux:command` (Pro). One per app, opened by a shortcut and a search icon in the header. Results are grouped under labels in the label style. Never a substitute for navigation the sidebar should carry.
@@ -40,7 +40,7 @@ Each entry below is the Flux component and the rule the standard adds: what it i
 
 ## Forms
 
-- **Field and fieldset** `flux:field`, `flux:fieldset`. Field wraps one control with its label, description and error. Fieldset groups related fields under a legend. A form of more than eight fields is split into fieldsets. Forms in the content grid span eight columns with four columns of notes or empty space; full width only on mobile.
+- **Field and fieldset** `flux:field`, `flux:fieldset`. Field wraps one control with its label, description and error. Fieldset groups related fields under a legend. A form of more than eight fields is split into fieldsets. Forms in the content grid span eight columns with four columns of notes or empty space, and go full width and one column below `lg`, as 12 says.
 - **Input, textarea, select** `flux:input`, `flux:textarea`, `flux:select`. `surface` fill, `border-strong` outline, radius from the step. Focus is a two pixel accent ring with a two pixel offset in `page`. Placeholder is `text-muted` and is never the only label. Input groups (`input.group`) for a prefix or suffix only, never to join two fields.
 - **Select variants** `flux:select` listbox and combobox (Pro), **autocomplete** `flux:autocomplete` (Pro), **pillbox** `flux:pillbox` (Pro). Listbox for up to twenty options, combobox or autocomplete above that, pillbox for many-of-many. The selected pill is `accent-soft` with `accent-content` text, never a filled accent.
 - **Checkbox, radio, switch, toggle** `flux:checkbox`, `flux:radio`, `flux:switch`, `flux:toggle`. Checked state is an accent fill. Label to the right. Switch for a setting that takes effect at once; checkbox for a choice saved with the form; toggle for a pressed state in a toolbar. Card variant of checkbox and radio only when each option needs a description.
