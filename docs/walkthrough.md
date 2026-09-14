@@ -81,6 +81,8 @@ The same panel folds the manual path away. The design page serves the pack at `/
 In the target repo:
 
 ```bash
+composer config repositories.flux-pro composer https://composer.fluxui.dev
+composer require livewire/flux-pro
 composer config repositories.design-kit vcs https://github.com/dashcoretech/design-kit.git
 composer require dashcore/design-kit
 php artisan design:apply https://design.dashcore.com/designs/<slug>/pack.json
@@ -91,6 +93,14 @@ npm run build
 With `DESIGN_SOURCE` in the kit's `.env` pointing at the design.dashcore.com you use, the slug alone is enough: `php artisan design:apply <slug>`. Download pack on the design page is the same four files as a zip, for anyone offline: unzip it into the repo root and run `php artisan design:apply design/design.json`.
 
 `npm install` matters only on a fresh clone, and it is the step everyone forgets on one.
+
+The first two lines are Flux Pro, and they come first on purpose. It is not on Packagist, so the repository line is needed or Composer reports it as a package that does not exist. And Tailwind has to see the Pro views before `npm run build`, or their classes never reach the stylesheet. Skip both lines if the app already requires `livewire/flux-pro`. The licence is once per machine, and Composer stops and prompts without it:
+
+```bash
+composer config --global http-basic.composer.fluxui.dev <email> <licence key>
+```
+
+An app that stays on free Flux is still on the standard. Section 06 names a free stand-in for eleven of the nineteen Pro components, and `design:apply` says which Flux the app has.
 
 `design:apply` prints its plan before writing: the four pack files under `design/`, the theme block in `app.css`, the fonts, the brand keys in `.env`, the sign-in layout, the logo, and the Lucide icon names renamed to Heroicons. It also offers to delete the kit's three stock sign-in layouts under `layouts/auth/`, which nothing references once the sign-in layout is the two-panel one. Run it with `--check` first if you want to see the plan without writing. Running it twice changes nothing, and it refuses a design that fails contrast.
 

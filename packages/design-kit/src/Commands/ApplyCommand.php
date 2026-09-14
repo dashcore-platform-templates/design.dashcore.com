@@ -98,6 +98,8 @@ class ApplyCommand extends Command
             $this->components->twoColumnDetail($c['path'], $c['changed'] ? "<fg=yellow>{$c['action']}</>" : '<fg=gray>unchanged</>');
         }
 
+        $this->reportFluxTier();
+
         if ($this->option('check')) {
             $this->line('');
             $this->components->{$changed === [] ? 'info' : 'warn'}($changed === [] ? 'Nothing to change.' : count($changed).' file(s) would change.');
@@ -223,6 +225,31 @@ class ApplyCommand extends Command
         }
 
         return $changes;
+    }
+
+    /**
+     * Say which Flux the app has. Section 06 of the standard names 19 Pro
+     * components and gives a free stand-in for eleven of them, so an app
+     * without Pro is still on the standard. It is worth saying out loud all the
+     * same, because the alternative is finding out later, when a screen wants
+     * a component that is not installed.
+     */
+    private function reportFluxTier(): void
+    {
+        $this->line('');
+
+        if (File::isDirectory(base_path('vendor/livewire/flux-pro'))) {
+            $this->line('  <fg=gray>Flux Pro is installed, so every component in standard section 06 is available.</>');
+
+            return;
+        }
+
+        $this->components->warn('Flux Pro is not installed, so 19 components in standard section 06 are unavailable.');
+        $this->line('  <fg=gray>The Dashcore licence covers every site. Section 06 names a free stand-in for eleven of them,</>');
+        $this->line('  <fg=gray>and screens built on those are on the standard. To install it, and note it is not on Packagist:</>');
+        $this->line('  <fg=gray>  composer config repositories.flux-pro composer https://composer.fluxui.dev</>');
+        $this->line('  <fg=gray>  composer require livewire/flux-pro</>');
+        $this->line('  <fg=gray>Do that before `npm run build`, or Tailwind never sees the Pro views.</>');
     }
 
     private function write(string $path, string $contents): void
