@@ -69,6 +69,14 @@ final class Audit
                 $findings[] = self::finding('text under 12px', $n, $m, 'Nothing is set below 12px, including badges and table heads.');
             }
 
+            // 05: a tap target is never under 36px, which is the compact control
+            // height. Only the interactive element's own class attribute counts.
+            // An icon inside a button is allowed to be 20px, and matching the
+            // whole line would report every icon button in the app.
+            foreach (self::tapTargets($line) as $m) {
+                $findings[] = self::finding('tap target under 36px', $n, $m, '05 sets the control height at 40px, or 36px compact, and nothing interactive goes under it. Use h-9 or the --ds-control value.');
+            }
+
             foreach (self::matches($line, '/<flux:badge\b/') as $m) {
                 $findings[] = self::finding('Flux badge', $n, $m, 'Use x-ds::badge: a status for the four the standard names, no status for a category, a role or a plan. Flux paints badges from Tailwind, not the standard roles.');
             }
@@ -102,6 +110,36 @@ final class Audit
         $path = str_replace('\\', '/', $path);
 
         return (bool) preg_match('~(^|/)auth(/|\.blade\.php$|-[^/]*\.blade\.php$)~', $path);
+    }
+
+    /**
+     * Interactive elements sized under 36px by their own class attribute.
+     *
+     * Tailwind's h-9 is 36px, so h-1 through h-8 are under it, as is any
+     * arbitrary value below 36. A Flux button at size="xs" is about 24px and
+     * counts too.
+     *
+     * @return list<string>
+     */
+    private static function tapTargets(string $line): array
+    {
+        $found = [];
+
+        if (preg_match_all('/<(?:button|a|input|select|textarea)\b[^>]*?\bclass="([^"]*)"/', $line, $tags)) {
+            foreach ($tags[1] as $classes) {
+                // The boundary goes after the number only. An arbitrary value
+                // ends in "]", and \b never matches between "]" and a quote.
+                foreach (self::matches($classes, '/\b(?:h|size|min-h)-(?:[1-8]\b|\[(?:[0-9]|[12][0-9]|3[0-5])px\])/') as $m) {
+                    $found[] = $m;
+                }
+            }
+        }
+
+        foreach (self::matches($line, '/<flux:button\b[^>]*?\bsize="xs"/') as $m) {
+            $found[] = $m;
+        }
+
+        return array_values(array_unique($found));
     }
 
     /** @return list<string> */

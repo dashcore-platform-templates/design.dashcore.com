@@ -110,6 +110,32 @@ class DesignKitAuditTest extends TestCase
     }
 
     #[Test]
+    public function an_interactive_element_under_36px_is_reported(): void
+    {
+        foreach ([
+            '<button class="h-8 px-3">Pay</button>',
+            '<a href="#" class="size-6 grid place-items-center">x</a>',
+            '<input class="h-[32px]" />',
+            '<flux:button size="xs">Pay</flux:button>',
+        ] as $blade) {
+            $this->assertContains('tap target under 36px', $this->rules($blade), $blade);
+        }
+    }
+
+    #[Test]
+    public function an_icon_inside_a_button_is_not_the_button(): void
+    {
+        // The common false positive. The icon is 20px and the button is 40px,
+        // and matching the whole line would report every icon button there is.
+        $blade = '<button class="h-10 px-3"><flux:icon name="plus" class="size-5" /></button>';
+
+        $this->assertSame([], Audit::file($blade));
+
+        // Prose links carry no height class at all, so they are never reported.
+        $this->assertSame([], Audit::file('<p>Read the <a href="#" class="underline">notes</a>.</p>'));
+    }
+
+    #[Test]
     public function a_whole_file_can_opt_out(): void
     {
         $blade = "{{-- @ds-audit-ignore-file public landing page, composed outside the app standard --}}\n<h1 class=\"font-bold p-5 text-red-600\">Hello</h1>";

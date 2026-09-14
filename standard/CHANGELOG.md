@@ -12,6 +12,8 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ## 14 September 2026
 
+**The tap target floor is checked.** No rule changed, and the audit now checks it. Section 05 has always said a tap target is never under 36px, which is the compact control height, but nothing enforced it. The audit reports an interactive element sized under that by its own class attribute, and a Flux button at `size="xs"`, which is about 24px. It reads the element's own classes rather than the line, so an icon at 20px inside a 40px button is not a finding. It found nothing on either app tested, so the fleet already clears the floor.
+
 **Email has a section.** Tightening, and the audit cannot check it. Section 10 is new. Every app in the fleet was sending Laravel's default template, so a member got a portal built to this standard and then an email that looked like nothing to do with it. Email is the one surface where the rest of the standard cannot apply: no custom properties, no utility classes, no web fonts, no second typeface and no dark register. What carries over is the accent, the neutral scale, the voice and the structure, all of it in inline hex. The audit does not see mail templates, so a person has to look.
 
 **Error pages and first run have a section.** Tightening, and the audit checks part of it. Section 11 is new. Laravel's own 404, 419, 429, 500 and 503 were untouched everywhere, which is a framework's page under a product's name, arriving at the moment somebody is already stuck. None of them uses the danger colour, because a red page tells somebody their data is gone. The audit walks `resources/views/errors/` like any other view, so colour and spacing there are checked, but it cannot tell you the pages were never written.
