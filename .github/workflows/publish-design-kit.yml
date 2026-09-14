@@ -112,6 +112,26 @@ jobs:
           split=$(git subtree split --prefix=packages/design-kit)
           echo "split commit: ${split}"
 
+          # The mirror is a build artefact and the split is deterministic, so this
+          # push is always a fast-forward unless somebody committed to the mirror
+          # directly. Checking first turns a bare non-fast-forward error into a
+          # sentence saying what happened and where the work still is.
+          #
+          # Deliberately not a force push. Forcing would destroy that commit
+          # silently and send its author looking for work that no longer exists.
+          if git -c "http.extraheader=Authorization: Basic ${auth}" fetch -q "${mirror}" master 2>/dev/null; then
+            if ! git merge-base --is-ancestor FETCH_HEAD "${split}"; then
+              echo 'The mirror has a commit this repo does not.'
+              echo 'Somebody edited the mirror directly. That commit is still there and nothing is lost.'
+              echo 'Copy it into packages/design-kit here, commit, and push again. Publishing stays'
+              echo 'broken until then, on purpose, rather than overwriting their work.'
+              echo ''
+              echo 'What is on the mirror and not here:'
+              git --no-pager log --oneline "${split}..FETCH_HEAD" || true
+              exit 1
+            fi
+          fi
+
           # A push with nothing new in it is already up to date, so this is safe
           # to run on every master push rather than guessing at changed paths.
           git -c "http.extraheader=Authorization: Basic ${auth}" push "${mirror}" "${split}:refs/heads/master"

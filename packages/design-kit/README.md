@@ -1,9 +1,14 @@
 # dashcore/design-kit
 
 > **This is a mirror. Do not edit it here.** The source is `packages/design-kit` in
-> [design.dashcore.com](https://github.com/dashcoretech/design.dashcore.com). Edits made
-> to this repo are overwritten the next time it is republished. Change it there, then
-> republish with the command below.
+> [design.dashcore.com](https://github.com/dashcoretech/design.dashcore.com). Change it
+> there and this repo follows on the next push.
+>
+> An edit made here is not overwritten and is not lost. It stops every release
+> instead: the publish is an ordinary push, so a commit this repo has and the
+> source does not makes the next one a non-fast-forward, and it is refused.
+> Publishing stays broken until that commit is copied into `packages/design-kit`
+> and pushed from there.
 
 Applies a design exported from design.dashcore.com to a Laravel Livewire Flux kit, and ships the five custom components the Dashcore Standard defines.
 
@@ -11,7 +16,9 @@ Applies a design exported from design.dashcore.com to a Laravel Livewire Flux ki
 
 The package lives in the design repo because it changes with the standard: a rule and the code that applies it move together, in one commit, tested against the real design files. But Composer cannot install a package from a subdirectory, so kits need it as a repo of its own. That repo is this one, published from the other by subtree push, with history.
 
-One is written, the other is published. Never the reverse.
+One is written, the other is published. Never the reverse. It is the same arrangement Symfony and Laravel use, where every component you install is an automatic read-only split of one repository.
+
+This repo is a build artefact. `git subtree split` rewrites the package's folder history into a standalone one, and it is deterministic: the same source always produces the same commits. That is why a normal push is always a fast-forward here, and why a rejection means somebody edited this repo rather than something going wrong with the machinery.
 
 ## Install
 
