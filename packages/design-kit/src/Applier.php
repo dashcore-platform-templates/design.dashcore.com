@@ -138,6 +138,41 @@ final class Applier
         $lines[] = '@utility font-second { font-family: var(--font-second); }';
         $lines[] = '@utility ds-label { font-size: 12px; line-height: 1.33; font-weight: 500; letter-spacing: 0.04em; color: var(--ds-text-muted); }';
         $lines[] = '@utility ds-eyebrow { font-size: 12px; line-height: 1.33; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ds-text-muted); font-family: var(--font-mono); }';
+
+        // The Flux table, brought onto 06. Flux ships a 14px head in body colour
+        // with no fill; the standard wants sunken, 12px, muted. Every app using
+        // flux:table drifts the same way, so the correction belongs here rather
+        // than on each screen, the same argument the badge override rests on.
+        //
+        // These rules sit outside any @layer, which beats Tailwind's utilities
+        // without !important, because unlayered styles win over layered ones.
+        $lines[] = '';
+        $lines[] = '/* 06: the table head sits on sunken, 12px, muted. */';
+        $lines[] = '[data-flux-table] thead [data-flux-column] {';
+        $lines[] = '    background: var(--ds-sunken);';
+        $lines[] = '    font-size: 12px;';
+        $lines[] = '    line-height: 1.33;';
+        $lines[] = '    font-weight: 500;';
+        $lines[] = '    color: var(--ds-text-muted);';
+        $lines[] = '    border-bottom-color: var(--ds-border);';
+        $lines[] = '}';
+        $lines[] = '/* Body rows on surface, 14px, one pixel border, row height from density. */';
+        $lines[] = '[data-flux-table] tbody [data-flux-cell] {';
+        $lines[] = '    font-size: 14px;';
+        $lines[] = '    color: var(--ds-text);';
+        $lines[] = '    height: var(--ds-row);';
+        $lines[] = '    border-bottom-color: var(--ds-border);';
+        $lines[] = '    font-variant-numeric: tabular-nums;';
+        $lines[] = '}';
+        $lines[] = '/* 06: the first column identifies the row, so it carries text-strong. */';
+        $lines[] = '[data-flux-table] tbody [data-flux-cell]:first-child {';
+        $lines[] = '    color: var(--ds-text-strong);';
+        $lines[] = '    font-weight: 500;';
+        $lines[] = '}';
+        $lines[] = '[data-flux-table] tbody tr:hover [data-flux-cell] {';
+        $lines[] = '    background: var(--ds-sunken);';
+        $lines[] = '}';
+
         $lines[] = self::END;
 
         return implode("\n", $lines);

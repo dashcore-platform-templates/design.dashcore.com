@@ -58,6 +58,18 @@ class DesignKitApplierTest extends TestCase
         $this->assertStringContainsString("--font-sans: 'Atkinson Hyperlegible Next'", $block);
         $this->assertStringContainsString('--radius-lg: 8px;', $block);
         $this->assertStringContainsString('--ds-text-muted: #78716c;', $block);
+
+        // 06 brought onto the Flux table. Without this every app that uses
+        // flux:table drifts the same way, because Flux ships a 14px head in
+        // body colour with no fill.
+        $this->assertStringContainsString('[data-flux-table] thead [data-flux-column]', $block);
+        $this->assertStringContainsString('[data-flux-table] tbody [data-flux-cell]', $block);
+        $this->assertStringContainsString('height: var(--ds-row);', $block);
+        // The table rules must stay outside any @layer. Unlayered styles beat
+        // layered ones, which is how they win over Tailwind's utilities without
+        // !important. Inside a layer the override would silently do nothing.
+        $fromTable = substr($block, (int) strpos($block, '[data-flux-table]'));
+        $this->assertStringNotContainsString('@layer', $fromTable);
         // The dark muted-text correction from 04: zinc-500 becomes the 400 step in dark.
         $this->assertMatchesRegularExpression('/\.dark \{[^}]*--color-zinc-500: #a8a29e;/s', $block);
     }

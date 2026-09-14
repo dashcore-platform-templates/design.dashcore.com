@@ -50,11 +50,17 @@ Releases are tagged, and `composer require` writes `^1.0` for you. Every later 1
 
 Before 1.0 this was a 0.x package, where Composer reads each minor as breaking. A kit that had required `^0.2.0` never saw v0.3.0 at all, and said so as "Nothing to modify in lock file" rather than as an error. If you have one of those, change the constraint to `^1.0` once and it will keep up from then on.
 
-Working on the design repo and a kit side by side, a path repository skips the mirror and picks up edits immediately:
+Working on the design repo and a kit side by side, a path repository skips the mirror:
 
 ```bash
 composer config repositories.design-kit path ../design.dashcore.com/packages/design-kit
 composer require dashcore/design-kit:@dev
+```
+
+On Windows that copies rather than symlinks, so edits to the package do not appear in the kit. Composer will not notice them either, and `composer update` reports nothing to do. Delete the copy and install again:
+
+```bash
+rm -rf vendor/dashcore/design-kit && composer install
 ```
 
 ## Apply a design
