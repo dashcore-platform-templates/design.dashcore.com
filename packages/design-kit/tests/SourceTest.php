@@ -1,13 +1,12 @@
 <?php
 
-namespace Tests\Unit;
+namespace Dashcore\DesignKit\Tests;
 
 use Dashcore\DesignKit\Source;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
 
-class DesignKitSourceTest extends TestCase
+class SourceTest extends TestCase
 {
     #[Test]
     public function it_tells_a_slug_from_a_url_from_a_file(): void

@@ -41,7 +41,8 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/",
-            "Dashcore\\DesignKit\\": "packages/design-kit/src/"
+            "Dashcore\\DesignKit\\": "packages/design-kit/src/",
+            "Dashcore\\DesignKit\\Tests\\": "packages/design-kit/tests/"
         }
     },
     "scripts": {

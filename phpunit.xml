@@ -11,6 +11,14 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
+        <!--
+            The package's own tests, run from here too so one command still
+            covers everything. They ship with the package, so a kit can check
+            the thing it installed without this repo.
+        -->
+        <testsuite name="DesignKit">
+            <directory>packages/design-kit/tests</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>

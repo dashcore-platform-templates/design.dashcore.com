@@ -1,25 +1,17 @@
 <?php
 
-namespace Tests\Unit;
+namespace Dashcore\DesignKit\Tests;
 
-use App\Design\Design;
 use Dashcore\DesignKit\Applier;
 use Dashcore\DesignKit\Contrast;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
 
 /**
  * The package's applier is pure string work, so it is tested here against the
  * real exported shape of a shipped design rather than a hand-made fixture.
  */
-class DesignKitApplierTest extends TestCase
+class ApplierTest extends TestCase
 {
-    /** @return array<string,mixed> */
-    private function exported(string $slug = 'harbor-point'): array
-    {
-        return Design::load($slug)->toArray();
-    }
-
     #[Test]
     public function the_exported_file_is_accepted_and_its_contrast_agrees_with_the_tool(): void
     {

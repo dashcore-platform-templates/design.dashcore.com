@@ -1,12 +1,11 @@
 <?php
 
-namespace Tests\Unit;
+namespace Dashcore\DesignKit\Tests;
 
 use Dashcore\DesignKit\Audit;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
 
-class DesignKitAuditTest extends TestCase
+class AuditTest extends TestCase
 {
     /** @return list<string> */
     private function rules(string $blade): array
