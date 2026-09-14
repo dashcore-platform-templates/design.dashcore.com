@@ -56,6 +56,43 @@ final class Handoff
         ];
     }
 
+    /**
+     * The update path, for an app already on the standard. Setting one up is a
+     * different job with one-time steps in it, so this is not that.
+     *
+     * Composer comes first and is separate: the components and the audit rules
+     * live in the package, and a command cannot safely update the package it is
+     * running from.
+     *
+     * @return list<string>
+     */
+    public static function updateCommands(Design $design): array
+    {
+        return [
+            'composer update dashcore/design-kit',
+            'php artisan design:update '.$design->slug,
+        ];
+    }
+
+    /** What to paste into Claude Code to pick up a change to the standard. */
+    public static function updatePrompt(Design $design): string
+    {
+        $name = $design->name();
+        [$composer, $update] = self::updateCommands($design);
+
+        return <<<TXT
+        The Dashcore design standard has changed. Pick the change up in this app, which is already on the {$name} design.
+
+        1. Run `{$composer}` first. The components and the audit rules arrive with the package.
+        2. Run `{$update}`. It re-applies the design, says whether the standard moved, and audits this app against the rules as they now read.
+        3. Read design/CHANGELOG.md. Each entry says whether it is a relaxation, which needs nothing, or a tightening, which means screens have drifted. It also says whether the audit can check it. Where the audit cannot, look for those screens yourself, because nothing will report them.
+        4. Work the audit findings the way design/MIGRATION.md says: one screen per commit, most-used first, checking each with `php artisan design:audit <file>` before committing. Do not invent a component or a colour the standard lacks; leave it and say so.
+        5. End with a report: the standard version before and after, the audit count before and after, the screens changed, and anything left and why.
+
+        Do not re-run the setup. The adapter is installed, the sign-in layout is in place, and the CLAUDE snippet is already in CLAUDE.md.
+        TXT;
+    }
+
     /** What to paste into Claude Code in the target repo. */
     public static function prompt(Design $design, ?string $packUrl = null): string
     {

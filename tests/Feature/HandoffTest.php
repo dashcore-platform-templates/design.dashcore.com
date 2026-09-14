@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Design\Design;
 use App\Design\Handoff;
 use App\Design\Pack;
+use App\Design\Standard;
 use Dashcore\DesignKit\Audit;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -97,6 +98,37 @@ class HandoffTest extends TestCase
             ->assertSee('Use this design')
             ->assertSee('Prompt for the agent')
             ->assertSee('Once per machine')
+            ->assertSee('Already on this design')
             ->assertSee('Download pack');
+    }
+
+    #[Test]
+    public function the_update_path_is_not_the_setup_path(): void
+    {
+        $design = Design::load('harbor-point');
+        $prompt = Handoff::updatePrompt($design);
+
+        $this->assertSame([
+            'composer update dashcore/design-kit',
+            'php artisan design:update harbor-point',
+        ], Handoff::updateCommands($design));
+
+        $this->assertStringContainsString('design/CHANGELOG.md', $prompt);
+        $this->assertStringContainsString('Do not re-run the setup', $prompt);
+
+        // The one-time steps must not appear, or somebody reinstalls an adapter
+        // they already have and overwrites a sign-in layout they have edited.
+        foreach (['composer require dashcore/design-kit', 'design:apply', 'CLAUDE.snippet.md'] as $setupOnly) {
+            $this->assertStringNotContainsString($setupOnly, $prompt, "the update prompt must not repeat setup: {$setupOnly}");
+        }
+    }
+
+    #[Test]
+    public function the_standard_page_shows_the_version_and_the_changelog(): void
+    {
+        $this->get('/standard')
+            ->assertOk()
+            ->assertSee(Standard::version())
+            ->assertSee('What changed in the standard');
     }
 }

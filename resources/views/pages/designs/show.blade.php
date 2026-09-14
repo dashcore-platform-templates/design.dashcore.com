@@ -9,6 +9,7 @@ use App\Design\Neutrals;
 use App\Design\Pack;
 use App\Design\Pairings;
 use App\Design\Resolver;
+use App\Design\Standard;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -118,8 +119,12 @@ new #[Layout('layouts::tool')] class extends Component
             'handoff' => [
                 'prompt' => Handoff::prompt($design),
                 'token' => Handoff::tokenCommand(),
+                'flux' => Handoff::fluxCommand(),
                 'commands' => implode(PHP_EOL, Handoff::commands(Handoff::packUrl($design))),
                 'snippet' => Pack::claudeSnippet($design),
+                'updatePrompt' => Handoff::updatePrompt($design),
+                'updateCommands' => implode(PHP_EOL, Handoff::updateCommands($design)),
+                'version' => Standard::version(),
             ],
         ];
     }
@@ -273,6 +278,16 @@ new #[Layout('layouts::tool')] class extends Component
             </div>
 
             <flux:accordion>
+                <flux:accordion.item>
+                    <flux:accordion.heading>Already on this design</flux:accordion.heading>
+                    <flux:accordion.content>
+                        <div class="space-y-4 pt-1">
+                            <p class="text-xs leading-snug text-(--ds-text-muted)">Setting an app up happens once, so do not repeat it when a rule changes. The standard is at version <span class="font-mono text-(--ds-text-strong)">{{ $handoff['version'] }}</span>, and an app whose <code>design/STANDARD.md</code> shows a different one is behind. <a href="{{ route('standard') }}#changelog" class="text-(--ds-accent-content) hover:underline">What changed</a>.</p>
+                            <x-copy-block label="Prompt for the agent" :text="$handoff['updatePrompt']" />
+                            <x-copy-block label="Or by hand, in the target repo" :text="$handoff['updateCommands']" />
+                        </div>
+                    </flux:accordion.content>
+                </flux:accordion.item>
                 <flux:accordion.item>
                     <flux:accordion.heading>By hand</flux:accordion.heading>
                     <flux:accordion.content>
