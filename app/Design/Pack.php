@@ -41,6 +41,7 @@ final class Pack
         return [
             'design.json' => $design->toJson(),
             'STANDARD.md' => self::standardFile(),
+            'CHANGELOG.md' => Standard::changelog(),
             'CLAUDE.snippet.md' => self::claudeSnippet($design),
             'MIGRATION.md' => self::migration($design),
         ];
@@ -48,6 +49,9 @@ final class Pack
 
     /** Must match Dashcore\DesignKit\Source::MANIFEST_SCHEMA in the package. */
     public const MANIFEST_SCHEMA = 'dashcore-design-pack/1';
+
+    /** Must match Dashcore\DesignKit\Source::VERSION_LINE. The kit reads the stamp back off this. */
+    public const VERSION_LINE = 'Standard version: ';
 
     /**
      * The pack as one JSON document, served at /designs/{slug}/pack.json for
@@ -61,6 +65,7 @@ final class Pack
             'schema' => self::MANIFEST_SCHEMA,
             'slug' => $design->slug,
             'name' => $design->name(),
+            'standard_version' => Standard::version(),
             'source' => $source,
             'files' => self::files($design),
         ], fn ($value) => $value !== null);
@@ -73,7 +78,7 @@ final class Pack
 
     public static function standardFile(): string
     {
-        return "# The Dashcore Standard\n\nExported from design.dashcore.com. Files 01 to 09 of the standard in full, including the rules the generator does not read: component behaviour, shell geometry, motion, the mapping onto Flux. Read alongside design.json before building or changing any screen.\n\nThe text below says \"the fleet\" throughout. The fleet is every app Dashcore runs, about fifteen of them, which have to look and work the same without looking like one client's app repainted. That number is the test a rule has to pass, and it is why a rule here is not open to a project: what suits one client is a preference, and the seven decisions in design.json are where a project differs.\n\n---\n\n".Standard::full();
+        return "# The Dashcore Standard\n\n".self::VERSION_LINE.Standard::version()."\n\nThat stamp is the text below, hashed. If it differs from the one in your `design/STANDARD.md`, the standard moved since you last applied a design, and `design/CHANGELOG.md` says what changed.\n\nExported from design.dashcore.com. Files 01 to 09 of the standard in full, including the rules the generator does not read: component behaviour, shell geometry, motion, the mapping onto Flux. Read alongside design.json before building or changing any screen.\n\nThe text below says \"the fleet\" throughout. The fleet is every app Dashcore runs, about fifteen of them, which have to look and work the same without looking like one client's app repainted. That number is the test a rule has to pass, and it is why a rule here is not open to a project: what suits one client is a preference, and the seven decisions in design.json are where a project differs.\n\n---\n\n".Standard::full();
     }
 
     public static function claudeSnippet(Design $design): string

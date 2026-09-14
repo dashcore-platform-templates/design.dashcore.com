@@ -162,6 +162,31 @@ Then the real test: the app's dashboard beside the tool's dashboard mockup. They
 
 ---
 
+## 8. Later: the standard changes
+
+Steps 1 to 7 set an app up, and setting up happens once. When a rule changes afterwards, do not run them again. Installing the adapter, replacing the sign-in layout and pasting the CLAUDE snippet are all one-time, and repeating them is noise.
+
+An update is three commands in the app:
+
+```bash
+composer update dashcore/design-kit
+php artisan design:update <slug>
+```
+
+The first has to come first, because the components and the audit rules live in the package. `design:update` then re-applies the design, tells you whether the standard moved, and runs the audit against the rules as they now read. It refuses to run on an app that has no `design/design.json`, since that app was never set up.
+
+The top of `design/STANDARD.md` carries a stamp, which is the standard's text hashed. When it differs from the served one, apply says so by name:
+
+```
+WARN  The standard moved since you last applied: deadbeef is now bd3837a1.
+```
+
+`design/CHANGELOG.md` then says what moved. Each entry says whether it is a relaxation or a tightening, and whether the audit can check it.
+
+That distinction is the whole thing. A relaxation lets an app do something new, so nothing that was right becomes wrong and there is nothing to fix. A tightening makes existing screens drift, and it only finds those screens if the audit can check it. Where an entry says the audit cannot, a person has to look, because nothing will report it.
+
+Work the findings the way step 7 says: one screen per commit, with you reviewing each.
+
 ## When something is off
 
 **A decision you disagree with.** Change it on the design page and fix the reason under it. If you disagree with the same thing on three projects, it is the standard that is wrong, not the generator.

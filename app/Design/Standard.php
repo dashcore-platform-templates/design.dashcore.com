@@ -21,7 +21,10 @@ final class Standard
     public static function sections(): array
     {
         return collect(File::glob(self::directory().'/*.md'))
-            ->filter(fn (string $path) => basename($path) !== 'README.md')
+            // README is the front door and CHANGELOG describes the sections
+            // rather than being one. Including the changelog would also make
+            // version() circular, since it hashes the sections.
+            ->filter(fn (string $path) => ! in_array(basename($path), ['README.md', 'CHANGELOG.md'], true))
             ->sort()
             ->map(function (string $path): array {
                 $markdown = File::get($path);
@@ -70,6 +73,25 @@ final class Standard
             ->reject(fn (array $s) => str_starts_with($s['file'], '00-'))
             ->map(fn (array $s) => str_replace(self::PROMPT_END."\n", '', $s['markdown']))
             ->implode("\n\n---\n\n");
+    }
+
+    /**
+     * A short stamp for the standard as it currently reads. Derived from the
+     * text rather than declared, because a number somebody has to remember to
+     * raise is a number that stops being raised. A kit compares its own copy
+     * against this to find out whether the standard moved under it.
+     */
+    public static function version(): string
+    {
+        return substr(sha1(self::full()), 0, 8);
+    }
+
+    /** What changed in the standard and when, newest first. Shipped in the pack. */
+    public static function changelog(): string
+    {
+        $path = self::directory().DIRECTORY_SEPARATOR.'CHANGELOG.md';
+
+        return File::exists($path) ? File::get($path) : '';
     }
 
     /** One file's generator-facing part: everything above the marker. */

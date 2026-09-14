@@ -74,6 +74,19 @@ What it changes: the four pack files under `design/` when pulled, a marked block
 
 `php artisan design:check design/design.json` measures contrast on the file.
 
+## Update an app that is already on the standard
+
+Setting an app up happens once. When the standard changes afterwards, do not repeat it:
+
+```bash
+composer update dashcore/design-kit    # the components and the audit rules live here, so this is first
+php artisan design:update <slug>
+```
+
+`design:update` re-applies the design, says whether the standard moved, and runs the audit against the rules as they now read. It does not run Composer for you, because a command should not update the package it is currently executing from, and it refuses to run on an app that has no `design/design.json`.
+
+`design:apply` carries the same check on its own. The top of `design/STANDARD.md` holds a stamp, which is the standard's text hashed, and a mismatch is reported by name. `design/CHANGELOG.md` says what moved, and whether each change is a relaxation with nothing to do or a tightening the audit can find for you.
+
 ## Audit and migrate
 
 ```bash

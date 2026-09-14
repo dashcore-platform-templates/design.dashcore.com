@@ -6,6 +6,18 @@ The fleet is every app Dashcore runs, about fifteen of them, which have to look 
 
 Status: draft zero, September 2026. Written whole so John can cut it in one sitting. Nothing in it is settled until he has.
 
+## Changing a rule
+
+Every change is a relaxation or a tightening, and they cost differently.
+
+A **relaxation** lets an app do something it could not before. Nothing that was right becomes wrong, so no existing site has to act.
+
+A **tightening** makes existing screens drift the moment it lands. It only reaches a site that is already on the standard if `design:audit` can check it, because that is the one thing a site runs against its own code. A tightening with no check lives in a document and shapes new work alone. The old screens are never found.
+
+So: **a tightening ships with its audit rule in the same change, or it does not reach the fleet.** If the rule cannot be checked from the text of a file, say so in the changelog entry, so nobody mistakes silence for compliance.
+
+Every change also gets an entry in [`CHANGELOG.md`](CHANGELOG.md), saying what moved and whether an app has to act. The pack carries that file, and the stamp at the top of the exported standard is this text hashed, so a site can tell its copy is behind.
+
 ## How it is organised
 
 | File | What it fixes |

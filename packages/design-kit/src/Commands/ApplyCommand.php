@@ -98,6 +98,7 @@ class ApplyCommand extends Command
             $this->components->twoColumnDetail($c['path'], $c['changed'] ? "<fg=yellow>{$c['action']}</>" : '<fg=gray>unchanged</>');
         }
 
+        $this->reportStandardMoved($packFiles);
         $this->reportFluxTier();
 
         if ($this->option('check')) {
@@ -225,6 +226,42 @@ class ApplyCommand extends Command
         }
 
         return $changes;
+    }
+
+    /**
+     * Say when the standard moved since this app last applied a design.
+     *
+     * Without this the rules change silently. The files are overwritten, the
+     * command reports a handful of paths, and nobody reads a 50,000 character
+     * markdown file to find the two paragraphs that are new.
+     *
+     * @param  array<string,string>  $packFiles  Empty when applying a local file, which cannot have moved.
+     */
+    private function reportStandardMoved(array $packFiles): void
+    {
+        if (! isset($packFiles['STANDARD.md'])) {
+            return;
+        }
+
+        $local = base_path('design/STANDARD.md');
+        $before = File::exists($local) ? Source::standardVersion(File::get($local)) : null;
+        $after = Source::standardVersion($packFiles['STANDARD.md']);
+
+        if ($after === null || $before === $after) {
+            return;
+        }
+
+        $this->line('');
+
+        if ($before === null) {
+            $this->line("  <fg=gray>Standard version {$after}. Your previous copy was not stamped, so this is the first comparable one.</>");
+
+            return;
+        }
+
+        $this->components->warn("The standard moved since you last applied: {$before} is now {$after}.");
+        $this->line('  <fg=gray>design/CHANGELOG.md says what changed and whether anything needs fixing.</>');
+        $this->line('  <fg=gray>Run `php artisan design:audit` afterwards: a rule the audit can check will find the screens.</>');
     }
 
     /**

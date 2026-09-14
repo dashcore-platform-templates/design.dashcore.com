@@ -14,6 +14,20 @@ final class Source
     /** The document design.dashcore.com serves at /designs/{slug}/pack.json. */
     public const MANIFEST_SCHEMA = 'dashcore-design-pack/1';
 
+    /** Must match App\Design\Pack::VERSION_LINE in the tool. The stamp follows it. */
+    public const VERSION_LINE = 'Standard version: ';
+
+    /**
+     * The stamp out of a STANDARD.md, or null when the file predates stamping.
+     * Comparing two of these is how a kit finds out the standard moved under it.
+     */
+    public static function standardVersion(string $standard): ?string
+    {
+        $pattern = '/^'.preg_quote(self::VERSION_LINE, '/').'([0-9a-f]{6,40})\s*$/m';
+
+        return preg_match($pattern, $standard, $m) === 1 ? $m[1] : null;
+    }
+
     /** 'file', 'url' or 'slug'. */
     public static function kind(string $argument): string
     {

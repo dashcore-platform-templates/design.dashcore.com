@@ -59,9 +59,14 @@ class DesignViewerTest extends TestCase
 
         // The package reads it back into the files that go under design/.
         $files = Source::files($manifest);
-        $this->assertSame(['design.json', 'STANDARD.md', 'CLAUDE.snippet.md', 'MIGRATION.md'], array_keys($files));
+        $this->assertSame(['design.json', 'STANDARD.md', 'CHANGELOG.md', 'CLAUDE.snippet.md', 'MIGRATION.md'], array_keys($files));
         $this->assertArrayHasKey('tokens', json_decode($files['design.json'], true));
         $this->assertStringContainsString('Migrating Harbor Point', $files['MIGRATION.md']);
+
+        // The stamp is how a kit finds out the standard moved under it. The tool
+        // writes it and the package reads it back, so both halves are checked.
+        $this->assertSame(Standard::version(), $manifest['standard_version']);
+        $this->assertSame(Standard::version(), Source::standardVersion($files['STANDARD.md']));
         $this->assertSame(Pack::files(Design::load('harbor-point')), $files, 'byte for byte what the zip holds');
         $this->assertSame($manifest, $this->get('/designs/harbor-point/pack.json')->json(), 'pulling twice must give the same bytes, or design:apply is never a no-op');
 
@@ -69,7 +74,7 @@ class DesignViewerTest extends TestCase
     }
 
     #[Test]
-    public function the_pack_holds_the_four_files(): void
+    public function the_pack_holds_its_five_files(): void
     {
         $response = $this->get('/designs/harbor-point/pack.zip')->assertOk();
         $path = $response->baseResponse->getFile()->getPathname();
@@ -81,7 +86,7 @@ class DesignViewerTest extends TestCase
             $names[] = $zip->getNameIndex($i);
         }
         $this->assertEqualsCanonicalizing(
-            ['design/design.json', 'design/STANDARD.md', 'design/CLAUDE.snippet.md', 'design/MIGRATION.md'],
+            ['design/design.json', 'design/STANDARD.md', 'design/CHANGELOG.md', 'design/CLAUDE.snippet.md', 'design/MIGRATION.md'],
             $names,
         );
         $this->assertStringContainsString('Harbor Point', $zip->getFromName('design/CLAUDE.snippet.md'));
