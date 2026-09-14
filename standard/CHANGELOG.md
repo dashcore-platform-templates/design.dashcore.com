@@ -12,6 +12,10 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ## 14 September 2026
 
+**Email has a section.** Tightening, and the audit cannot check it. Section 10 is new. Every app in the fleet was sending Laravel's default template, so a member got a portal built to this standard and then an email that looked like nothing to do with it. Email is the one surface where the rest of the standard cannot apply: no custom properties, no utility classes, no web fonts, no second typeface and no dark register. What carries over is the accent, the neutral scale, the voice and the structure, all of it in inline hex. The audit does not see mail templates, so a person has to look.
+
+**Error pages and first run have a section.** Tightening, and the audit checks part of it. Section 11 is new. Laravel's own 404, 419, 429, 500 and 503 were untouched everywhere, which is a framework's page under a product's name, arriving at the moment somebody is already stuck. None of them uses the danger colour, because a red page tells somebody their data is gone. The audit walks `resources/views/errors/` like any other view, so colour and spacing there are checked, but it cannot tell you the pages were never written.
+
 **A badge with no status is neutral.** Tightening, and the audit checks it. Roles, plans, types, categories and any state the four status colours do not cover now take `<x-ds::badge>` with no status. Colour on a badge means status and nothing else. An unrecognised status renders neutral instead of falling back to info. A count is not a badge at all. The audit reports every `flux:badge`.
 
 **A count marker takes the accent.** Tightening, and the audit checks it. An unread count on a nav item or a notification bell fills with the accent and uses `on-accent` text at `text-xs`. It is never red, because red says something has gone wrong and unread items have not. The audit reports a red fill as a colour off the roles.

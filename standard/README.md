@@ -32,6 +32,8 @@ Every change also gets an entry in [`CHANGELOG.md`](CHANGELOG.md), saying what m
 | 07-motifs.md | The four structural motifs a project may pick one of. |
 | 08-motion-icons.md | Motion limits and the one icon set. |
 | 09-decisions.md | The seven things the generator is allowed to decide, the JSON it produces, and the export pack a project receives. |
+| 10-email.md | Email, which is the one surface where the rest of this standard cannot apply directly. |
+| 11-errors.md | The error pages, first run, and the other screens nobody styles until they are the ones giving an app away. |
 
 ## Fixed versus varied
 
