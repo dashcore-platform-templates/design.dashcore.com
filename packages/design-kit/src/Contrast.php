@@ -43,6 +43,15 @@ final class Contrast
                 'on-accent on accent' => [$r['on-accent'], $r['accent']],
             ];
             $mutedOnQuiet = $r['text-muted-on-sunken'] ?? $r['text-muted'];
+
+            // The accent tint 04 puts behind selected rows and active list items.
+            // accent-soft carries alpha, so it has to be composited before it can
+            // be measured. Skipping this is how dark sat at 3.40:1 while every
+            // design reported passing.
+            $accentTint = self::over($r['accent'], $r['surface'], $register === 'dark' ? 0.16 : 0.10);
+            $checks['accent-content on accent-soft'] = [$r['accent-content'], $accentTint];
+            $checks['text-muted-on-sunken on accent-soft'] = [$mutedOnQuiet, $accentTint];
+
             foreach ($tokens['status'] ?? [] as $name => $s) {
                 $soft = $s["soft-{$register}"];
                 $checks["{$name} text on page"] = [$s["text-{$register}"], $r['page']];
@@ -64,6 +73,32 @@ final class Contrast
         }
 
         return ['passes' => $passes, 'lowest' => $lowest, 'pairs' => $pairs];
+    }
+
+    /** One colour laid over another at an alpha, as a solid hex. */
+    private static function over(string $top, string $bottom, float $alpha): string
+    {
+        $t = self::channels($top);
+        $b = self::channels($bottom);
+        $mix = [];
+
+        foreach ([0, 1, 2] as $i) {
+            $mix[] = (int) round($t[$i] * $alpha + $b[$i] * (1 - $alpha));
+        }
+
+        return sprintf('#%02x%02x%02x', ...$mix);
+    }
+
+    /** @return array{0: int, 1: int, 2: int} */
+    private static function channels(string $hex): array
+    {
+        $hex = ltrim($hex, '#');
+
+        return [
+            (int) hexdec(substr($hex, 0, 2)),
+            (int) hexdec(substr($hex, 2, 2)),
+            (int) hexdec(substr($hex, 4, 2)),
+        ];
     }
 
     private static function luminance(string $hex): float

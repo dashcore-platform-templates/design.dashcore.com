@@ -67,7 +67,7 @@ final class Resolver
             'text-muted' => $n[500],
             'text-muted-on-sunken' => $n[600],
         ];
-        $light += self::accentRoles($accent, $light['page'], $n[950], dark: false, notes: $notes);
+        $light += self::accentRoles($accent, $light['surface'], $n[950], dark: false, notes: $notes);
 
         // Dark register. The accent is lightened until it reads as a fill on the dark page.
         $dark = [
@@ -85,7 +85,7 @@ final class Resolver
         if ($darkAccent !== $accent) {
             $notes[] = "Dark accent lightened from {$accent} to {$darkAccent} to read on the dark page.";
         }
-        $dark += self::accentRoles($darkAccent, $dark['page'], $n[950], dark: true, notes: $notes);
+        $dark += self::accentRoles($darkAccent, $dark['surface'], $n[950], dark: true, notes: $notes);
 
         $tokens = [
             'fonts' => [
@@ -108,13 +108,19 @@ final class Resolver
 
     /**
      * Accent roles for one register. The fill is nudged away from mid-lightness
-     * until white or near-black text passes on it, accent-content is moved until
-     * it passes as text on the page, and accent-soft is a tint over the surface.
+     * until white or near-black text passes on it, and accent-soft is a tint of
+     * the fill over the surface.
+     *
+     * accent-content is moved until it passes on that tint, not on the page.
+     * 04 puts the tint behind selected rows and active list items, so accent
+     * text sits on it more often than it sits on anything else, and the tint is
+     * the worst of the three surfaces in both registers. Targeting the page
+     * left it failing at 3.40:1 in dark while every design reported passing.
      *
      * @param  array<int,string>  $notes
      * @return array<string,string>
      */
-    private static function accentRoles(string $accent, string $page, string $nearBlack, bool $dark, array &$notes): array
+    private static function accentRoles(string $accent, string $surface, string $nearBlack, bool $dark, array &$notes): array
     {
         $fill = $accent;
         $onAccent = Color::contrast('#ffffff', $fill) >= Color::contrast($nearBlack, $fill) ? '#ffffff' : $nearBlack;
@@ -128,9 +134,11 @@ final class Resolver
             }
         }
 
-        $content = Color::untilContrast($fill, $page, 4.5, $dark ? +1 : -1);
-        $hover = Color::shiftLightness($fill, $dark ? +6 : -6);
         $softAlpha = $dark ? 0.16 : 0.10;
+        $tint = Color::over($fill, $surface, $softAlpha);
+
+        $content = Color::untilContrast($fill, $tint, 4.5, $dark ? +1 : -1);
+        $hover = Color::shiftLightness($fill, $dark ? +6 : -6);
 
         return [
             'accent' => $fill,
@@ -178,6 +186,12 @@ final class Resolver
             $pairs["{$register}: text-muted on surface"] = [$r['text-muted'], $r['surface'], 4.5];
             $pairs["{$register}: text-muted-on-sunken on sunken"] = [$r['text-muted-on-sunken'], $r['sunken'], 4.5];
             $pairs["{$register}: accent-content on page"] = [$r['accent-content'], $r['page'], 4.5];
+            // The tint 04 puts behind selected rows and active list items. It is
+            // where accent text actually sits, and it was never measured, so
+            // every design reported passing while dark sat at 3.40:1.
+            $accentTint = Color::over($r['accent'], $r['surface'], $register === 'dark' ? 0.16 : 0.10);
+            $pairs["{$register}: accent-content on accent-soft"] = [$r['accent-content'], $accentTint, 4.5];
+            $pairs["{$register}: text-muted-on-sunken on accent-soft"] = [$r['text-muted-on-sunken'], $accentTint, 4.5];
             $pairs["{$register}: on-accent on accent"] = [$r['on-accent'], $r['accent'], 4.5];
             $pairs["{$register}: border-strong on surface"] = [$r['border-strong'], $r['surface'], 1.5];
             foreach (self::STATUS as $name => $s) {

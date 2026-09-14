@@ -83,7 +83,7 @@ In the target repo:
 ```bash
 composer config repositories.flux-pro composer https://composer.fluxui.dev
 composer require livewire/flux-pro
-composer config repositories.design-kit vcs https://github.com/kengervacio/design-kit.git
+composer config repositories.design-kit vcs https://github.com/dashcoretech/design-kit.git
 composer require dashcore/design-kit
 php artisan design:apply https://design.dashcore.com/designs/<slug>/pack.json
 npm install

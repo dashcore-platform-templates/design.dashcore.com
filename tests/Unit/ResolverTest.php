@@ -129,6 +129,33 @@ class ResolverTest extends TestCase
     }
 
     #[Test]
+    #[DataProvider('temperatures')]
+    public function accent_text_passes_on_the_tint_it_actually_sits_on(string $temperature): void
+    {
+        $tokens = Resolver::resolve($this->decisions(temperature: $temperature));
+        $measured = array_column($tokens['contrast']['pairs'], 'ratio', 'pair');
+
+        foreach (['light' => 0.10, 'dark' => 0.16] as $register => $alpha) {
+            $r = $tokens[$register];
+            $tint = Color::over($r['accent'], $r['surface'], $alpha);
+
+            // 04 puts this tint behind selected rows and active list items, so
+            // accent text sits on it more often than on anything else. Deriving
+            // against the page left dark at 3.40:1 with every design passing.
+            $this->assertGreaterThanOrEqual(4.5, Color::contrast($r['accent-content'], $tint), "{$register} accent-content on the accent tint");
+            $this->assertGreaterThanOrEqual(4.5, Color::contrast($r['text-muted-on-sunken'], $tint), "{$register} muted text on the accent tint");
+
+            foreach (["{$register}: accent-content on accent-soft", "{$register}: text-muted-on-sunken on accent-soft"] as $pair) {
+                $this->assertArrayHasKey($pair, $measured, "not measured: {$pair}");
+            }
+
+            // Passing on the tint has to mean passing on the lighter surfaces too.
+            $this->assertGreaterThanOrEqual(4.5, Color::contrast($r['accent-content'], $r['page']));
+            $this->assertGreaterThanOrEqual(4.5, Color::contrast($r['accent-content'], $r['surface']));
+        }
+    }
+
+    #[Test]
     public function plain_muted_text_is_the_wrong_role_on_a_tint_which_is_why_the_rule_exists(): void
     {
         $tokens = Resolver::resolve($this->decisions(temperature: 'pure'));

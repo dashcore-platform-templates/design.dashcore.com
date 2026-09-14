@@ -30,7 +30,8 @@ The generator picks one per project. **Pure** is a true grey and suits technical
 - The accent hue must sit at least 30 degrees away from red (0) and amber (40) so it is never read as danger or warning. Green near 140 is allowed but discouraged, since success then loses its meaning.
 - Saturation is between 45 and 85 percent in HSL. Under that it reads as a grey; over it, it vibrates on white.
 - As a fill, the accent appears on: the primary button, the active nav indicator, the checked state of switches, checkboxes and radios, the selected tab, progress fills, and a count marker on a nav item or a notification bell. Nowhere else. A count marker is small, carries `on-accent` text, and sits at `text-xs` like everything else, because 03 sets no size below 12px. A count is attention and never danger, so it is never red: red says something has gone wrong, and a pile of unread items has not.
-- As text or icon, only `accent-content` is used, so it always passes contrast.
+- As text or icon, only `accent-content` is used. It is derived against the accent tint rather than the page, because that tint sits behind selected rows and active list items and is the worst of the three surfaces accent text lands on. Passing there means passing on page and surface too.
+- Secondary text on that tint takes `text-muted-on-sunken`, the same role a status tint uses. Plain `text-muted` is the 500 step and does not clear a tint.
 - Never on page or surface backgrounds. `accent-soft` may tint one region per view when the filled-stat motif is chosen, and is otherwise used only behind selected rows and active list items.
 - Headings and body text never take the accent.
 
@@ -114,8 +115,12 @@ Flux's own badge colours come from Tailwind's palette rather than these, so the 
 | text-muted on sunken | 4.54 to 4.59 using 500; 6.9 to 7.2 using 600 | n/a, sunken is darker than page |
 | text-muted on a status tint | 4.35 to 4.59 using 500, which fails on danger and info; 5.7 or better using 600 | 5.7 to 6.4 |
 | status text on its own tint | 4.79 to 6.16 | 5.7 to 9.0 |
+| accent-content on the accent tint | 4.65 to 6.71 | 4.55 to 4.85 |
+| text-muted on the accent tint | 4.06 to 4.31 using 500, which fails; 6.4 or better using 600 | 4.9 to 5.3 |
 
 Three things fall out of the numbers. Muted text at 500 only just passes on white and fails on neutral 100, so muted text on any sunken surface uses 600 in light. Flux's default of neutral 500 for muted text in dark fails at 3.07 to 3.19:1 on neutral 800, so the standard sets dark muted text to 400 and the adapter overrides Flux there.
+
+The accent's own tint is the same story, and it went unnoticed for longer. `accent-content` used to be derived against the page, where it passed, and nothing measured it against the tint the standard itself puts behind every selected row. In dark it sat at 3.40:1 while every design reported passing. It is now derived against the tint, and both pairs are measured.
 
 And a status tint is a quiet surface like any other. Muted text at 500 measures 4.35:1 on the danger tint and 4.37:1 on the info tint in light, so secondary text on a tinted row takes the same 600 step as on sunken. The role carries the name `text-muted-on-sunken` from where it was first needed; read it as muted text on any quiet surface that is not page or surface. A badge is safe as it stands, because status text on its own tint never drops below 4.79:1. Both pairs are measured for every status, in both registers, so neither can go quietly wrong again.
 
