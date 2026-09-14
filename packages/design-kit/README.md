@@ -20,6 +20,20 @@ One is written, the other is published. Never the reverse. It is the same arrang
 
 This repo is a build artefact. `git subtree split` rewrites the package's folder history into a standalone one, and it is deterministic: the same source always produces the same commits. That is why a normal push is always a fast-forward here, and why a rejection means somebody edited this repo rather than something going wrong with the machinery.
 
+## Locking the mirror
+
+That refusal reports an edit. It does not prevent one. Anyone holding write access here can still commit, and publishing stays broken until somebody moves the commit across. The way to prevent it is access, not rules: GitHub's branch protection and rulesets are not available on a private repository under the Free plan, so the lock has to come from who holds write.
+
+The order matters. The publishing credential is a classic token, and a classic token acts as the person who created it, so taking write access away from people takes it away from the token too. The key has to be in place first.
+
+1. Here, under Settings then Deploy keys, add a key with write access. A deploy key reaches one repository and nothing else, which is the whole point.
+2. In design.dashcore.com, add the private half as a secret named `DASHCORE_DESIGN_KEY`. The publish workflow prefers it over `DASHCORE_DESIGN` whenever it is set.
+3. Push to master there and read the publish job. It prints which repository the key belongs to before it pushes, so a key added to the wrong repo says so.
+4. Here, under Settings then Collaborators and teams, set every human grant to read. Composer only ever reads, so nothing about installing the package changes.
+5. Delete the `DASHCORE_DESIGN` secret and revoke the token behind it.
+
+An organisation owner keeps write and cannot be locked out of their own repo. That is the one hand left that can commit here, and it is enough: the aim is that nobody edits this repo by accident, not that nobody can.
+
 ## Install
 
 This repo is republished automatically. A push to master in the design repo updates it, and a `design-kit/vX.Y.Z` tag there releases that version here:
@@ -28,7 +42,7 @@ This repo is republished automatically. A push to master in the design repo upda
 git tag design-kit/v1.1.0 && git push origin design-kit/v1.1.0
 ```
 
-If the workflow is down, the same thing by hand:
+If the workflow is down, the same thing by hand, which needs write access to the mirror:
 
 ```bash
 git subtree push --prefix=packages/design-kit https://github.com/dashcoretech/design-kit.git master

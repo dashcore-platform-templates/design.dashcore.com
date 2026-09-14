@@ -8,8 +8,13 @@ name: publish design-kit
 # Releasing:
 #   git tag design-kit/v1.1.0 && git push origin design-kit/v1.1.0
 #
-# Needs a DASHCORE_DESIGN secret: a token that can write to the mirror. The
-# built-in GITHUB_TOKEN cannot, because it only ever reaches this repo.
+# Needs a credential that can write to the mirror. The built-in GITHUB_TOKEN
+# cannot, because it only ever reaches this repo. Either secret works:
+#
+#   DASHCORE_DESIGN_KEY  the private half of a write deploy key on the mirror
+#   DASHCORE_DESIGN      a classic token with repo scope
+#
+# The key is preferred. See "Locking the mirror" in packages/design-kit/README.md.
 
 on:
   push:
@@ -42,73 +47,106 @@ jobs:
       - name: Publish the package to its own repo
         env:
           DASHCORE_DESIGN: ${{ secrets.DASHCORE_DESIGN }}
+          DASHCORE_DESIGN_KEY: ${{ secrets.DASHCORE_DESIGN_KEY }}
         run: |
           set -euo pipefail
 
-          if [ -z "${DASHCORE_DESIGN}" ]; then
-            echo "DASHCORE_DESIGN is not set."
-            echo "Add a repository secret holding a token that can write to dashcoretech/design-kit."
-            exit 1
-          fi
+          # There are two ways to reach the mirror and the deploy key wins.
+          #
+          # A deploy key can push to one repository and nothing else, so the
+          # mirror can drop every human write grant and still be published to.
+          # A classic token acts as the person who created it, so removing
+          # people write access removes the token write access with it.
+          if [ -n "${DASHCORE_DESIGN_KEY:-}" ]; then
+            echo 'reaching the mirror with the deploy key'
 
-          # A token pasted into the secret box picks up a trailing newline more
-          # often than not. No token has whitespace in it, so taking it out is
-          # always safe and saves re-pasting the secret.
-          token=$(printf '%s' "${DASHCORE_DESIGN}" | tr -d '[:space:]')
-          if [ -z "${token}" ]; then
-            echo 'DASHCORE_DESIGN is empty or only whitespace.'
-            exit 1
-          fi
+            mkdir -p ~/.ssh
+            printf '%s\n' "${DASHCORE_DESIGN_KEY}" > ~/.ssh/publish
+            chmod 600 ~/.ssh/publish
 
-          # A GitHub token is letters, digits and underscores, and nothing else.
-          # Checking that here turns "URL rejected: Bad hostname", which sounds
-          # like a network fault, into a sentence about the secret.
-          case "${token}" in
-            *[!A-Za-z0-9_]*)
-              echo 'DASHCORE_DESIGN does not look like a GitHub token.'
-              echo 'A token is letters, digits and underscores only, and begins ghp_ or github_pat_.'
-              # Name the punctuation and the length rather than the value, so the
-              # next attempt is aimed rather than another guess. An @ means an
-              # email went in, a : means a pair, quotes mean the paste kept them.
-              stray=$(printf '%s' "${token}" | tr -d 'A-Za-z0-9_' | fold -w1 | sort -u | tr -d '\n')
-              echo "  characters in it that a token never has: ${stray}"
-              echo "  its length is ${#token}; a classic token is 40 and a fine-grained one about 93"
-              exit 1 ;;
-          esac
+            # Pin the host keys rather than accepting whatever answers.
+            ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
 
-          # Ask GitHub what this token can do before pushing. A push that is
-          # refused says only "Write access to repository not granted", which
-          # does not say whether the scope is wrong, the repository was never
-          # selected, or an org owner has yet to approve it.
-          echo 'what this token can do:'
-          status=$(curl -sS -o /tmp/repo.json -w '%{http_code}' \
-            -H "Authorization: Bearer ${token}" \
-            -H 'Accept: application/vnd.github+json' \
-            https://api.github.com/repos/dashcoretech/design-kit || echo 000)
-          echo "  repository lookup: HTTP ${status}"
-          if [ "${status}" = '200' ]; then
-            echo "  push permission: $(jq -r '.permissions.push // "not reported"' /tmp/repo.json)"
+            export GIT_SSH_COMMAND='ssh -i ~/.ssh/publish -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes'
+            mirror='git@github.com:dashcoretech/design-kit.git'
+            mirror_git() { git "$@"; }
+
+            # Say which repository the key belongs to before pushing. A deploy
+            # key for the wrong repository fails with "repository not found",
+            # which reads like the repository is gone rather than like the key
+            # is somebody else key.
+            echo '  the key answers as:'
+            ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -i ~/.ssh/publish -T git@github.com 2>&1 | sed 's/^/    /' || true
           else
-            echo '  the token cannot see dashcoretech/design-kit at all'
-          fi
-          scopes=$(curl -sS -I -H "Authorization: Bearer ${token}" https://api.github.com/user 2>/dev/null | tr -d '\r' | grep -i '^x-oauth-scopes:' || true)
-          echo "  ${scopes:-x-oauth-scopes: none reported, which is normal for a fine-grained token}"
+            echo 'no deploy key, falling back to the token'
 
-          if [ "${status}" = '200' ] && [ "$(jq -r '.permissions.push // "false"' /tmp/repo.json)" != 'true' ]; then
-            echo 'This token cannot write to dashcoretech/design-kit.'
-            echo 'A classic token needs the repo scope. A fine-grained one needs that repository selected,'
-            echo 'Contents set to read and write, and approval from an organisation owner.'
-            exit 1
+            if [ -z "${DASHCORE_DESIGN:-}" ]; then
+              echo 'Neither DASHCORE_DESIGN_KEY nor DASHCORE_DESIGN is set.'
+              echo 'Add one repository secret that can write to dashcoretech/design-kit.'
+              exit 1
+            fi
+
+            # A token pasted into the secret box picks up a trailing newline more
+            # often than not. No token has whitespace in it, so taking it out is
+            # always safe and saves re-pasting the secret.
+            token=$(printf '%s' "${DASHCORE_DESIGN}" | tr -d '[:space:]')
+            if [ -z "${token}" ]; then
+              echo 'DASHCORE_DESIGN is empty or only whitespace.'
+              exit 1
+            fi
+
+            # A GitHub token is letters, digits and underscores, and nothing else.
+            # Checking that here turns "URL rejected: Bad hostname", which sounds
+            # like a network fault, into a sentence about the secret.
+            case "${token}" in
+              *[!A-Za-z0-9_]*)
+                echo 'DASHCORE_DESIGN does not look like a GitHub token.'
+                echo 'A token is letters, digits and underscores only, and begins ghp_ or github_pat_.'
+                # Name the punctuation and the length rather than the value, so the
+                # next attempt is aimed rather than another guess. An @ means an
+                # email went in, a : means a pair, quotes mean the paste kept them.
+                stray=$(printf '%s' "${token}" | tr -d 'A-Za-z0-9_' | fold -w1 | sort -u | tr -d '\n')
+                echo "  characters in it that a token never has: ${stray}"
+                echo "  its length is ${#token}; a classic token is 40 and a fine-grained one about 93"
+                exit 1 ;;
+            esac
+
+            # Ask GitHub what this token can do before pushing. A push that is
+            # refused says only "Write access to repository not granted", which
+            # does not say whether the scope is wrong, the repository was never
+            # selected, or an org owner has yet to approve it.
+            echo 'what this token can do:'
+            status=$(curl -sS -o /tmp/repo.json -w '%{http_code}' \
+              -H "Authorization: Bearer ${token}" \
+              -H 'Accept: application/vnd.github+json' \
+              https://api.github.com/repos/dashcoretech/design-kit || echo 000)
+            echo "  repository lookup: HTTP ${status}"
+            if [ "${status}" = '200' ]; then
+              echo "  push permission: $(jq -r '.permissions.push // "not reported"' /tmp/repo.json)"
+            else
+              echo '  the token cannot see dashcoretech/design-kit at all'
+            fi
+            scopes=$(curl -sS -I -H "Authorization: Bearer ${token}" https://api.github.com/user 2>/dev/null | tr -d '\r' | grep -i '^x-oauth-scopes:' || true)
+            echo "  ${scopes:-x-oauth-scopes: none reported, which is normal for a fine-grained token}"
+
+            if [ "${status}" = '200' ] && [ "$(jq -r '.permissions.push // "false"' /tmp/repo.json)" != 'true' ]; then
+              echo 'This token cannot write to dashcoretech/design-kit.'
+              echo 'A classic token needs the repo scope. A fine-grained one needs that repository selected,'
+              echo 'Contents set to read and write, and approval from an organisation owner.'
+              exit 1
+            fi
+
+            # The credential goes in a header rather than the URL. Git parses a
+            # URL before it authenticates, so anything unexpected in the token
+            # fails as a malformed address instead of as a rejected credential.
+            auth=$(printf 'x-access-token:%s' "${token}" | base64 -w0)
+            mirror='https://github.com/dashcoretech/design-kit.git'
+            mirror_git() { git -c "http.extraheader=Authorization: Basic ${auth}" "$@"; }
           fi
 
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          # The credential goes in a header rather than the URL. Git parses a
-          # URL before it authenticates, so anything unexpected in the token
-          # fails as a malformed address instead of as a rejected credential.
-          auth=$(printf 'x-access-token:%s' "${token}" | base64 -w0)
-          mirror='https://github.com/dashcoretech/design-kit.git'
           split=$(git subtree split --prefix=packages/design-kit)
           echo "split commit: ${split}"
 
@@ -119,7 +157,7 @@ jobs:
           #
           # Deliberately not a force push. Forcing would destroy that commit
           # silently and send its author looking for work that no longer exists.
-          if git -c "http.extraheader=Authorization: Basic ${auth}" fetch -q "${mirror}" master 2>/dev/null; then
+          if mirror_git fetch -q "${mirror}" master 2>/dev/null; then
             if ! git merge-base --is-ancestor FETCH_HEAD "${split}"; then
               echo 'The mirror has a commit this repo does not.'
               echo 'Somebody edited the mirror directly. That commit is still there and nothing is lost.'
@@ -134,10 +172,10 @@ jobs:
 
           # A push with nothing new in it is already up to date, so this is safe
           # to run on every master push rather than guessing at changed paths.
-          git -c "http.extraheader=Authorization: Basic ${auth}" push "${mirror}" "${split}:refs/heads/master"
+          mirror_git push "${mirror}" "${split}:refs/heads/master"
 
           if [ "${GITHUB_REF_TYPE}" = 'tag' ]; then
             version="${GITHUB_REF_NAME#design-kit/}"
             echo "releasing ${version}"
-            git -c "http.extraheader=Authorization: Basic ${auth}" push "${mirror}" "${split}:refs/tags/${version}"
+            mirror_git push "${mirror}" "${split}:refs/tags/${version}"
           fi
