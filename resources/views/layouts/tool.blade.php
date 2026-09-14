@@ -29,6 +29,49 @@
                     <div>
                         <p class="ds-eyebrow px-2 pb-1.5">Reference</p>
                         <x-tool-nav-item :href="route('standard')" :active="request()->routeIs('standard')" icon="book-open">The Standard</x-tool-nav-item>
+                        {{--
+                            How many changes this browser has not looked at. There
+                            is no login here, so the count is per browser and lives
+                            in localStorage. Every read and write is wrapped,
+                            because a private window throws rather than returning
+                            nothing, and a nav that explodes is worse than a nav
+                            with no badge. The marker itself is the one 04 defines:
+                            accent fill, on-accent text, never red.
+                        --}}
+                        <div x-data="{
+                            total: @js(\App\Design\Standard::changelogCount()),
+                            unseen: 0,
+                            key: 'ds-changelog-seen',
+                            init() {
+                                this.sync();
+                                document.addEventListener('livewire:navigated', () => this.sync());
+                            },
+                            sync() {
+                                if (window.location.pathname === @js(route('standard', absolute: false))) {
+                                    this.write(this.total);
+                                    this.unseen = 0;
+                                    return;
+                                }
+                                this.unseen = Math.max(0, this.total - this.read());
+                            },
+                            read() {
+                                // On failure claim everything is read, so a browser
+                                // that blocks storage shows no badge rather than a
+                                // permanent one it can never clear.
+                                try { return parseInt(localStorage.getItem(this.key) || '0', 10) || 0; } catch (e) { return this.total; }
+                            },
+                            write(value) {
+                                try { localStorage.setItem(this.key, String(value)); } catch (e) {}
+                            },
+                        }">
+                            <x-tool-nav-item :href="route('standard') . '#changelog'" icon="sparkles">
+                                What changed
+                                <x-slot:marker>
+                                    <span x-cloak x-show="unseen > 0" x-text="unseen"
+                                          class="ms-auto inline-flex min-w-5 shrink-0 items-center justify-center rounded-(--radius-sm) bg-(--ds-accent) px-1.5 py-0.5 text-xs font-medium tabular-nums text-(--ds-on-accent)"></span>
+                                </x-slot:marker>
+                            </x-tool-nav-item>
+                        </div>
                     </div>
                     <div>
                         <p class="ds-eyebrow px-2 pb-1.5">Designs</p>

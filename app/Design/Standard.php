@@ -86,6 +86,19 @@ final class Standard
         return substr(sha1(self::full()), 0, 8);
     }
 
+    /**
+     * How many changes the changelog records. Each entry opens a line with its
+     * own bold summary, and the prose above them never starts a line that way.
+     */
+    public static function changelogCount(): int
+    {
+        $count = preg_match_all('/^\*\*/m', self::changelog());
+
+        // A PCRE failure shows no badge. A wrong number in a nav is worse than
+        // no number, because somebody goes looking for changes that are not there.
+        return $count === false ? 0 : $count;
+    }
+
     /** What changed in the standard and when, newest first. Shipped in the pack. */
     public static function changelog(): string
     {

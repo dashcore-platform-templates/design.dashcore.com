@@ -51,6 +51,17 @@ class StandardVersionTest extends TestCase
     }
 
     #[Test]
+    public function the_changelog_count_is_the_entries_and_not_the_prose(): void
+    {
+        $count = Standard::changelogCount();
+
+        $this->assertGreaterThan(0, $count);
+        // The paragraphs above the entries use bold mid-sentence, as in
+        // "A **relaxation** lets an app". Only an entry opens a line with it.
+        $this->assertSame(substr_count(Standard::changelog(), "\n**") + (str_starts_with(Standard::changelog(), '**') ? 1 : 0), $count);
+    }
+
+    #[Test]
     public function changing_the_standard_changes_the_stamp(): void
     {
         $before = Source::standardVersion(Pack::standardFile());
