@@ -66,22 +66,26 @@ final class Handoff
      *
      * @return list<string>
      */
-    public static function updateCommands(Design $design): array
+    public static function updateCommands(?Design $design = null): array
     {
         return [
             'composer update dashcore/design-kit',
-            'php artisan design:update '.$design->slug,
+            'php artisan design:update '.($design === null ? '<slug>' : $design->slug),
         ];
     }
 
-    /** What to paste into Claude Code to pick up a change to the standard. */
-    public static function updatePrompt(Design $design): string
+    /**
+     * What to paste into Claude Code to pick up a change to the standard.
+     * Without a design it reads generically, for the changelog page, where the
+     * reader has not said which app they are updating.
+     */
+    public static function updatePrompt(?Design $design = null): string
     {
-        $name = $design->name();
+        $on = $design === null ? 'already on the Dashcore standard' : 'already on the '.$design->name().' design';
         [$composer, $update] = self::updateCommands($design);
 
         return <<<TXT
-        The Dashcore design standard has changed. Pick the change up in this app, which is already on the {$name} design.
+        The Dashcore design standard has changed. Pick the change up in this app, which is {$on}.
 
         1. Run `{$composer}` first. The components and the audit rules arrive with the package.
         2. Run `{$update}`. It re-applies the design, says whether the standard moved, and audits this app against the rules as they now read.

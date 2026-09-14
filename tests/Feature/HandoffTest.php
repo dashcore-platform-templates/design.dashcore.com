@@ -124,11 +124,38 @@ class HandoffTest extends TestCase
     }
 
     #[Test]
-    public function the_standard_page_shows_the_version_and_the_changelog(): void
+    public function the_changelog_has_its_own_page_carrying_the_update_snippet(): void
+    {
+        $this->get('/changelog')
+            ->assertOk()
+            ->assertSee(Standard::version())
+            ->assertSee('What changed in the standard')
+            ->assertSee('Picking a change up')
+            ->assertSee('composer update dashcore/design-kit')
+            ->assertSee('php artisan design:update &lt;slug&gt;', false);
+    }
+
+    #[Test]
+    public function the_standard_page_is_reference_and_links_out_rather_than_carrying_the_changelog(): void
     {
         $this->get('/standard')
             ->assertOk()
             ->assertSee(Standard::version())
-            ->assertSee('What changed in the standard');
+            ->assertSee(route('changelog'))
+            // Reading what moved is a different job from reading the rules, and
+            // the changelog on this page made a long page longer.
+            ->assertDontSee('What changed in the standard');
+    }
+
+    #[Test]
+    public function the_update_snippet_reads_generically_without_a_design(): void
+    {
+        $this->assertSame([
+            'composer update dashcore/design-kit',
+            'php artisan design:update <slug>',
+        ], Handoff::updateCommands());
+
+        $this->assertStringContainsString('already on the Dashcore standard', Handoff::updatePrompt());
+        $this->assertStringContainsString('already on the Harbor Point', Handoff::updatePrompt(Design::load('harbor-point')));
     }
 }

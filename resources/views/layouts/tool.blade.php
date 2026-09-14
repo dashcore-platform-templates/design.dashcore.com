@@ -47,7 +47,7 @@
                                 document.addEventListener('livewire:navigated', () => this.sync());
                             },
                             sync() {
-                                if (window.location.pathname === @js(route('standard', absolute: false))) {
+                                if (window.location.pathname === @js(route('changelog', absolute: false))) {
                                     this.write(this.total);
                                     this.unseen = 0;
                                     return;
@@ -64,7 +64,7 @@
                                 try { localStorage.setItem(this.key, String(value)); } catch (e) {}
                             },
                         }">
-                            <x-tool-nav-item :href="route('standard') . '#changelog'" icon="sparkles">
+                            <x-tool-nav-item :href="route('changelog')" :active="request()->routeIs('changelog')" icon="sparkles">
                                 What changed
                                 <x-slot:marker>
                                     <span x-cloak x-show="unseen > 0" x-text="unseen"

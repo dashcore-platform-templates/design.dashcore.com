@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/designs')->name('home');
 
 Route::livewire('standard', 'pages::standard')->name('standard');
+Route::livewire('changelog', 'pages::changelog')->name('changelog');
 
 Route::livewire('designs', 'pages::designs.index')->name('designs.index');
 Route::livewire('designs/new', 'pages::designs.create')->name('designs.create');
