@@ -17,6 +17,11 @@
             <p class="{{ $eyebrowClass }} mb-1.5">Components</p>
             <h1 class="text-2xl font-semibold leading-[1.25] text-(--ds-text-strong) {{ $design->pairing()['second']['kind'] !== 'mono' ? 'font-second' : '' }}">Every Flux component in this design</h1>
             <p class="mt-1 text-sm text-(--ds-text-muted)">Free and Pro. Rules are in the standard, section 06. Anything that fails contrast here fails the design.</p>
+            {{-- Ten Pro components render on this screen, and most of the fleet
+                 installs the free package only. Without this line somebody can
+                 judge a design here and promise an app a component it cannot
+                 install. Section 06 names a free stand-in for eleven of them. --}}
+            <p class="mt-1 text-sm text-(--ds-text-muted)">Accordion, chart, composer, date picker, editor, file upload, pillbox, slider, tabs and timeline need a Flux Pro licence. An app on the free package is still on the standard, and section 06 says what it uses instead.</p>
         </div>
     </div>
 

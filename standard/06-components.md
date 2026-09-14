@@ -166,3 +166,23 @@ Every component Flux ships as of 2.19, with where its rule lives. Free unless ma
 | toggle | free | Forms |
 | tooltip | free | Actions |
 | with-container, with-field, with-inline-field, with-reversed-inline-field, with-tooltip | free | internal wrappers |
+
+## An app without Flux Pro
+
+Nineteen rows above are Pro. A Flux licence covers one project unless it is the Unlimited or Team tier, so an app is not off the standard for having the free package alone. Most of the fleet does today. Executive OS does.
+
+Eleven of the nineteen have a free stand-in, and the rule for each is the Pro one, unchanged. Only the component differs.
+
+| Pro | Without it |
+|---|---|
+| tab, tabs | a navlist beside the panel, as above |
+| calendar, date-picker, time-picker | `flux:input` of that type |
+| file-upload, file-item | `flux:input type="file"` |
+| popover, context | `flux:dropdown` |
+| autocomplete, pillbox | `flux:select` |
+| accordion | stacked sections, each with a heading |
+| editor | `flux:textarea` |
+
+The other eight have no stand-in and need none: carousel, chart, color-picker, command, composer, kanban, slider and timeline. No screen in the fleet uses one. If a screen ever needs a chart or a kanban, that is a rule to write then, against the real screen, rather than a guess now.
+
+A screen built on a stand-in is on the standard. Do not mark it as an exception, and do not rebuild it if the app later gets Pro, unless the Pro component does something the screen actually needs.
