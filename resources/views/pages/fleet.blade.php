@@ -200,6 +200,11 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                         <td class="px-(--ds-cell-x) py-3">
                             @if ($report === null)
                                 <x-ds::badge>Never reported</x-ds::badge>
+                            @elseif (! $report->hasDesign())
+                                {{-- A repo can be added here before anyone sets
+                                     it up. Not started is not drift, so it is
+                                     neutral rather than a warning. --}}
+                                <x-ds::badge>Not applied</x-ds::badge>
                             @elseif ($report->isCurrent())
                                 <x-ds::badge status="success">Current</x-ds::badge>
                             @else

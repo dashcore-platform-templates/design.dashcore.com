@@ -104,9 +104,16 @@ class SiteTest extends TestCase
         $this->assertFalse($behind->isCurrent());
 
         // No stamp is behind, not unknown. The stamp arrived with the standard,
-        // so a file without one predates it.
+        // so a file without one predates it. It still counts as applied,
+        // because the slug says a design is there.
         $unstamped = SiteReport::factory()->create(['standard_version' => null]);
         $this->assertFalse($unstamped->isCurrent());
+        $this->assertTrue($unstamped->hasDesign());
+
+        // Neither stamp means design/ is not there at all, which is a repo
+        // added to the board before anyone set it up.
+        $bare = SiteReport::factory()->create(['standard_version' => null, 'design_slug' => null]);
+        $this->assertFalse($bare->hasDesign());
 
         $this->assertSame(Standard::version(), $current->standard_version);
     }

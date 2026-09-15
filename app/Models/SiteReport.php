@@ -61,4 +61,18 @@ class SiteReport extends Model
     {
         return $this->standard_version !== null && $this->standard_version === Standard::version();
     }
+
+    /**
+     * Whether a design has ever been applied to this app.
+     *
+     * Both stamps come out of design/, so an app that has never run
+     * design:apply reports neither. That is a different thing from an app on
+     * the standard whose copy predates stamping, and the board showed the
+     * second when it meant the first: a repo added to the board before anyone
+     * set it up read as drift rather than as not started.
+     */
+    public function hasDesign(): bool
+    {
+        return $this->standard_version !== null || $this->design_slug !== null;
+    }
 }

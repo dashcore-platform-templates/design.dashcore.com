@@ -107,6 +107,27 @@ class FleetPageTest extends TestCase
     }
 
     #[Test]
+    public function a_repo_added_before_it_is_set_up_says_not_applied(): void
+    {
+        $site = Site::factory()->create();
+
+        // Nothing stops a repo being added here first, and then its CI reports
+        // an audit of an app with no design/ at all. Both stamps come out of
+        // that folder, so both are null, and the board used to read that as
+        // "Unstamped" which means an app that is on the standard.
+        SiteReport::factory()->for($site)->create([
+            'standard_version' => null,
+            'design_slug' => null,
+        ]);
+
+        $this->actingAs(User::factory()->create())
+            ->get('/fleet')
+            ->assertOk()
+            ->assertSee('Not applied')
+            ->assertDontSee('Unstamped');
+    }
+
+    #[Test]
     public function a_site_behind_the_standard_shows_the_stamp_it_is_on(): void
     {
         $site = Site::factory()->create();
