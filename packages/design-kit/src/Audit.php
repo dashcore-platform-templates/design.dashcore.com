@@ -176,7 +176,12 @@ final class Audit
             }
         }
 
-        foreach (self::matches($line, '/<flux:button\b[^>]*?\bsize="xs"/') as $m) {
+        // Flux button heights: base is h-10 at 40px, sm is h-8 at 32px, xs is
+        // h-6 at 24px. Only base clears the floor in 05, so both smaller sizes
+        // are findings. The rule used to name xs alone, which was inconsistent
+        // with its own first branch: a hand-written h-8 button was already
+        // reported, while the Flux size that renders as h-8 was not.
+        foreach (self::matches($line, '/<flux:button\b[^>]*?\bsize="(?:xs|sm)"/') as $m) {
             $found[] = $m;
         }
 

@@ -59,4 +59,4 @@ Values in pixels. `rounded-full` is unaffected and stays a pill or circle. Flux 
 - Borders are one pixel. Two pixel borders exist only for the accent bar motif and for focus rings.
 - Shadows are not used for elevation on surfaces. Cards are marked by border or by hairline division. The only shadows are on overlays: dropdowns, modals and toasts, at one fixed value, `shadow-lg`.
 - Max content width in the top nav shell is 80rem. The sidebar shell has none.
-- Touch targets are never under 36px in either density.
+- Touch targets are never under 36px in either density. Flux's only button size that clears this is `base`, at 40px: `sm` is 32px and `xs` is 24px, so neither is used. An inline action in a dense row is `base` like any other button, or it is not a button.

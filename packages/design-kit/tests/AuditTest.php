@@ -174,10 +174,17 @@ class AuditTest extends TestCase
             '<button class="h-8 px-3">Pay</button>',
             '<a href="#" class="size-6 grid place-items-center">x</a>',
             '<input class="h-[32px]" />',
+            // Flux's own sizes: base is h-10 at 40px, sm is h-8 at 32px, xs is
+            // h-6 at 24px. Both smaller ones are under the floor, and sm being
+            // h-8 is the same 32 pixels the first case above already reports.
             '<flux:button size="xs">Pay</flux:button>',
+            '<flux:button size="sm" variant="ghost">Cancel</flux:button>',
         ] as $blade) {
             $this->assertContains('tap target under 36px', $this->rules($blade), $blade);
         }
+
+        $this->assertSame([], $this->rules('<flux:button>Pay</flux:button>'), 'the default size is h-10, which is 40px');
+        $this->assertSame([], $this->rules('<flux:button size="base">Pay</flux:button>'));
     }
 
     #[Test]
