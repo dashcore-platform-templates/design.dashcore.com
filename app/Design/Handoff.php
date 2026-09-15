@@ -25,12 +25,18 @@ final class Handoff
     /**
      * The package major the fleet is being moved onto.
      *
-     * A major does not arrive on its own, which is the point of one: an app on
-     * ^3.0 never sees 4.0 and says nothing about it. So the constraint has to
-     * be named somewhere a person reads, and it changes here when a major
+     * A major does not arrive on its own, which is the point of one: an app
+     * pinned to 3 never sees 4 and says nothing about it. So the constraint has
+     * to be named somewhere a person reads, and it changes here when a major
      * ships, beside the release note in the package README.
+     *
+     * Written 5.* rather than ^5.0 because this ends up in a command somebody
+     * pastes into a shell. On Windows, composer is a .bat, so cmd.exe sees the
+     * arguments and eats the caret as its own escape character: ^5.0 arrives as
+     * 5.0 and Composer resolves an exact version that does not exist. 5.* means
+     * the same thing and has no character any shell argues about.
      */
-    public const MAJOR = '^5.0';
+    public const MAJOR = '5.*';
 
     /** Once per machine: the package is private, and Composer runs git non-interactively. */
     public static function tokenCommand(): string

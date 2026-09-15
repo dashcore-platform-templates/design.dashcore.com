@@ -167,7 +167,7 @@ The Flux table also picks up the styling 06 always specified, and the empty stat
 
 ## Versions
 
-A kit on an older major does not get the next one, on purpose: a release that can fail a passing build stops and waits for a person. Move it with `composer require "dashcore/design-kit:^5.0"`, which changes the constraint and updates in one step. Plain `composer update` stays inside the major it is already pinned to and reports nothing to do.
+A kit on an older major does not get the next one, on purpose: a release that can fail a passing build stops and waits for a person. Move it with `composer require "dashcore/design-kit:5.*"`, which changes the constraint and updates in one step. Plain `composer update` stays inside the major it is already pinned to and reports nothing to do.
 
 Releases are tagged, and `composer require` writes `^1.0` for you. Every later 1.x release then reaches every kit on the next `composer update`, which is the whole point: a rule added to the standard should not need fifteen repos edited by hand to arrive. A change that would break an app already on the standard goes to 2.0 instead, so it stops and waits for a person rather than arriving quietly.
 
@@ -216,7 +216,7 @@ It compares the stamp in `design/STANDARD.md` with the version the tool is publi
 Setting an app up happens once. When the standard changes afterwards, do not repeat it:
 
 ```bash
-composer require "dashcore/design-kit:^5.0"   # the components and the audit rules live here, so this is first
+composer require "dashcore/design-kit:5.*"   # the components and the audit rules live here, so this is first
 php artisan design:update <slug>
 ```
 
