@@ -15,6 +15,21 @@ name: publish design-kit
 #   DASHCORE_DESIGN      a classic token with repo scope
 #
 # The key is preferred. See "Locking the mirror" in packages/design-kit/README.md.
+#
+# Not splitsh/lite, and this is measured rather than assumed. The whole publish
+# step below, token checks and two API calls and the split and the fetch and the
+# push, runs in 2 to 5 seconds on the runner, out of a 14 second job. The split
+# is a second of that. The same command takes 17 seconds on a Windows laptop,
+# which is where the idea that it was slow came from.
+#
+# Switching would also cost the mirror its history. splitsh-lite and git subtree
+# split are different implementations and are not expected to produce the same
+# commits, so the first push after a switch is a non-fast-forward, the ancestor
+# check below refuses it, and the only way through is the force push that check
+# exists to prevent.
+#
+# Reconsider if this job ever passes two minutes. At 60 commits it is at 14
+# seconds, and what grows with history is the full clone, not the split.
 
 on:
   push:
