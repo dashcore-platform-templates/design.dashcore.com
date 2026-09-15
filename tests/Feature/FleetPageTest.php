@@ -124,7 +124,26 @@ class FleetPageTest extends TestCase
             ->get('/fleet')
             ->assertOk()
             ->assertSee('Not applied')
-            ->assertDontSee('Unstamped');
+            ->assertDontSee('Unstamped')
+            // A row that reports a problem and stops there makes somebody go
+            // and work out the next move. This one carries it.
+            ->assertSee('Set it up')
+            ->assertSee(route('designs.index'));
+    }
+
+    #[Test]
+    public function the_connect_panel_names_its_prerequisite_before_the_prompt(): void
+    {
+        // The prompt does refuse on an app with no design, which is how we
+        // found out ExecutiveOS had never been set up. But by then somebody has
+        // opened an agent to learn something this page could have said.
+        Livewire::actingAs(User::factory()->create())
+            ->test('pages::fleet')
+            ->set('name', 'Fresh')
+            ->set('repository', 'dashcoretech/fresh.dashcore.com')
+            ->call('add')
+            ->assertSee('It needs a design applied already')
+            ->assertSee(route('designs.index'));
     }
 
     #[Test]

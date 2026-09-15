@@ -124,6 +124,14 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
             <div>
                 <x-ds::section-heading level="2">Connect {{ $repo }}</x-ds::section-heading>
                 <flux:text class="mt-1">Paste it into Claude Code in that repo. The agent does the repo work and stops at the secrets.</flux:text>
+                {{-- Said before the prompt rather than only enforced inside it.
+                     The prompt does stop on an app with no design, but by then
+                     somebody has opened an agent to find out something the page
+                     could have told them. --}}
+                <p class="mt-2 text-sm text-(--ds-text-muted)">
+                    It needs a design applied already. If this app has never had one,
+                    <flux:link :href="route('designs.index')" wire:navigate>start there</flux:link> instead.
+                </p>
             </div>
 
             <x-copy-block label="Agent prompt" :text="$connectPrompt" />
@@ -203,8 +211,13 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                             @elseif (! $report->hasDesign())
                                 {{-- A repo can be added here before anyone sets
                                      it up. Not started is not drift, so it is
-                                     neutral rather than a warning. --}}
-                                <x-ds::badge>Not applied</x-ds::badge>
+                                     neutral rather than a warning, and it links
+                                     to the next move rather than being a row
+                                     that reports a problem and stops there. --}}
+                                <span class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                    <x-ds::badge>Not applied</x-ds::badge>
+                                    <flux:link :href="route('designs.index')" wire:navigate class="text-xs">Set it up</flux:link>
+                                </span>
                             @elseif ($report->isCurrent())
                                 <x-ds::badge status="success">Current</x-ds::badge>
                             @else
