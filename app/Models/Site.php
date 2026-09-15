@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
  *
  * @property int $id
  * @property string $name
- * @property string $host
+ * @property string $repository
  * @property string|null $design_slug
  * @property string $token_hash
  * @property Carbon|null $last_reported_at
@@ -28,10 +28,10 @@ class Site extends Model
     /** @use HasFactory<SiteFactory> */
     use HasFactory;
 
-    /** Every repo in the fleet lives here, named after the host it serves. */
-    public const ORGANISATION = 'dashcoretech';
+    /** Where the fleet's repositories live. Only the prefix; the row holds owner/name. */
+    public const GITHUB = 'https://github.com';
 
-    protected $fillable = ['name', 'host', 'design_slug'];
+    protected $fillable = ['name', 'repository', 'design_slug'];
 
     /** The token itself is never readable, and the hash is never sent anywhere. */
     protected $hidden = ['token_hash'];
@@ -84,15 +84,20 @@ class Site extends Model
      * Where this app's secrets are set, so the instructions are a link rather
      * than a route somebody follows by hand.
      *
-     * Derived from the host, because every repo in the fleet is named after
-     * the site it serves: executiveos.dashcore.com is
-     * dashcoretech/executiveos.dashcore.com. A repo that breaks the
-     * convention gets a link that 404s, which is no worse than the no link
-     * there was before and obvious when it happens.
+     * The row holds owner/name, so this is exact rather than assembled from a
+     * convention. It used to be built from a hostname by assuming every repo
+     * is named after the site it serves, which is true across the fleet today
+     * and was never a fact.
      */
     public function secretsUrl(): string
     {
-        return 'https://github.com/'.self::ORGANISATION.'/'.$this->host.'/settings/secrets/actions';
+        return self::GITHUB.'/'.$this->repository.'/settings/secrets/actions';
+    }
+
+    /** The repository itself, for the link on the board. */
+    public function repositoryUrl(): string
+    {
+        return self::GITHUB.'/'.$this->repository;
     }
 
     /** The site a token belongs to, or null. Constant time by virtue of the index. */

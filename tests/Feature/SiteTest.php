@@ -62,7 +62,7 @@ class SiteTest extends TestCase
         // Found by trying to add one: issueToken is what sets the hash, and the
         // column cannot be null, so creating a row needed a hash that only
         // creating a row could give you.
-        $site = Site::create(['name' => 'New Project', 'host' => 'newproject.dashcore.com']);
+        $site = Site::create(['name' => 'New Project', 'repository' => 'dashcoretech/newproject.dashcore.com']);
 
         $this->assertNotEmpty($site->token_hash);
 
@@ -75,10 +75,10 @@ class SiteTest extends TestCase
     #[Test]
     public function a_site_knows_where_its_secrets_are_set(): void
     {
-        $site = Site::factory()->create(['host' => 'executiveos.dashcore.com']);
+        $site = Site::factory()->create(['repository' => 'dashcoretech/executiveos.dashcore.com']);
 
-        // Every repo in the fleet is named after the host it serves, so the
-        // instructions can be a link rather than a route to follow by hand.
+        // The row holds owner/name, so this is exact rather than assembled
+        // from a convention about how repos happen to be named.
         $this->assertSame(
             'https://github.com/dashcoretech/executiveos.dashcore.com/settings/secrets/actions',
             $site->secretsUrl(),
@@ -86,12 +86,12 @@ class SiteTest extends TestCase
     }
 
     #[Test]
-    public function two_sites_cannot_share_a_host(): void
+    public function two_sites_cannot_share_a_repository(): void
     {
-        Site::factory()->create(['host' => 'executiveos.dashcore.com']);
+        Site::factory()->create(['repository' => 'dashcoretech/executiveos.dashcore.com']);
 
         $this->expectException(QueryException::class);
-        Site::factory()->create(['host' => 'executiveos.dashcore.com']);
+        Site::factory()->create(['repository' => 'dashcoretech/executiveos.dashcore.com']);
     }
 
     #[Test]

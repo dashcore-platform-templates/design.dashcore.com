@@ -61,7 +61,7 @@ class FleetPageTest extends TestCase
     #[Test]
     public function the_page_shows_what_each_site_last_reported(): void
     {
-        $site = Site::factory()->create(['name' => 'ExecutiveOS', 'host' => 'executiveos.dashcore.com', 'design_slug' => 'dashcore-product-executiveos']);
+        $site = Site::factory()->create(['name' => 'ExecutiveOS', 'repository' => 'dashcoretech/executiveos.dashcore.com', 'design_slug' => 'dashcore-product-executiveos']);
         SiteReport::factory()->for($site)->withFindings(['tap target under 36px' => 6])->create();
 
         $this->actingAs(User::factory()->create())
@@ -105,14 +105,14 @@ class FleetPageTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test('pages::fleet')
             ->set('name', 'New Project')
-            ->set('host', 'newproject.dashcore.com')
+            ->set('repository', 'dashcoretech/newproject.dashcore.com')
             ->call('add')
             ->assertHasNoErrors()
             // The token is shown once, so this is the one moment somebody has
             // everything in front of them. It names the repository, where the
             // secrets go, and the step to add, rather than saying "that app's
             // CI" and leaving them to work out where that is.
-            ->assertSee('Connect newproject.dashcore.com')
+            ->assertSee('Connect dashcoretech/newproject.dashcore.com')
             ->assertSee('Settings → Secrets and variables → Actions', false)
             ->assertSee('DESIGN_TOKEN')
             ->assertSee('DESIGN_SOURCE')
@@ -130,28 +130,28 @@ class FleetPageTest extends TestCase
             ->assertSee('github.ref_name == github.event.repository.default_branch');
 
         $site = Site::query()->sole();
-        $this->assertSame('newproject.dashcore.com', $site->host);
+        $this->assertSame('dashcoretech/newproject.dashcore.com', $site->repository);
         $this->assertNotEmpty($site->token_hash);
     }
 
     #[Test]
-    public function a_host_is_a_host_and_is_only_added_once(): void
+    public function a_repository_is_owner_slash_name_and_is_only_added_once(): void
     {
-        Site::factory()->create(['host' => 'taken.dashcore.com']);
+        Site::factory()->create(['repository' => 'dashcoretech/taken.dashcore.com']);
 
         Livewire::actingAs(User::factory()->create())
             ->test('pages::fleet')
             ->set('name', 'Taken')
-            ->set('host', 'taken.dashcore.com')
+            ->set('repository', 'dashcoretech/taken.dashcore.com')
             ->call('add')
-            ->assertHasErrors(['host']);
+            ->assertHasErrors(['repository']);
 
         Livewire::actingAs(User::factory()->create())
             ->test('pages::fleet')
             ->set('name', 'Odd')
-            ->set('host', 'https://not a host/')
+            ->set('repository', 'executiveos.dashcore.com')
             ->call('add')
-            ->assertHasErrors(['host']);
+            ->assertHasErrors(['repository']);
 
         $this->assertSame(1, Site::query()->count());
     }

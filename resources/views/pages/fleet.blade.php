@@ -25,7 +25,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 {
     public string $name = '';
 
-    public string $host = '';
+    public string $repository = '';
 
     /** Shown once, straight after issuing. Never read back from anywhere. */
     public ?string $issued = null;
@@ -33,7 +33,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
     public ?int $issuedFor = null;
 
     /** Named in the instructions, so they say which repository to go to. */
-    public ?string $issuedHost = null;
+    public ?string $issuedRepository = null;
 
     /** Straight to the page the secrets go on, rather than a route to follow. */
     public ?string $issuedSecretsUrl = null;
@@ -42,13 +42,15 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
     {
         $data = $this->validate([
             'name' => ['required', 'string', 'max:100'],
-            'host' => ['required', 'string', 'max:255', 'regex:/^[a-z0-9.-]+$/', Rule::unique('sites', 'host')],
+            // owner/name, because that is what a repository is called and what
+            // the links on this page are built from.
+            'repository' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/', Rule::unique('sites', 'repository')],
         ]);
 
         $site = Site::create($data);
 
         $this->show($site);
-        $this->reset('name', 'host');
+        $this->reset('name', 'repository');
         Flux::modal('add-site')->close();
     }
 
@@ -64,14 +66,14 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
     {
         $this->issued = $site->issueToken();
         $this->issuedFor = $site->id;
-        $this->issuedHost = $site->host;
+        $this->issuedRepository = $site->repository;
         $this->issuedSecretsUrl = $site->secretsUrl();
     }
 
     public function forget(int $siteId): void
     {
         Site::findOrFail($siteId)->delete();
-        $this->reset('issued', 'issuedFor', 'issuedHost', 'issuedSecretsUrl');
+        $this->reset('issued', 'issuedFor', 'issuedRepository', 'issuedSecretsUrl');
     }
 
     public function with(): array
@@ -115,10 +117,10 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
          somebody has everything they need in front of them. It carries the
          whole recipe rather than a sentence saying to go and find it. --}}
     @if ($issued)
-        @php $host = $issuedHost ?? 'the app'; @endphp
+        @php $repo = $issuedRepository ?? 'the app'; @endphp
         <div class="mb-(--ds-section) space-y-(--ds-section) rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-accent-soft) p-(--ds-card)">
             <div>
-                <x-ds::section-heading level="2">Connect {{ $host }}</x-ds::section-heading>
+                <x-ds::section-heading level="2">Connect {{ $repo }}</x-ds::section-heading>
                 <p class="mt-1 text-sm text-(--ds-text-muted)">Three steps, once per app. The token is shown here and never again.</p>
             </div>
 
@@ -156,7 +158,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
         <table class="w-full min-w-[54rem] text-sm">
             <thead>
                 <tr class="border-b border-(--ds-border)">
-                    <th class="ds-label px-(--ds-cell-x) py-2.5 text-start font-normal">Site</th>
+                    <th class="ds-label px-(--ds-cell-x) py-2.5 text-start font-normal">Repository</th>
                     <th class="ds-label px-(--ds-cell-x) py-2.5 text-start font-normal">Design</th>
                     <th class="ds-label px-(--ds-cell-x) py-2.5 text-start font-normal">Standard</th>
                     <th class="ds-label px-(--ds-cell-x) py-2.5 text-start font-normal">Package</th>
@@ -171,7 +173,13 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                     <tr class="border-b border-(--ds-border) last:border-0" wire:key="site-{{ $site->id }}">
                         <td class="px-(--ds-cell-x) py-3">
                             <span class="font-medium text-(--ds-text-strong)">{{ $site->name }}</span>
-                            <span class="mt-0.5 block font-mono text-xs text-(--ds-text-muted)">{{ $site->host }}</span>
+                            <a href="{{ $site->repositoryUrl() }}" target="_blank" class="mt-0.5 flex items-center gap-1 font-mono text-xs text-(--ds-text-muted) hover:text-(--ds-text)">
+                                {{-- Says github.com outright. A bare owner/name
+                                     reads as a hostname, which is exactly the
+                                     confusion this column used to carry. --}}
+                                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" class="size-3.5 shrink-0"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+                                <span>github.com/{{ $site->repository }}</span>
+                            </a>
                         </td>
                         <td class="px-(--ds-cell-x) py-3 text-(--ds-text-muted)">{{ $site->design_slug ?? '—' }}</td>
                         <td class="px-(--ds-cell-x) py-3">
@@ -205,7 +213,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                                 <flux:menu>
                                     <flux:menu.item wire:click="rotate({{ $site->id }})" icon="key">New token</flux:menu.item>
                                     <flux:menu.separator />
-                                    <flux:menu.item wire:click="forget({{ $site->id }})" wire:confirm="Remove {{ $site->host }} and every report it has sent?" icon="trash" variant="danger">Remove</flux:menu.item>
+                                    <flux:menu.item wire:click="forget({{ $site->id }})" wire:confirm="Remove {{ $site->repository }} and every report it has sent?" icon="trash" variant="danger">Remove</flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>
                         </td>
@@ -235,7 +243,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 
             <div class="space-y-(--ds-field-gap)">
                 <flux:input wire:model="name" label="Name" placeholder="ExecutiveOS" />
-                <flux:input wire:model="host" label="Host" placeholder="executiveos.dashcore.com" description="The repository is assumed to match, under dashcoretech." />
+                <flux:input wire:model="repository" label="Repository" placeholder="dashcoretech/executiveos.dashcore.com" description="On GitHub, as owner/name. This is where its CI reports from." />
             </div>
 
             <div class="flex justify-end gap-2">
