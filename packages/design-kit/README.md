@@ -82,6 +82,30 @@ The mirror is private, so Composer needs its own GitHub credentials once per mac
 composer config --global github-oauth.github.com <a GitHub token with repo scope>
 ```
 
+## Upgrading to 3.0
+
+One thing breaks: the audit gains a rule that fires on every app in the fleet.
+
+**Headings go through `x-ds::section-heading`.** `flux:heading` cannot make either heading role in section 03. `size="lg"` renders 16px at weight 500 where a section heading is 18px at 600, and `size="xl"` renders 24px at 500 where a page title is 24px at 600. The weight is wrong at every size. Its sizes are plain utility classes on the element, so adding a class of your own leaves two competing and the stylesheet order decides rather than you.
+
+So `design:audit` now reports `flux:heading size="lg"`, and a build that passed on 2.0 can fail on 3.0. Measured on five apps here, it finds 1, 1, 1, 44 and 53. One of those five had zero findings an hour before this was written.
+
+```blade
+<x-ds::section-heading>Recent activity</x-ds::section-heading>
+<x-ds::section-heading level="3">Delete this item?</x-ds::section-heading>
+```
+
+It is 18px at 600 in the body face, and it covers a section heading, a card title and a modal title. The body face and never the second one: 03 gives the second face the page title, the sign-in headline and stat values, and bars a serif from anything under 24px. A page title is still `x-ds::page-header`.
+
+`flux:heading` at its default size is 14px at 500, which is the UI emphasis role in 03, and that one is correct. It is left alone.
+
+**Nothing else here breaks.** The rest is new:
+
+- `php artisan design:check --against=<slug>` says whether the standard moved since this app applied, without changing anything. See "Update an app that is already on the standard".
+- Standard section 13 governs public pages, which used to be exempted. A landing page still carrying `@ds-audit-ignore-file` keeps working exactly as before; swapping it for `@ds-public` is what opts it into the rules.
+- The audit reports `--ds-prose` used as a width or a height. It is the prose type size from 05, so as a width it gives a column 14 pixels across. It found nothing on any app here; it was written after it caught one of ours.
+- Section 06 said `callout.button`, which has never existed in either Flux tier. It says `callout.link` now.
+
 ## Upgrading to 2.0
 
 Three things change in a way that can break an app that works on 1.0. None of them is a bug; they are fixes arriving.
@@ -105,6 +129,8 @@ php artisan design:update <slug>
 The Flux table also picks up the styling 06 always specified, and the empty state gains a compact size. Neither breaks anything.
 
 ## Versions
+
+A kit on `^2.0` does not get 3.0, on purpose: a release that can fail a passing build stops and waits for a person. Change the constraint to `^3.0` once, then `composer update dashcore/design-kit`.
 
 Releases are tagged, and `composer require` writes `^1.0` for you. Every later 1.x release then reaches every kit on the next `composer update`, which is the whole point: a rule added to the standard should not need fifteen repos edited by hand to arrive. A change that would break an app already on the standard goes to 2.0 instead, so it stops and waits for a person rather than arriving quietly.
 
