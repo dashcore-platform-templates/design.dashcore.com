@@ -79,8 +79,12 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
         // Built here rather than in the markup. It contains ${{ }}, which is
         // GitHub's own syntax and Blade's as well, and @verbatim would stop the
         // copy-block component compiling along with it.
+        // The `if` matters. A row here says what a repository's default branch
+        // looks like, and without this a pull request build would overwrite it
+        // with a branch nobody has merged.
         $ciStep = <<<'YAML'
               - name: Report to design.dashcore.com
+                if: github.ref_name == github.event.repository.default_branch
                 env:
                   DESIGN_SOURCE: ${{ secrets.DESIGN_SOURCE }}
                   DESIGN_TOKEN: ${{ secrets.DESIGN_TOKEN }}
@@ -97,7 +101,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 
 <div class="px-(--ds-gutter) py-(--ds-section)">
     <x-ds::page-header title="Fleet" class="mb-(--ds-section)">
-        <x-slot:description>What each app last reported about itself. The standard reads <code class="font-mono text-xs">{{ $current }}</code> today.</x-slot:description>
+        <x-slot:description>Each app's default branch, as its CI last saw it. The standard reads <code class="font-mono text-xs">{{ $current }}</code> today.</x-slot:description>
 
         {{-- Adding a site happens once per app and then never again, so it is
              behind a button. A permanent form under the table would be the
@@ -137,7 +141,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 
             <div>
                 <p class="text-sm font-medium text-(--ds-text-strong)">2. Add a step to the workflow that already installs the app</p>
-                <p class="mt-1 text-sm text-(--ds-text-muted)">After <code class="font-mono text-xs">composer install</code>, beside the tests. It never fails the build.</p>
+                <p class="mt-1 text-sm text-(--ds-text-muted)">After <code class="font-mono text-xs">composer install</code>, beside the tests. It never fails the build, and the <code class="font-mono text-xs">if</code> keeps a pull request from overwriting the row with a branch nobody has merged.</p>
                 <x-copy-block label="In .github/workflows" :text="$ciStep" />
             </div>
 

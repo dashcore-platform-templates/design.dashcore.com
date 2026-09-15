@@ -123,7 +123,11 @@ class FleetPageTest extends TestCase
             // too. @verbatim escaped it and stopped copy-block compiling with
             // it, so the whole snippet rendered on the page as raw markup.
             ->assertSee('secrets.DESIGN_TOKEN')
-            ->assertDontSee('<x-copy-block', false);
+            ->assertDontSee('<x-copy-block', false)
+            // A row says what a repository's default branch looks like. Without
+            // this a pull request build overwrites it with a branch nobody has
+            // merged, and the board quietly stops meaning anything.
+            ->assertSee('github.ref_name == github.event.repository.default_branch');
 
         $site = Site::query()->sole();
         $this->assertSame('newproject.dashcore.com', $site->host);
