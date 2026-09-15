@@ -3,8 +3,12 @@
 namespace Dashcore\DesignKit\Commands;
 
 use Dashcore\DesignKit\Audit;
+use Dashcore\DesignKit\Report;
+use Dashcore\DesignKit\Source;
 use Illuminate\Console\Command;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use SplFileInfo;
 
 /**
@@ -21,7 +25,8 @@ class AuditCommand extends Command
     protected $signature = 'design:audit
         {path=resources/views : A directory to walk, or one Blade file}
         {--fix : Apply the mechanical rewrites (weights, off-scale spacing) and report the rest}
-        {--full : List every finding rather than the first few per file}';
+        {--full : List every finding rather than the first few per file}
+        {--report : Also send the counts to design.dashcore.com, for the fleet view}';
 
     protected $description = 'Find what in this app is off the Dashcore Standard';
 
@@ -117,6 +122,8 @@ class AuditCommand extends Command
             $this->line('');
         }
 
+        $this->report($byRule, $filesWithFindings, $files->count());
+
         if ($totalFindings === 0) {
             $this->components->info('Nothing off the standard.');
 
@@ -133,6 +140,80 @@ class AuditCommand extends Command
         $this->components->warn('These need a person or an agent. design/MIGRATION.md in the pack says how to work through them.');
 
         return self::FAILURE;
+    }
+
+    /**
+     * Send the counts to the tool, so the fleet view has a row for this app.
+     *
+     * It never fails the audit. The audit's answer is about this repo, and a
+     * tool that is down or a token that was never set does not change it. A
+     * build that goes red because a dashboard could not be updated teaches
+     * people to pass --report less often, which is the opposite of the point.
+     *
+     * @param  array<string,int>  $byRule
+     */
+    private function report(array $byRule, int $filesWithFindings, int $filesChecked): void
+    {
+        if (! $this->option('report')) {
+            return;
+        }
+
+        $token = (string) config('design-kit.token');
+
+        if ($token === '') {
+            $this->line('');
+            $this->line('  <fg=gray>--report needs DESIGN_TOKEN, which is this app\'s token from design.dashcore.com.</>');
+
+            return;
+        }
+
+        $design = File::exists(base_path('design/design.json'))
+            ? json_decode(File::get(base_path('design/design.json')), true)
+            : null;
+
+        $standard = File::exists(base_path('design/STANDARD.md'))
+            ? Source::standardVersion(File::get(base_path('design/STANDARD.md')))
+            : null;
+
+        $payload = Report::payload(
+            $byRule,
+            $filesWithFindings,
+            $filesChecked,
+            $standard,
+            is_array($design) ? Source::designSlug($design) : null,
+        );
+
+        $url = rtrim((string) config('design-kit.source'), '/').'/api/reports';
+
+        $this->line('');
+
+        try {
+            $response = Http::timeout(15)->withToken($token)->acceptJson()->post($url, $payload);
+        } catch (ConnectionException $e) {
+            $this->line("  <fg=gray>Could not reach {$url}, so nothing was reported. ({$e->getMessage()})</>");
+
+            return;
+        }
+
+        if ($response->failed()) {
+            $this->line("  <fg=gray>{$url} answered HTTP {$response->status()}, so nothing was reported.</>");
+
+            if ($response->status() === 401) {
+                $this->line('  <fg=gray>That is the token. Reissue it on design.dashcore.com and set DESIGN_TOKEN again.</>');
+            }
+
+            return;
+        }
+
+        // The tool knows what the standard reads today, so it says so on the
+        // way back. An app therefore learns it is behind by reporting, without
+        // a second call and without anybody asking.
+        $current = $response->json('standard_version');
+        $this->line('  <fg=gray>Reported to '.$url.'.</>');
+
+        if (is_string($current) && $standard !== null && $current !== $standard) {
+            $this->components->warn("The standard has moved since this app applied: {$standard} is now {$current}.");
+        }
     }
 
     /** The path from the repo root, with forward slashes on every platform. */

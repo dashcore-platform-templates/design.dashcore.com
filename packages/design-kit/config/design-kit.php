@@ -13,4 +13,18 @@
 
 return [
     'source' => env('DESIGN_SOURCE', 'https://design.dashcore.com'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Fleet reporting
+    |--------------------------------------------------------------------------
+    |
+    | This app's own token from design.dashcore.com, which `design:audit
+    | --report` authenticates with. Belongs in CI rather than in a repo: it
+    | identifies this site and nothing else, but it is still a credential.
+    | Without it --report says so and the audit carries on regardless.
+    |
+    */
+
+    'token' => env('DESIGN_TOKEN'),
 ];

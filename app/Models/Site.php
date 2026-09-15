@@ -39,6 +39,23 @@ class Site extends Model
     }
 
     /**
+     * A site is never without a token hash, even before anybody issues one.
+     *
+     * Otherwise creating a site means inventing a hash first, which is a
+     * chicken and egg nobody should have to solve to add a row. The hash put
+     * here is of a token nobody has ever seen, so the site simply cannot
+     * report until a real one is issued, which is the right default.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $site): void {
+            if (($site->token_hash ?? '') === '') {
+                $site->token_hash = self::hash(Str::random(40));
+            }
+        });
+    }
+
+    /**
      * A new token, returned once and never again.
      *
      * sha256 rather than bcrypt: a token is 40 random characters, so there is

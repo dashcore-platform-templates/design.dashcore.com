@@ -57,6 +57,22 @@ class SiteTest extends TestCase
     }
 
     #[Test]
+    public function a_site_can_be_created_without_inventing_a_token_first(): void
+    {
+        // Found by trying to add one: issueToken is what sets the hash, and the
+        // column cannot be null, so creating a row needed a hash that only
+        // creating a row could give you.
+        $site = Site::create(['name' => 'New Project', 'host' => 'newproject.dashcore.com']);
+
+        $this->assertNotEmpty($site->token_hash);
+
+        // The token behind that hash has never existed, so the site cannot
+        // report until somebody issues a real one. That is the right default.
+        $token = $site->issueToken();
+        $this->assertSame($site->id, Site::byToken($token)?->id);
+    }
+
+    #[Test]
     public function two_sites_cannot_share_a_host(): void
     {
         Site::factory()->create(['host' => 'executiveos.dashcore.com']);
