@@ -333,8 +333,10 @@ new #[Layout('layouts::tool')] class extends Component
 
         <div class="flex-1 p-(--ds-gutter)">
             {{--
-                The canvas: every width the standard names, side by side, always on
-                screen. A width behind a toggle is a width nobody presses, so it rots.
+                The canvas: all three widths 12 names, side by side, always on
+                screen. A width behind a toggle is a width nobody presses, so it
+                rots. Tablet was left out of this at first and 12's tablet rule
+                shipped wrong because of it.
 
                 Each artboard is an iframe, because only an iframe has a viewport of
                 its own. A scaled div keeps measuring the browser window, so a 375px
@@ -362,13 +364,19 @@ new #[Layout('layouts::tool')] class extends Component
                     },
                  }"
                  x-init="fit(); new ResizeObserver(() => fit()).observe($el)">
+                {{-- Three widths do not fit at full size, so say what you are
+                     looking at. A reduced view that does not admit it is how
+                     somebody measures a gap off the screen and gets it wrong. --}}
+                <p class="mb-3 text-xs text-(--ds-text-muted)"
+                   x-show="scale < 0.999"
+                   x-text="`Fitted to ${Math.round(scale * 100)}%, click a width to see it at full size`"></p>
                 <div class="flex origin-top-left items-start gap-8" x-bind:style="`transform: scale(${scale})`">
                     @foreach (Artboard::SHOWN as $name)
                         @php $width = Artboard::WIDTHS[$name]; @endphp
                         <div x-show="zoomed === null || zoomed === {{ $width }}" class="shrink-0" style="width: {{ $width }}px">
                             <button type="button" x-on:click="zoom({{ $width }})" class="mb-2 flex w-full items-center justify-between text-start">
                                 <span class="ds-label">{{ ucfirst($name) }}</span>
-                                <span class="text-xs tabular-nums text-(--ds-text-muted)" x-text="zoomed === {{ $width }} ? 'Back to both' : '{{ $width }}'">{{ $width }}</span>
+                                <span class="text-xs tabular-nums text-(--ds-text-muted)" x-text="zoomed === {{ $width }} ? 'Back to all three' : '{{ $width }}'">{{ $width }}</span>
                             </button>
                             {{-- Keyed on what changes the document. A token change rewrites
                                  srcdoc as well, which reloads the frame, but the accent

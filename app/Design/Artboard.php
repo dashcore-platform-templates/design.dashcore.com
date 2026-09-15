@@ -27,8 +27,21 @@ final class Artboard
         'tablet' => 820,
     ];
 
-    /** Shown side by side. Tablet is the width fewest things break at, so it is not one of them. */
-    public const SHOWN = ['desktop', 'phone'];
+    /**
+     * Shown side by side, widest first.
+     *
+     * Tablet used to be left out, on the grounds that fewest things break at
+     * that width. That was the wrong test. 12 has a rule that exists only at
+     * tablet, where a form may go to two columns from `md`, and the first
+     * version of that rule was wrong precisely because nobody could see it:
+     * it said forms stay one column below `lg`, which wastes half a tablet.
+     * It was corrected within an hour of the canvas existing.
+     *
+     * A width nobody can see is a width nobody checks. The cost is that three
+     * artboards fit at about half scale instead of four fifths, and the answer
+     * to that is the zoom, which was already here.
+     */
+    public const SHOWN = ['desktop', 'tablet', 'phone'];
 
     /**
      * A complete HTML document for one artboard.
