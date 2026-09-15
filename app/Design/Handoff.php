@@ -22,6 +22,16 @@ final class Handoff
     /** Flux Pro is not on Packagist, so a kit has to be told where it lives. */
     public const FLUX_REPO = 'https://composer.fluxui.dev';
 
+    /**
+     * The package major the fleet is being moved onto.
+     *
+     * A major does not arrive on its own, which is the point of one: an app on
+     * ^3.0 never sees 4.0 and says nothing about it. So the constraint has to
+     * be named somewhere a person reads, and it changes here when a major
+     * ships, beside the release note in the package README.
+     */
+    public const MAJOR = '^4.0';
+
     /** Once per machine: the package is private, and Composer runs git non-interactively. */
     public static function tokenCommand(): string
     {
@@ -69,7 +79,11 @@ final class Handoff
     public static function updateCommands(?Design $design = null): array
     {
         return [
-            'composer update dashcore/design-kit',
+            // require rather than update, and with the major named. `composer
+            // update` keeps an app inside the major it is already pinned to, so
+            // on a kit still on ^3.0 it reports nothing to do and the app sits
+            // there looking current.
+            'composer require "dashcore/design-kit:'.self::MAJOR.'"',
             'php artisan design:update '.($design === null ? '<slug>' : $design->slug),
         ];
     }

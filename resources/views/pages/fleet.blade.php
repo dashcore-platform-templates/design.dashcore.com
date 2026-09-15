@@ -97,6 +97,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
             'sites' => Site::query()->with('latestReport')->orderBy('name')->get(),
             'current' => Standard::version(),
             'ciStep' => $ciStep,
+            'upgrade' => implode(PHP_EOL, \App\Design\Handoff::updateCommands()),
         ];
     }
 }; ?>
@@ -121,11 +122,21 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
         <div class="mb-(--ds-section) space-y-(--ds-section) rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-accent-soft) p-(--ds-card)">
             <div>
                 <x-ds::section-heading level="2">Connect {{ $repo }}</x-ds::section-heading>
-                <p class="mt-1 text-sm text-(--ds-text-muted)">Three steps, once per app. The token is shown here and never again.</p>
+                <p class="mt-1 text-sm text-(--ds-text-muted)">Four steps, once per app. The token is shown here and never again.</p>
             </div>
 
             <div>
-                <p class="text-sm font-medium text-(--ds-text-strong)">1. Add two secrets to that repository</p>
+                {{-- Connecting and upgrading are one visit to a repo, not two.
+                     A major never arrives on its own, so an app left on an older
+                     one reports counts produced by rules this tool has moved on
+                     from, and the board reads as if it were current. --}}
+                <p class="text-sm font-medium text-(--ds-text-strong)">1. Bring it onto the current package</p>
+                <p class="mt-1 text-sm text-(--ds-text-muted)">In that repo, then commit the lock file. Skip if it is already on {{ \App\Design\Handoff::MAJOR }}.</p>
+                <x-copy-block label="In the target repo" :text="$upgrade" />
+            </div>
+
+            <div>
+                <p class="text-sm font-medium text-(--ds-text-strong)">2. Add two secrets to that repository</p>
                 <p class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-(--ds-text-muted)">
                     <span>On GitHub: <span class="text-(--ds-text)">Settings → Secrets and variables → Actions → New repository secret</span>. Twice, one for each.</span>
                     @if ($issuedSecretsUrl)
@@ -142,13 +153,13 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
             </div>
 
             <div>
-                <p class="text-sm font-medium text-(--ds-text-strong)">2. Add a step to the workflow that already installs the app</p>
+                <p class="text-sm font-medium text-(--ds-text-strong)">3. Add a step to the workflow that already installs the app</p>
                 <p class="mt-1 text-sm text-(--ds-text-muted)">After <code class="font-mono text-xs">composer install</code>, beside the tests. It never fails the build, and the <code class="font-mono text-xs">if</code> keeps a pull request from overwriting the row with a branch nobody has merged.</p>
                 <x-copy-block label="In .github/workflows" :text="$ciStep" />
             </div>
 
             <div>
-                <p class="text-sm font-medium text-(--ds-text-strong)">3. Push</p>
+                <p class="text-sm font-medium text-(--ds-text-strong)">4. Push</p>
                 <p class="mt-1 text-sm text-(--ds-text-muted)">The row above fills in on the next run. If it does not, the job's output says which of the two secrets is missing or wrong.</p>
             </div>
         </div>

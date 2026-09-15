@@ -126,6 +126,6 @@ class CheckCommand extends Command
 
         $this->components->warn("The standard moved since this app applied: {$before} is now {$after}.");
         $this->line('  <fg=gray>design/CHANGELOG.md says what changed, as of when this app applied.</>');
-        $this->line("  <fg=gray>To pick it up: composer update dashcore/design-kit, then php artisan design:update {$against}.</>");
+        $this->line("  <fg=gray>To pick it up: composer require the current major, then php artisan design:update {$against}.</>");
     }
 }
