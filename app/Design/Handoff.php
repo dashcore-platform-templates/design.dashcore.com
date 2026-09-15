@@ -89,6 +89,45 @@ final class Handoff
     }
 
     /**
+     * What to paste into Claude Code to put an app on the fleet board.
+     *
+     * Three of the four steps on that panel are work in a repo, which is an
+     * agent's job. The fourth is setting two secrets on GitHub, which needs a
+     * browser and admin on the repo, and one of them is a credential. So the
+     * prompt does the three and stops at the fourth rather than asking for the
+     * token, the same way the setup prompt refuses the Composer and Flux ones.
+     *
+     * @param  string  $repository  owner/name, so the prompt can name the file it is editing.
+     */
+    public static function connectPrompt(string $repository, string $source): string
+    {
+        [$composer, $update] = self::updateCommands();
+        $major = self::MAJOR;
+
+        return <<<TXT
+        Connect this app to the Dashcore design fleet board at {$source}. The repository is {$repository}.
+
+        1. Move it onto the current design-kit if it is not there already: `{$composer}`. Plain `composer update` will not do it, because it stays inside the major the app is pinned to. Then `{$update}`, with no argument, which reads the slug out of design/design.json. If there is no design/design.json, stop: this app is not on the standard yet and setting it up is a different job.
+        2. Find the workflow that already installs this app for its tests, usually under .github/workflows. Add one step to it, after composer install and beside the tests:
+
+        ```yaml
+        - name: Report to design.dashcore.com
+          if: github.ref_name == github.event.repository.default_branch
+          env:
+            DESIGN_SOURCE: \${{ secrets.DESIGN_SOURCE }}
+            DESIGN_TOKEN: \${{ secrets.DESIGN_TOKEN }}
+          run: php artisan design:audit --report
+        ```
+
+        The `if` keeps a pull request build from overwriting the row with a branch nobody has merged. `design:audit --report` never fails a build, so it does not need `continue-on-error`.
+        3. Commit the composer files, whatever design:update changed, and the workflow. If design:update left audit findings, do not fix them in this commit; report the count and leave them.
+        4. Stop and tell me to add two repository secrets, DESIGN_TOKEN and DESIGN_SOURCE, on GitHub. I will do that myself. Never ask me for the token value and never write it into a file.
+
+        The row on the board fills in on the first run of that workflow after the secrets exist. End with a report: which major the app was on and which it is on now, the standard version, the audit count, and the workflow file you edited.
+        TXT;
+    }
+
+    /**
      * What to paste into Claude Code to pick up a change to the standard.
      * Without a design it reads generically, for the changelog page, where the
      * reader has not said which app they are updating.

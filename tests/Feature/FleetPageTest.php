@@ -146,7 +146,15 @@ class FleetPageTest extends TestCase
             // A row says what a repository's default branch looks like. Without
             // this a pull request build overwrites it with a branch nobody has
             // merged, and the board quietly stops meaning anything.
-            ->assertSee('github.ref_name == github.event.repository.default_branch');
+            ->assertSee('github.ref_name == github.event.repository.default_branch')
+            // The repo half is agent work, so there is a prompt for it. It
+            // names the repository it is talking about, refuses the token the
+            // way the setup prompt refuses the Composer and Flux ones, and
+            // stops at the one step a person has to do in a browser.
+            ->assertSee('Agent prompt')
+            ->assertSee('Connect this app to the Dashcore design fleet board')
+            ->assertSee('dashcoretech/newproject.dashcore.com')
+            ->assertSee('Never ask me for the token value');
 
         $site = Site::query()->sole();
         $this->assertSame('dashcoretech/newproject.dashcore.com', $site->repository);
