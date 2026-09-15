@@ -31,6 +31,12 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 
     public ?int $issuedFor = null;
 
+    /** Named in the instructions, so they say which repository to go to. */
+    public ?string $issuedHost = null;
+
+    /** Straight to the page the secrets go on, rather than a route to follow. */
+    public ?string $issuedSecretsUrl = null;
+
     public function add(): void
     {
         $data = $this->validate([
@@ -40,8 +46,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 
         $site = Site::create($data);
 
-        $this->issued = $site->issueToken();
-        $this->issuedFor = $site->id;
+        $this->show($site);
         $this->reset('name', 'host');
     }
 
@@ -49,21 +54,41 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
     {
         $site = Site::findOrFail($siteId);
 
+        $this->show($site);
+    }
+
+    /** The one place a token is put on screen, so it is put there the same way twice. */
+    private function show(Site $site): void
+    {
         $this->issued = $site->issueToken();
         $this->issuedFor = $site->id;
+        $this->issuedHost = $site->host;
+        $this->issuedSecretsUrl = $site->secretsUrl();
     }
 
     public function forget(int $siteId): void
     {
         Site::findOrFail($siteId)->delete();
-        $this->reset('issued', 'issuedFor');
+        $this->reset('issued', 'issuedFor', 'issuedHost', 'issuedSecretsUrl');
     }
 
     public function with(): array
     {
+        // Built here rather than in the markup. It contains ${{ }}, which is
+        // GitHub's own syntax and Blade's as well, and @verbatim would stop the
+        // copy-block component compiling along with it.
+        $ciStep = <<<'YAML'
+              - name: Report to design.dashcore.com
+                env:
+                  DESIGN_SOURCE: ${{ secrets.DESIGN_SOURCE }}
+                  DESIGN_TOKEN: ${{ secrets.DESIGN_TOKEN }}
+                run: php artisan design:audit --report
+            YAML;
+
         return [
             'sites' => Site::query()->with('latestReport')->orderBy('name')->get(),
             'current' => Standard::version(),
+            'ciStep' => $ciStep,
         ];
     }
 }; ?>
@@ -80,13 +105,44 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
         </div>
     </header>
 
-    {{-- A token is shown once and then never again, so it gets a region of its
-         own rather than a line somebody scrolls past. --}}
+    {{-- A token is shown once and then never again, so this is the one moment
+         somebody has everything they need in front of them. It carries the
+         whole recipe rather than a sentence saying to go and find it. --}}
     @if ($issued)
-        <div class="mb-(--ds-section) rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-accent-soft) p-(--ds-card)">
-            <p class="text-sm font-medium text-(--ds-text-strong)">Copy this token now. It is not shown again.</p>
-            <p class="mt-1 text-sm text-(--ds-text-muted)">Set it as <code class="font-mono text-xs">DESIGN_TOKEN</code> in that app's CI, beside <code class="font-mono text-xs">DESIGN_SOURCE</code>. It belongs in CI rather than in the repo.</p>
-            <code class="mt-3 block overflow-x-auto rounded-(--radius-sm) border border-(--ds-border) bg-(--ds-surface) px-3 py-2 font-mono text-sm text-(--ds-text-strong)">{{ $issued }}</code>
+        @php $host = $issuedHost ?? 'the app'; @endphp
+        <div class="mb-(--ds-section) space-y-(--ds-section) rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-accent-soft) p-(--ds-card)">
+            <div>
+                <x-ds::section-heading level="2">Set {{ $host }} up to report</x-ds::section-heading>
+                <p class="mt-1 text-sm text-(--ds-text-muted)">Three steps, once per app. The token is shown here and never again.</p>
+            </div>
+
+            <div>
+                <p class="text-sm font-medium text-(--ds-text-strong)">1. Add two secrets to that repository</p>
+                <p class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-(--ds-text-muted)">
+                    <span>On GitHub: <span class="text-(--ds-text)">Settings → Secrets and variables → Actions → New repository secret</span>. Twice, one for each.</span>
+                    @if ($issuedSecretsUrl)
+                        <flux:link href="{{ $issuedSecretsUrl }}" target="_blank" class="inline-flex items-center gap-1">
+                            Open that page
+                            <flux:icon name="arrow-top-right-on-square" class="size-3.5" />
+                        </flux:link>
+                    @endif
+                </p>
+                <div class="mt-3 grid gap-3 md:grid-cols-2">
+                    <x-copy-block label="DESIGN_TOKEN" :text="$issued" />
+                    <x-copy-block label="DESIGN_SOURCE" :text="rtrim(config('app.url'), '/')" />
+                </div>
+            </div>
+
+            <div>
+                <p class="text-sm font-medium text-(--ds-text-strong)">2. Add a step to the workflow that already installs the app</p>
+                <p class="mt-1 text-sm text-(--ds-text-muted)">After <code class="font-mono text-xs">composer install</code>, beside the tests. It never fails the build.</p>
+                <x-copy-block label="In .github/workflows" :text="$ciStep" />
+            </div>
+
+            <div>
+                <p class="text-sm font-medium text-(--ds-text-strong)">3. Push</p>
+                <p class="mt-1 text-sm text-(--ds-text-muted)">The row above fills in on the next run. If it does not, the job's output says which of the two secrets is missing or wrong.</p>
+            </div>
         </div>
     @endif
 

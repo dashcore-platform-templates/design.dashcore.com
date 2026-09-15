@@ -94,7 +94,22 @@ class FleetPageTest extends TestCase
             ->set('host', 'newproject.dashcore.com')
             ->call('add')
             ->assertHasNoErrors()
-            ->assertSee('It is not shown again');
+            // The token is shown once, so this is the one moment somebody has
+            // everything in front of them. It names the repository, where the
+            // secrets go, and the step to add, rather than saying "that app's
+            // CI" and leaving them to work out where that is.
+            ->assertSee('Set newproject.dashcore.com up to report')
+            ->assertSee('Settings → Secrets and variables → Actions', false)
+            ->assertSee('DESIGN_TOKEN')
+            ->assertSee('DESIGN_SOURCE')
+            ->assertSee('design:audit --report')
+            // The route is a link, not a set of directions to follow.
+            ->assertSee('https://github.com/dashcoretech/newproject.dashcore.com/settings/secrets/actions', false)
+            // The CI step contains ${{ }}, which is GitHub's syntax and Blade's
+            // too. @verbatim escaped it and stopped copy-block compiling with
+            // it, so the whole snippet rendered on the page as raw markup.
+            ->assertSee('secrets.DESIGN_TOKEN')
+            ->assertDontSee('<x-copy-block', false);
 
         $site = Site::query()->sole();
         $this->assertSame('newproject.dashcore.com', $site->host);
@@ -132,7 +147,7 @@ class FleetPageTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test('pages::fleet')
             ->call('rotate', $site->id)
-            ->assertSee('It is not shown again');
+            ->assertSee('shown here and never again');
 
         $this->assertNull(Site::byToken($old));
     }

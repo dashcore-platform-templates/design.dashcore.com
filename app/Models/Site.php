@@ -28,6 +28,9 @@ class Site extends Model
     /** @use HasFactory<SiteFactory> */
     use HasFactory;
 
+    /** Every repo in the fleet lives here, named after the host it serves. */
+    public const ORGANISATION = 'dashcoretech';
+
     protected $fillable = ['name', 'host', 'design_slug'];
 
     /** The token itself is never readable, and the hash is never sent anywhere. */
@@ -75,6 +78,21 @@ class Site extends Model
     public static function hash(string $token): string
     {
         return hash('sha256', $token);
+    }
+
+    /**
+     * Where this app's secrets are set, so the instructions are a link rather
+     * than a route somebody follows by hand.
+     *
+     * Derived from the host, because every repo in the fleet is named after
+     * the site it serves: executiveos.dashcore.com is
+     * dashcoretech/executiveos.dashcore.com. A repo that breaks the
+     * convention gets a link that 404s, which is no worse than the no link
+     * there was before and obvious when it happens.
+     */
+    public function secretsUrl(): string
+    {
+        return 'https://github.com/'.self::ORGANISATION.'/'.$this->host.'/settings/secrets/actions';
     }
 
     /** The site a token belongs to, or null. Constant time by virtue of the index. */

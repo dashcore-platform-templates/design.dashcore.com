@@ -73,6 +73,19 @@ class SiteTest extends TestCase
     }
 
     #[Test]
+    public function a_site_knows_where_its_secrets_are_set(): void
+    {
+        $site = Site::factory()->create(['host' => 'executiveos.dashcore.com']);
+
+        // Every repo in the fleet is named after the host it serves, so the
+        // instructions can be a link rather than a route to follow by hand.
+        $this->assertSame(
+            'https://github.com/dashcoretech/executiveos.dashcore.com/settings/secrets/actions',
+            $site->secretsUrl(),
+        );
+    }
+
+    #[Test]
     public function two_sites_cannot_share_a_host(): void
     {
         Site::factory()->create(['host' => 'executiveos.dashcore.com']);
