@@ -2,6 +2,7 @@
 
 use App\Design\Standard;
 use App\Models\Site;
+use Flux\Flux;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -48,6 +49,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 
         $this->show($site);
         $this->reset('name', 'host');
+        Flux::modal('add-site')->close();
     }
 
     public function rotate(int $siteId): void
@@ -103,6 +105,13 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                 <code class="font-mono text-xs">{{ $current }}</code> today.
             </p>
         </div>
+
+        {{-- Adding a site happens once per app and then never again, so it is
+             behind a button. A permanent form under the table would be the
+             largest thing on a page that exists to be read at a glance. --}}
+        <flux:modal.trigger name="add-site">
+            <flux:button variant="primary" icon="plus">Add a site</flux:button>
+        </flux:modal.trigger>
     </header>
 
     {{-- A token is shown once and then never again, so this is the one moment
@@ -220,15 +229,24 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
         </table>
     </div>
 
-    <form wire:submit="add" class="mt-(--ds-section) max-w-xl">
-        <x-ds::section-heading>Add a site</x-ds::section-heading>
-        <p class="mt-1 text-sm text-(--ds-text-muted)">A site is added here first and given a token. A report authenticates as a site rather than claiming to be one, so nothing can add itself by finding the endpoint.</p>
+    <flux:modal name="add-site" class="md:w-96">
+        <form wire:submit="add" class="space-y-(--ds-section)">
+            <div>
+                <x-ds::section-heading>Add a site</x-ds::section-heading>
+                <p class="mt-1 text-sm text-(--ds-text-muted)">It is given a token, which goes in that app's CI. A report authenticates as a site rather than claiming to be one, so nothing can add itself by finding the endpoint.</p>
+            </div>
 
-        <div class="mt-(--ds-section) grid gap-(--ds-field-gap) md:grid-cols-2">
-            <flux:input wire:model="name" label="Name" placeholder="ExecutiveOS" />
-            <flux:input wire:model="host" label="Host" placeholder="executiveos.dashcore.com" />
-        </div>
+            <div class="space-y-(--ds-field-gap)">
+                <flux:input wire:model="name" label="Name" placeholder="ExecutiveOS" />
+                <flux:input wire:model="host" label="Host" placeholder="executiveos.dashcore.com" description="The repository is assumed to match, under dashcoretech." />
+            </div>
 
-        <flux:button type="submit" variant="primary" class="mt-(--ds-section)">Add and issue a token</flux:button>
-    </form>
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button type="submit" variant="primary">Add and issue a token</flux:button>
+            </div>
+        </form>
+    </flux:modal>
 </div>
