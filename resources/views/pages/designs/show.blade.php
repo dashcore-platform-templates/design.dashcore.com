@@ -35,6 +35,10 @@ new #[Layout('layouts::tool')] class extends Component
     #[Url]
     public string $register = 'light';
 
+    /** @var array<int,string> */
+    #[Url]
+    public array $viewports = [];
+
     public ?string $generatedAt = null;
 
     public ?array $generator = null;
@@ -49,6 +53,18 @@ new #[Layout('layouts::tool')] class extends Component
         // The screen comes off the URL and ends up in a Blade include, so it is
         // checked against the list rather than trusted.
         $this->screen = Screens::resolve($this->screen);
+
+        // Read straight from the query rather than off the property. Livewire
+        // merges a URL array into the property's default by position, so with a
+        // default of desktop and mobile, ?viewports[]=tablet arrives as tablet
+        // and mobile: the second default survives because nothing replaced it.
+        // The property therefore defaults to empty and the default list is
+        // applied here, once, only when the URL asked for nothing.
+        $asked = request()->query('viewports');
+        $this->viewports = $asked === null
+            ? Artboard::DEFAULT_SHOWN
+            : Artboard::valid(is_array($asked) ? $asked : [$asked]);
+
         $this->load();
     }
 
@@ -324,6 +340,27 @@ new #[Layout('layouts::tool')] class extends Component
             </flux:radio.group>
             <div class="flex items-center gap-3">
                 <span class="text-xs text-(--ds-text-muted)">{{ $tokens['fonts']['sans']['family'] }} + {{ $tokens['fonts']['second']['family'] }} · {{ $decisions['temperature']['value'] }} · {{ $decisions['radius']['value'] }} · {{ $decisions['density']['value'] }} · {{ $decisions['motif']['value'] }}</span>
+
+                {{-- Which frames are drawn. Behind a menu rather than on the bar
+                     because it is set once and then left alone, unlike the screen
+                     and the register beside it, which are pressed constantly. --}}
+                <flux:dropdown position="bottom" align="end">
+                    <flux:button size="sm" variant="ghost" icon="computer-desktop" icon:trailing="chevron-down">{{ count($viewports) }}</flux:button>
+                    <flux:menu class="w-64">
+                        <flux:menu.heading>Show viewports</flux:menu.heading>
+                        @foreach (Artboard::VIEWPORTS as $name => $frame)
+                            <flux:menu.checkbox wire:model.live="viewports" :value="$name">
+                                <span class="flex w-full items-center justify-between gap-4">
+                                    <span>{{ $frame['label'] }}</span>
+                                    <span class="text-xs tabular-nums text-(--ds-text-muted)">{{ $frame['width'] }}×{{ $frame['height'] }}</span>
+                                </span>
+                            </flux:menu.checkbox>
+                        @endforeach
+                        <flux:menu.separator />
+                        <p class="px-2 py-1.5 text-xs leading-snug text-(--ds-text-muted)">Two to a row, wrapping below. Unticking the last one puts Desktop and Mobile back.</p>
+                    </flux:menu>
+                </flux:dropdown>
+
                 <flux:radio.group wire:model.live="register" variant="segmented" size="sm">
                     <flux:radio value="light" icon="sun" />
                     <flux:radio value="dark" icon="moon" />
@@ -333,10 +370,15 @@ new #[Layout('layouts::tool')] class extends Component
 
         <div class="flex-1 p-(--ds-gutter)">
             {{--
-                The canvas: all three widths 12 names, side by side, always on
-                screen. A width behind a toggle is a width nobody presses, so it
-                rots. Tablet was left out of this at first and 12's tablet rule
-                shipped wrong because of it.
+                The canvas: two frames to a row, wrapping below, at whatever
+                widths are ticked.
+
+                Two are on by default rather than all four, because every extra
+                frame shrinks all of them. The menu is a menu and not a switcher:
+                nothing is hidden behind a choice of one, and a width that is off
+                is off because somebody turned it off. Tablet was missing here
+                entirely at first and 12's tablet rule shipped wrong because of
+                it, which is the failure this shape is avoiding.
 
                 Each artboard is an iframe, because only an iframe has a viewport of
                 its own. A scaled div keeps measuring the browser window, so a 375px
@@ -347,19 +389,27 @@ new #[Layout('layouts::tool')] class extends Component
                 $markup = view('mockups.'.$screen, ['t' => $tokens, 'design' => $design, 'motif' => $decisions['motif']['value'], 'shell' => $brief['shell'] ?? 'sidebar', 'register' => $register])->render();
                 $doc = Artboard::document($markup, $tokens, $register);
                 $gap = 32;
-                $total = array_sum(array_map(fn (string $k) => Artboard::WIDTHS[$k], Artboard::SHOWN)) + $gap * (count(Artboard::SHOWN) - 1);
+                $shown = Artboard::shown($viewports);
+                $total = Artboard::gridWidth($shown, $gap);
             @endphp
 
-            <div x-data="{
+            {{-- Keyed on the selection so Alpine re-initialises when it changes.
+                 Without this Livewire keeps the old state and the canvas goes on
+                 fitting to a total that no longer describes what is drawn. --}}
+            <div wire:key="canvas-{{ implode('-', $shown) }}"
+                 x-data="{
                     scale: 1,
                     zoomed: null,
+                    zoomedWidth: null,
                     total: {{ $total }},
                     fit() {
                         const available = $el.clientWidth || this.total;
-                        this.scale = Math.min(1, available / (this.zoomed ?? this.total));
+                        this.scale = Math.min(1, available / (this.zoomedWidth ?? this.total));
                     },
-                    zoom(width) {
-                        this.zoomed = this.zoomed === width ? null : width;
+                    zoom(name, width) {
+                        const off = this.zoomed === name;
+                        this.zoomed = off ? null : name;
+                        this.zoomedWidth = off ? null : width;
                         this.fit();
                     },
                  }"
@@ -370,21 +420,28 @@ new #[Layout('layouts::tool')] class extends Component
                 <p class="mb-3 text-xs text-(--ds-text-muted)"
                    x-show="scale < 0.999"
                    x-text="`Fitted to ${Math.round(scale * 100)}%, click a width to see it at full size`"></p>
-                <div class="flex origin-top-left items-start gap-8" x-bind:style="`transform: scale(${scale})`">
-                    @foreach (Artboard::SHOWN as $name)
-                        @php $width = Artboard::WIDTHS[$name]; @endphp
-                        <div x-show="zoomed === null || zoomed === {{ $width }}" class="shrink-0" style="width: {{ $width }}px">
-                            <button type="button" x-on:click="zoom({{ $width }})" class="mb-2 flex w-full items-center justify-between text-start">
-                                <span class="ds-label">{{ ucfirst($name) }}</span>
-                                <span class="text-xs tabular-nums text-(--ds-text-muted)" x-text="zoomed === {{ $width }} ? 'Back to all three' : '{{ $width }}'">{{ $width }}</span>
+                {{-- Two columns, filled in order, so a third frame wraps under
+                     the first rather than running off the side. Cells size to
+                     their frame, because a 390px frame beside a 1440px one in
+                     an even grid is mostly empty space. --}}
+                <div class="grid origin-top-left grid-cols-[max-content_max-content] items-start gap-8" x-bind:style="`transform: scale(${scale})`">
+                    @foreach ($shown as $name)
+                        @php $frame = Artboard::VIEWPORTS[$name]; @endphp
+                        <div x-show="zoomed === null || zoomed === '{{ $name }}'"
+                             @class(['shrink-0', 'col-span-2' => count($shown) === 1])
+                             style="width: {{ $frame['width'] }}px">
+                            <button type="button" x-on:click="zoom('{{ $name }}', {{ $frame['width'] }})" class="mb-2 flex w-full items-center justify-between gap-4 text-start">
+                                <span class="ds-label">{{ $frame['label'] }}</span>
+                                <span class="text-xs tabular-nums text-(--ds-text-muted)" x-text="zoomed === '{{ $name }}' ? 'Back to the rest' : '{{ $frame['width'] }}×{{ $frame['height'] }}'">{{ $frame['width'] }}×{{ $frame['height'] }}</span>
                             </button>
                             {{-- Keyed on what changes the document. A token change rewrites
                                  srcdoc as well, which reloads the frame, but the accent
                                  input is debounced so that happens at most twice a second. --}}
                             <iframe wire:key="artboard-{{ $name }}-{{ $screen }}-{{ $register }}"
-                                    title="{{ ucfirst($name) }}, {{ $width }} pixels wide"
+                                    title="{{ $frame['label'] }}, {{ $frame['width'] }} by {{ $frame['height'] }} pixels"
                                     srcdoc="{{ $doc }}"
-                                    class="block h-[900px] w-full rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-page) shadow-lg"></iframe>
+                                    class="block w-full rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-page) shadow-lg"
+                                    style="height: {{ $frame['height'] }}px"></iframe>
                         </div>
                     @endforeach
                 </div>
