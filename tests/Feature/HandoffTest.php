@@ -96,9 +96,9 @@ class HandoffTest extends TestCase
         $this->get('/designs/harbor-point')
             ->assertOk()
             ->assertSee('Use this design')
-            ->assertSee('Prompt for the agent')
-            ->assertSee('Once per machine')
-            ->assertSee('Already on this design')
+            ->assertSee('Agent prompt')
+            ->assertSee('GitHub token')
+            ->assertSee('Updating')
             ->assertSee('Download pack');
     }
 

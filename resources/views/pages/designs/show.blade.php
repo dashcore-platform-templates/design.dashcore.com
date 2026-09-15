@@ -170,7 +170,6 @@ new #[Layout('layouts::tool')] class extends Component
     {{-- Controls --}}
     <aside class="flex w-80 shrink-0 flex-col border-e border-(--ds-border) bg-(--ds-surface)">
         <div class="border-b border-(--ds-border) px-(--ds-card) py-4">
-            <p class="ds-eyebrow mb-1">Design</p>
             <h1 class="truncate text-lg font-semibold leading-tight text-(--ds-text-strong)">{{ $title }}</h1> {{-- @ds-audit-ignore the control pane title on a two-pane tool screen, which has no page header region --}}
             <p class="mt-1 line-clamp-3 text-xs text-(--ds-text-muted)">{{ $brief['product'] ?? '' }}</p>
         </div>
@@ -297,21 +296,21 @@ new #[Layout('layouts::tool')] class extends Component
                 <flux:text class="mt-1">Paste the prompt into Claude Code opened in the target repo. The agent installs the adapter, applies {{ $title }}, builds, commits, and if the app already has screens, migrates them one commit at a time. You review the commits.</flux:text>
             </div>
 
-            <x-copy-block label="Prompt for the agent" :text="$handoff['prompt']" />
+            <x-copy-block label="Agent prompt" :text="$handoff['prompt']" />
 
             <div>
-                <x-copy-block label="Once per machine" :text="$handoff['token']" />
+                <x-copy-block label="GitHub token" :text="$handoff['token']" />
                 <p class="mt-1.5 text-xs leading-snug text-(--ds-text-muted)">The package is private, so Composer needs its own GitHub token. The agent is never given it: if Composer cannot reach the repository, the agent stops and asks you to run this.</p>
             </div>
 
             <flux:accordion>
                 <flux:accordion.item>
-                    <flux:accordion.heading>Already on this design</flux:accordion.heading>
+                    <flux:accordion.heading>Updating</flux:accordion.heading>
                     <flux:accordion.content>
                         <div class="space-y-4 pt-1">
                             <p class="text-xs leading-snug text-(--ds-text-muted)">Setting an app up happens once, so do not repeat it when a rule changes. The standard is at version <span class="font-mono text-(--ds-text-strong)">{{ $handoff['version'] }}</span>, and an app whose <code>design/STANDARD.md</code> shows a different one is behind. <a href="{{ route('changelog') }}" wire:navigate class="text-(--ds-accent-content) hover:underline">What changed</a>.</p>
-                            <x-copy-block label="Prompt for the agent" :text="$handoff['updatePrompt']" />
-                            <x-copy-block label="Or by hand, in the target repo" :text="$handoff['updateCommands']" />
+                            <x-copy-block label="Agent prompt" :text="$handoff['updatePrompt']" />
+                            <x-copy-block label="Commands" :text="$handoff['updateCommands']" />
                         </div>
                     </flux:accordion.content>
                 </flux:accordion.item>
@@ -319,8 +318,11 @@ new #[Layout('layouts::tool')] class extends Component
                     <flux:accordion.heading>By hand</flux:accordion.heading>
                     <flux:accordion.content>
                         <div class="space-y-4 pt-1">
-                            <x-copy-block label="In the target repo" :text="$handoff['commands']" />
-                            <x-copy-block label="For the repo's CLAUDE.md" :text="$handoff['snippet']" />
+                            {{-- The label used to carry this. A label is the name
+                                 of the thing, and where to run it is a sentence. --}}
+                            <p class="text-xs leading-snug text-(--ds-text-muted)">Run these in the target repo, in this order.</p>
+                            <x-copy-block label="Commands" :text="$handoff['commands']" />
+                            <x-copy-block label="CLAUDE.md snippet" :text="$handoff['snippet']" />
                             <div class="flex flex-wrap items-center gap-2">
                                 <flux:button :href="route('designs.pack', $slug)" size="sm" icon="arrow-down-tray">Download pack</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
                                 <flux:button :href="route('designs.json', $slug)" size="sm" variant="ghost">JSON</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
