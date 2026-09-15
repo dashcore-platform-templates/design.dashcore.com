@@ -30,7 +30,7 @@ final class Handoff
      * be named somewhere a person reads, and it changes here when a major
      * ships, beside the release note in the package README.
      */
-    public const MAJOR = '^4.0';
+    public const MAJOR = '^5.0';
 
     /** Once per machine: the package is private, and Composer runs git non-interactively. */
     public static function tokenCommand(): string

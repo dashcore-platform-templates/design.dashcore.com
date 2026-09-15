@@ -109,7 +109,7 @@ class HandoffTest extends TestCase
         $prompt = Handoff::updatePrompt($design);
 
         $this->assertSame([
-            'composer require "dashcore/design-kit:^4.0"',
+            'composer require "dashcore/design-kit:^5.0"',
             'php artisan design:update harbor-point',
         ], Handoff::updateCommands($design));
 
@@ -131,7 +131,7 @@ class HandoffTest extends TestCase
             ->assertSee(Standard::version())
             ->assertSee('What changed in the standard')
             ->assertSee('Picking a change up')
-            ->assertSee('composer require "dashcore/design-kit:^4.0"')
+            ->assertSee('composer require "dashcore/design-kit:^5.0"')
             ->assertSee('php artisan design:update &lt;slug&gt;', false);
     }
 
@@ -151,7 +151,7 @@ class HandoffTest extends TestCase
     public function the_update_snippet_reads_generically_without_a_design(): void
     {
         $this->assertSame([
-            'composer require "dashcore/design-kit:^4.0"',
+            'composer require "dashcore/design-kit:^5.0"',
             'php artisan design:update <slug>',
         ], Handoff::updateCommands());
 

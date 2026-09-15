@@ -82,6 +82,20 @@ The mirror is private, so Composer needs its own GitHub credentials once per mac
 composer config --global github-oauth.github.com <a GitHub token with repo scope>
 ```
 
+## Upgrading to 5.0
+
+One new rule, and it finds nothing on any app here.
+
+**A screen may not restyle the Flux table.** 06's table styling has been in the applied CSS since 14 September: head on `sunken` at 12px in `text-muted`, body at 14px on the density row height, first column `text-strong`, hover on `sunken`. A table is a plain `flux:table` and all of it arrives with the package.
+
+The audit now reports `[data-flux-table]`, `[data-flux-column]`, `[data-flux-cell]` and `[data-flux-row]` in a view.
+
+This is a major because a build that passes on 4.0 can fail on 5.0, not because anything failed here. Measured on three apps before shipping it: nothing. The one screen that had it was fixed first, and it is worth knowing how it read, because the next one will read the same way. The screen used `text-muted-on-sunken` for the head where the adapter uses `text-muted`, so the utilities won on the head while the adapter supplied the hover and the first column. The table matched neither the mockup nor the standard, and no rule could see it.
+
+Other Flux internals are left alone. This is 06's argument about the table, not a ban on touching a data attribute.
+
+**Also in this release.** `design:update` and the snippet the tool hands out now say `composer require "dashcore/design-kit:<major>"` rather than `composer update dashcore/design-kit`. Plain `composer update` stays inside the major an app is pinned to, so the command that was meant to move an app onto a new major could never have done it.
+
 ## Upgrading to 4.0
 
 One thing breaks, and it lands on one product rather than the fleet.
@@ -153,7 +167,7 @@ The Flux table also picks up the styling 06 always specified, and the empty stat
 
 ## Versions
 
-A kit on an older major does not get the next one, on purpose: a release that can fail a passing build stops and waits for a person. Move it with `composer require "dashcore/design-kit:^4.0"`, which changes the constraint and updates in one step. Plain `composer update` stays inside the major it is already pinned to and reports nothing to do.
+A kit on an older major does not get the next one, on purpose: a release that can fail a passing build stops and waits for a person. Move it with `composer require "dashcore/design-kit:^5.0"`, which changes the constraint and updates in one step. Plain `composer update` stays inside the major it is already pinned to and reports nothing to do.
 
 Releases are tagged, and `composer require` writes `^1.0` for you. Every later 1.x release then reaches every kit on the next `composer update`, which is the whole point: a rule added to the standard should not need fifteen repos edited by hand to arrive. A change that would break an app already on the standard goes to 2.0 instead, so it stops and waits for a person rather than arriving quietly.
 
@@ -202,7 +216,7 @@ It compares the stamp in `design/STANDARD.md` with the version the tool is publi
 Setting an app up happens once. When the standard changes afterwards, do not repeat it:
 
 ```bash
-composer require "dashcore/design-kit:^4.0"   # the components and the audit rules live here, so this is first
+composer require "dashcore/design-kit:^5.0"   # the components and the audit rules live here, so this is first
 php artisan design:update <slug>
 ```
 
