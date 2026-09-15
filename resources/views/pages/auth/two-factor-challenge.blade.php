@@ -46,9 +46,9 @@
             <form method="POST" action="{{ route('two-factor.login.store') }}">
                 @csrf
 
-                <div class="space-y-5 text-center">
+                <div class="space-y-6 text-center">
                     <div x-show="!showRecoveryInput">
-                        <div class="flex items-center justify-center my-5" x-ref="otp">
+                        <div class="flex items-center justify-center my-6" x-ref="otp">
                             <flux:otp
                                 x-model="code"
                                 length="6"
@@ -61,7 +61,7 @@
                     </div>
 
                     <div x-show="showRecoveryInput">
-                        <div class="my-5">
+                        <div class="my-6">
                             <flux:input
                                 type="text"
                                 name="recovery_code"
@@ -88,7 +88,7 @@
                     </flux:button>
                 </div>
 
-                <div class="mt-5 space-x-0.5 text-sm leading-5 text-center">
+                <div class="mt-6 space-x-0.5 text-sm leading-5 text-center">
                     <span class="opacity-50">{{ __('or you can') }}</span>
                     <div class="inline font-medium underline cursor-pointer opacity-80">
                         <span x-show="!showRecoveryInput" @click="toggleInput()">{{ __('login using a recovery code') }}</span>

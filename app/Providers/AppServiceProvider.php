@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Design\Generation\AnthropicDecisionSource;
 use App\Design\Generation\DecisionSource;
 use Carbon\CarbonImmutable;
+use Dashcore\DesignKit\Commands\AuditCommand;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,27 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->allowBuiltAssetsWhileDevServerRuns();
         $this->registerKitComponents();
+        $this->auditThisAppToo();
+    }
+
+    /**
+     * The package's own audit, so the tool is held to the standard it publishes.
+     *
+     * The package's command rather than a second implementation of it. Two
+     * audits would drift, and this repo would end up checked against a slightly
+     * different standard from the fleet, which is the exact failure the whole
+     * project exists to stop.
+     *
+     * Only that one command. The package also ships design:apply, design:update
+     * and its own design:check, and this app is not a kit: it has no design to
+     * apply, and design:check here is a different command that measures a design
+     * in the tool rather than a file in a repo.
+     */
+    protected function auditThisAppToo(): void
+    {
+        if ($this->app->runningInConsole() && class_exists(AuditCommand::class)) {
+            $this->commands([AuditCommand::class]);
+        }
     }
 
     /**

@@ -96,15 +96,8 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 }; ?>
 
 <div class="px-(--ds-gutter) py-(--ds-section)">
-    <header class="mb-(--ds-section) flex flex-wrap items-end justify-between gap-4">
-        <div>
-            <p class="ds-eyebrow mb-1.5">Fleet</p>
-            <h1 class="text-2xl font-semibold leading-tight text-(--ds-text-strong)">Who is on the standard</h1>
-            <p class="mt-1 text-sm text-(--ds-text-muted)">
-                What each app last reported about itself. The standard reads
-                <code class="font-mono text-xs">{{ $current }}</code> today.
-            </p>
-        </div>
+    <x-ds::page-header eyebrow="Fleet" title="Who is on the standard" class="mb-(--ds-section)">
+        <x-slot:description>What each app last reported about itself. The standard reads <code class="font-mono text-xs">{{ $current }}</code> today.</x-slot:description>
 
         {{-- Adding a site happens once per app and then never again, so it is
              behind a button. A permanent form under the table would be the
@@ -112,7 +105,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
         <flux:modal.trigger name="add-site">
             <flux:button variant="primary" icon="plus">Add a site</flux:button>
         </flux:modal.trigger>
-    </header>
+    </x-ds::page-header>
 
     {{-- A token is shown once and then never again, so this is the one moment
          somebody has everything they need in front of them. It carries the

@@ -30,17 +30,17 @@ new #[Layout('layouts::tool')] #[Title('What changed')] class extends Component
 
 <div class="flex">
     <div class="min-w-0 flex-1 px-(--ds-gutter) py-(--ds-section)">
-        <header class="mb-(--ds-section) flex flex-wrap items-end justify-between gap-4">
-            <div>
-                <p class="ds-eyebrow mb-1.5">Reference</p>
-                <h1 class="text-2xl font-semibold leading-tight text-(--ds-text-strong)">What changed</h1>
-                <p class="mt-1 text-sm text-(--ds-text-muted)">{{ $count }} {{ Str::plural('change', $count) }} to the standard so far. An app compares its own stamp against this one.</p>
-            </div>
+        <x-ds::page-header
+            eyebrow="Reference"
+            title="What changed"
+            :description="$count.' '.Str::plural('change', $count).' to the standard so far. An app compares its own stamp against this one.'"
+            class="mb-(--ds-section)"
+        >
             <div class="text-end">
                 <p class="ds-label mb-1.5">Version</p>
                 <p class="font-mono text-sm text-(--ds-text-strong)">{{ $version }}</p>
             </div>
-        </header>
+        </x-ds::page-header>
 
         <section class="mb-(--ds-section) rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">
             <p class="ds-label mb-1.5">Picking a change up</p>

@@ -22,7 +22,7 @@
         <div class="flex min-h-screen">
             <aside class="hidden w-56 shrink-0 flex-col border-e border-(--ds-border) bg-(--ds-sunken) lg:flex dark:bg-(--ds-surface)">
                 <a href="{{ route('designs.index') }}" class="flex h-(--ds-brand) items-center gap-2.5 border-b border-(--ds-border) px-4">
-                    <span class="grid size-6 place-items-center rounded-(--radius-sm) bg-(--ds-accent) font-second text-[11px] font-medium text-(--ds-on-accent)">D</span>
+                    <span class="grid size-6 place-items-center rounded-(--radius-sm) bg-(--ds-accent) font-second text-xs font-medium text-(--ds-on-accent)">D</span>
                     <span class="text-sm font-medium text-(--ds-text-strong)">Dashcore Design</span>
                 </a>
                 <nav class="flex flex-1 flex-col gap-4 px-2 py-4 text-sm">

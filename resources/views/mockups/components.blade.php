@@ -1,3 +1,4 @@
+{{-- @ds-audit-ignore-file the component gallery. It shows flux:badge beside x-ds::badge and an xs button beside a full one, so the standard can be seen being broken next to being kept. Auditing it reports the demonstration. --}}
 {{--
     The Components screen: every Flux component that renders without a user
     action, free and Pro, in the current design and register. Built from real

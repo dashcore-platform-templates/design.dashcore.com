@@ -171,11 +171,11 @@ new #[Layout('layouts::tool')] class extends Component
     <aside class="flex w-80 shrink-0 flex-col border-e border-(--ds-border) bg-(--ds-surface)">
         <div class="border-b border-(--ds-border) px-(--ds-card) py-4">
             <p class="ds-eyebrow mb-1">Design</p>
-            <h1 class="truncate text-lg font-semibold leading-tight text-(--ds-text-strong)">{{ $title }}</h1>
+            <h1 class="truncate text-lg font-semibold leading-tight text-(--ds-text-strong)">{{ $title }}</h1> {{-- @ds-audit-ignore the control pane title on a two-pane tool screen, which has no page header region --}}
             <p class="mt-1 line-clamp-3 text-xs text-(--ds-text-muted)">{{ $brief['product'] ?? '' }}</p>
         </div>
 
-        <div class="flex-1 space-y-5 overflow-y-auto px-(--ds-card) py-4">
+        <div class="flex-1 space-y-6 overflow-y-auto px-(--ds-card) py-4">
             {{-- Shell: a person's choice, in the brief --}}
             <flux:field>
                 <flux:label>Shell <span class="ds-label ms-1.5 font-normal">brief, not generated</span></flux:label>
@@ -273,15 +273,15 @@ new #[Layout('layouts::tool')] class extends Component
                 <p class="text-xs text-(--ds-text-muted)">{{ $notice }}</p>
             @endif
             <div class="flex gap-2">
-                <flux:button wire:click="save" variant="primary" size="sm" :disabled="! $dirty" class="flex-1">Save</flux:button>
-                <flux:button wire:click="revert" size="sm" :disabled="! $dirty">Revert</flux:button>
+                <flux:button wire:click="save" variant="primary" size="sm" :disabled="! $dirty" class="flex-1">Save</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
+                <flux:button wire:click="revert" size="sm" :disabled="! $dirty">Revert</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
             </div>
-            <flux:button wire:click="regenerate" wire:confirm="Run the brief through the generator again? Unsaved changes here will be replaced." size="sm" icon="sparkles" class="w-full">
+            <flux:button wire:click="regenerate" wire:confirm="Run the brief through the generator again? Unsaved changes here will be replaced." size="sm" icon="sparkles" class="w-full"> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
                 <span wire:loading.remove wire:target="regenerate">Regenerate from brief</span>
                 <span wire:loading wire:target="regenerate">Choosing again…</span>
             </flux:button>
             <flux:modal.trigger name="use-design">
-                <flux:button size="sm" icon="command-line" class="w-full">Use this design</flux:button>
+                <flux:button size="sm" icon="command-line" class="w-full">Use this design</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
             </flux:modal.trigger>
             @if ($dirty)
                 <p class="text-xs text-(--ds-warning)">Unsaved changes. The pack is built from the saved file.</p>
@@ -293,7 +293,7 @@ new #[Layout('layouts::tool')] class extends Component
     <flux:modal name="use-design" class="md:w-[44rem]">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Use this design</flux:heading>
+                <x-ds::section-heading level="2">Use this design</x-ds::section-heading>
                 <flux:text class="mt-1">Paste the prompt into Claude Code opened in the target repo. The agent installs the adapter, applies {{ $title }}, builds, commits, and if the app already has screens, migrates them one commit at a time. You review the commits.</flux:text>
             </div>
 
@@ -322,8 +322,8 @@ new #[Layout('layouts::tool')] class extends Component
                             <x-copy-block label="In the target repo" :text="$handoff['commands']" />
                             <x-copy-block label="For the repo's CLAUDE.md" :text="$handoff['snippet']" />
                             <div class="flex flex-wrap items-center gap-2">
-                                <flux:button :href="route('designs.pack', $slug)" size="sm" icon="arrow-down-tray">Download pack</flux:button>
-                                <flux:button :href="route('designs.json', $slug)" size="sm" variant="ghost">JSON</flux:button>
+                                <flux:button :href="route('designs.pack', $slug)" size="sm" icon="arrow-down-tray">Download pack</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
+                                <flux:button :href="route('designs.json', $slug)" size="sm" variant="ghost">JSON</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
                             </div>
                             <p class="text-xs leading-snug text-(--ds-text-muted)">The zip is the same four files, for anyone offline. Unzip it into the repo root, then <code>php artisan design:apply design/design.json</code>.</p>
                         </div>
@@ -348,7 +348,7 @@ new #[Layout('layouts::tool')] class extends Component
                      because it is set once and then left alone, unlike the screen
                      and the register beside it, which are pressed constantly. --}}
                 <flux:dropdown position="bottom" align="end">
-                    <flux:button size="sm" variant="ghost" icon="computer-desktop" icon:trailing="chevron-down">{{ count($viewports) }}</flux:button>
+                    <flux:button size="sm" variant="ghost" icon="computer-desktop" icon:trailing="chevron-down">{{ count($viewports) }}</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
                     <flux:menu class="w-64">
                         <flux:menu.heading>Show viewports</flux:menu.heading>
                         {{-- The group carries the binding and each box carries a

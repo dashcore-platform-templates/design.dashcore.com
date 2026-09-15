@@ -19,12 +19,12 @@ new #[Layout('layouts::tool')] #[Title('The Standard')] class extends Component
 
 <div class="flex">
     <div class="min-w-0 flex-1 px-(--ds-gutter) py-(--ds-section)">
-        <header class="mb-(--ds-section) flex flex-wrap items-end justify-between gap-4">
-            <div>
-                <p class="ds-eyebrow mb-1.5">Reference</p>
-                <h1 class="text-2xl font-semibold leading-tight text-(--ds-text-strong)">The Dashcore Standard</h1>
-                <p class="mt-1 text-sm text-(--ds-text-muted)">Draft zero. Files 01 to 09 are also the generator's instructions, word for word.</p>
-            </div>
+        <x-ds::page-header
+            eyebrow="Reference"
+            title="The Dashcore Standard"
+            description="Draft zero. Files 01 to 09 are also the generator's instructions, word for word."
+            class="mb-(--ds-section)"
+        >
             {{-- The stamp an app compares its own copy against. Shown here so a
                  person can answer "is that site behind?" without a terminal. --}}
             <div class="text-end">
@@ -32,7 +32,7 @@ new #[Layout('layouts::tool')] #[Title('The Standard')] class extends Component
                 <p class="font-mono text-sm text-(--ds-text-strong)">{{ $version }}</p>
                 <a href="{{ route('changelog') }}" wire:navigate class="text-xs text-(--ds-accent-content) hover:underline">What changed</a>
             </div>
-        </header>
+        </x-ds::page-header>
 
         <article class="ds-prose">{!! Standard::html($readme) !!}</article>
 

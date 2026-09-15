@@ -17,7 +17,7 @@
             @if (! empty($copy['eyebrow']))
                 <p class="{{ $eyebrowClass ?? ($motif === 'eyebrow' ? 'ds-eyebrow' : 'ds-label') }} mb-3">{{ $copy['eyebrow'] }}</p>
             @endif
-            <h1 class="text-4xl font-semibold leading-[1.1] text-(--ds-text-strong) {{ $headlineFont }} {{ $upper }}">{{ $copy['headline'] ?? 'Welcome back.' }}</h1>
+            <h1 class="text-4xl font-semibold leading-[1.1] text-(--ds-text-strong) {{ $headlineFont }} {{ $upper }}">{{ $copy['headline'] ?? 'Welcome back.' }}</h1> {{-- @ds-audit-ignore 02 gives sign-in its own headline, which is why the audit skips auth views --}}
             {{-- 12: below lg the brand panel carries the wordmark and headline
                  only. A phone sign-in is a form, and everything above it is delay. --}}
             <p class="mt-4 hidden max-w-prose text-[length:var(--ds-prose)] text-(--ds-text-muted) lg:block">{{ $copy['tagline'] ?? '' }}</p>

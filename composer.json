@@ -71,11 +71,15 @@
         "types:check": [
             "phpstan analyse"
         ],
+        "standard:check": [
+            "@php artisan design:audit"
+        ],
         "test": [
             "@php artisan config:clear --ansi",
             "@lint:check",
             "@types:check",
-            "@php artisan test"
+            "@php artisan test",
+            "@standard:check"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

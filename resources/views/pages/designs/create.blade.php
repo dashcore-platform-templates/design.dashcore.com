@@ -57,11 +57,12 @@ new #[Layout('layouts::tool')] #[Title('New design')] class extends Component
 }; ?>
 
 <div class="px-(--ds-gutter) py-(--ds-section)">
-    <header class="mb-(--ds-section)">
-        <p class="ds-eyebrow mb-1.5">New design</p>
-        <h1 class="text-2xl font-semibold leading-tight text-(--ds-text-strong)">Describe the project</h1>
-        <p class="mt-1 max-w-prose text-sm text-(--ds-text-muted)">Two sentences are enough. The generator reads the standard and this brief, then chooses the seven decisions the standard leaves open. You can change any of them afterwards.</p>
-    </header>
+    <x-ds::page-header
+        eyebrow="New design"
+        title="Describe the project"
+        description="Two sentences are enough. The generator reads the standard and this brief, then chooses the seven decisions the standard leaves open. You can change any of them afterwards."
+        class="mb-(--ds-section)"
+    />
 
     <form wire:submit="generate" class="grid gap-(--ds-section) lg:grid-cols-12">
         <div class="space-y-(--ds-field-gap) lg:col-span-8">
@@ -96,7 +97,7 @@ new #[Layout('layouts::tool')] #[Title('New design')] class extends Component
                 <flux:field>
                     <flux:label>Brand colour <span class="ds-label ms-1.5 font-normal">optional</span></flux:label>
                     <flux:description>A hex the client already owns. It becomes the accent even where it bends the hue rule.</flux:description>
-                    <flux:input wire:model="brand_colour" placeholder="#b5542d" class="font-mono" />
+                    <flux:input wire:model="brand_colour" placeholder="#b5542d" class="font-mono" /> {{-- @ds-audit-ignore a placeholder showing the shape of a hex, not a colour this page paints with --}}
                     <flux:error name="brand_colour" />
                 </flux:field>
             </div>

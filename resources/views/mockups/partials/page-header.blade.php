@@ -6,7 +6,7 @@
         @if ($eyebrow || $motif === 'eyebrow')
             <p class="{{ $eyebrowClass }} mb-1.5">{{ $eyebrow ?? $design->name() }}</p>
         @endif
-        <h1 class="text-2xl font-semibold leading-[1.25] text-(--ds-text-strong) {{ $titleFont }} {{ $upper }}">{{ $title }}</h1>
+        <h1 class="text-2xl font-semibold leading-[1.25] text-(--ds-text-strong) {{ $titleFont }} {{ $upper }}">{{ $title }}</h1> {{-- @ds-audit-ignore this partial is the page header, drawn by hand because the mockups rebuild it --}}
         @if ($description)
             <p class="mt-1 text-sm text-(--ds-text-muted)">{{ $description }}</p>
         @endif

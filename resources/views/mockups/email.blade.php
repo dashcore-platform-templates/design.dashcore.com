@@ -1,3 +1,4 @@
+{{-- @ds-audit-ignore-file a drawing of section 10, where none of the rest of the standard applies: no utility classes, no custom properties, pixel values inline, because that is all an email client honours. --}}
 {{--
     Email, from standard/10. The one surface where the rest of the standard
     cannot apply: no custom properties, no utility classes, no web fonts, no

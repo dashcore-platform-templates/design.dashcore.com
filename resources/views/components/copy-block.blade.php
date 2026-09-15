@@ -33,7 +33,7 @@
         <pre x-ref="text" class="overflow-x-auto whitespace-pre-wrap break-words rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-sunken) px-3 py-2.5 pe-24 font-mono text-xs leading-relaxed text-(--ds-text)">{{ $text }}</pre>
         {{-- Positioned by a wrapper: Flux's own `relative` on the button outranks an added `absolute`. --}}
         <div class="absolute end-1.5 top-1.5">
-            <flux:button size="xs" variant="ghost" icon="clipboard" x-on:click="copy()">
+            <flux:button size="xs" variant="ghost" icon="clipboard" x-on:click="copy()"> {{-- @ds-audit-ignore the copy control inside a code block; at 40px it would be taller than the block it sits in --}}
                 <span x-text="copied ? 'Copied' : 'Copy'">Copy</span>
             </flux:button>
         </div>

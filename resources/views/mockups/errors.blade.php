@@ -25,7 +25,7 @@
                         {!! $brand !!}
                         <span class="text-sm font-medium text-(--ds-text-strong)">{{ $name }}</span>
                     </div>
-                    <h1 class="text-2xl font-semibold leading-[1.25] text-(--ds-text-strong) {{ $titleFont }}">Nothing here</h1>
+                    <h1 class="text-2xl font-semibold leading-[1.25] text-(--ds-text-strong) {{ $titleFont }}">Nothing here</h1> {{-- @ds-audit-ignore 11 gives an error page one short heading, not a page header --}}
                     <p class="mt-2 text-sm leading-relaxed text-(--ds-text-muted)">
                         That address is wrong, or the page has been removed since you last opened it.
                     </p>
@@ -81,7 +81,7 @@
                         @if ($motif === 'eyebrow')
                             <p class="ds-eyebrow mb-1.5">{{ $name }}</p>
                         @endif
-                        <h1 class="text-2xl font-semibold leading-[1.25] text-(--ds-text-strong) {{ $titleFont }}">Your pets</h1>
+                        <h1 class="text-2xl font-semibold leading-[1.25] text-(--ds-text-strong) {{ $titleFont }}">Your pets</h1> {{-- @ds-audit-ignore the first-run screen is drawn here rather than composed from the component --}}
                         <p class="mt-1 text-sm text-(--ds-text-muted)">Everything {{ $name }} holds for you.</p>
                     </div>
                 </header>
