@@ -220,7 +220,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                                 size="compact"
                                 icon="server-stack"
                                 title="No sites yet."
-                                description="Add one below, then put its token in that app's CI as DESIGN_TOKEN."
+                                description="Add one from the button above, then put its token in that app's CI."
                             />
                         </td>
                     </tr>
