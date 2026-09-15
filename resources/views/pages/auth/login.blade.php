@@ -51,9 +51,11 @@
             </div>
         </form>
 
-        <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
-            <span>{{ __('Don\'t have an account?') }}</span>
-            <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
-        </div>
+        {{-- No sign-up link, because there is no sign-up. This tool lists every
+             Dashcore product and how far off the standard each one is, so
+             accounts are made with `php artisan fleet:invite`. --}}
+        <p class="text-center text-sm text-(--ds-text-muted)">
+            {{ __('Accounts are made by someone who already has one.') }}
+        </p>
     </div>
 </x-layouts::auth>

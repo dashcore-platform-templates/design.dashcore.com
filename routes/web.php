@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/designs')->name('home');
 
+// The sign-in screens are Fortify's, pointed at this kit's views by
+// FortifyServiceProvider. Nothing for them here.
+//
+// The one page behind sign-in. It lists every Dashcore product and how far
+// off the standard each one is, which is not a public fact. Everything below
+// stays open, because kits pull their pack over HTTP without a session.
+Route::livewire('fleet', 'pages::fleet')->middleware('auth')->name('fleet');
+
 Route::livewire('standard', 'pages::standard')->name('standard');
 Route::livewire('changelog', 'pages::changelog')->name('changelog');
 

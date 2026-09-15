@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Design\Generation\AnthropicDecisionSource;
 use App\Design\Generation\DecisionSource;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Vite;
@@ -28,6 +29,27 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->allowBuiltAssetsWhileDevServerRuns();
+        $this->registerKitComponents();
+    }
+
+    /**
+     * The package's own components, under <x-ds::…>, in the tool as well.
+     *
+     * The tool maps the package's namespace but does not install it, so its
+     * service provider never runs and the components were unavailable here.
+     * That is why the mockups rebuild page-header and badge by hand, and why
+     * a mockup can drift from what a kit actually renders.
+     *
+     * This is the seam that lets the canvas stop guessing. The mockups are not
+     * moved over yet; the fleet page uses them now.
+     */
+    protected function registerKitComponents(): void
+    {
+        $views = base_path('packages/design-kit/resources/views/ds');
+
+        if (is_dir($views)) {
+            Blade::anonymousComponentPath($views, 'ds');
+        }
     }
 
     /**
