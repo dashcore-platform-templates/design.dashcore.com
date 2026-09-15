@@ -107,8 +107,9 @@ final class Handoff
         return <<<TXT
         Connect this app to the Dashcore design fleet board at {$source}. The repository is {$repository}.
 
-        1. Move it onto the current design-kit if it is not there already: `{$composer}`. Plain `composer update` will not do it, because it stays inside the major the app is pinned to. Then `{$update}`, with no argument, which reads the slug out of design/design.json. If there is no design/design.json, stop: this app is not on the standard yet and setting it up is a different job.
-        2. Find the workflow that already installs this app for its tests, usually under .github/workflows. Add one step to it, after composer install and beside the tests:
+        1. Check for design/design.json first. If it is not there, stop and say so: this app has never had a design applied, so it cannot report one, and setting it up is a different job with its own prompt on the design's page at {$source}. Do not install anything.
+        2. Move it onto the current design-kit if it is not there already: `{$composer}`. Plain `composer update` will not do it, because it stays inside the major the app is pinned to. Then `{$update}`, with no argument, which reads the slug out of design/design.json.
+        3. Find the workflow that already installs this app for its tests, usually under .github/workflows. Add one step to it, after composer install and beside the tests:
 
         ```yaml
         - name: Report to design.dashcore.com
@@ -119,9 +120,9 @@ final class Handoff
           run: php artisan design:audit --report
         ```
 
-        The `if` keeps a pull request build from overwriting the row with a branch nobody has merged. `design:audit --report` never fails a build, so it does not need `continue-on-error`.
-        3. Commit the composer files, whatever design:update changed, and the workflow. If design:update left audit findings, do not fix them in this commit; report the count and leave them.
-        4. Stop and tell me to add two repository secrets, DESIGN_TOKEN and DESIGN_SOURCE, on GitHub. I will do that myself. Never ask me for the token value and never write it into a file.
+        The `if` keeps a pull request build from overwriting the row with a branch nobody has merged. `design:audit --report` never fails a build, so it does not need `continue-on-error`. If that file has more than one job installing the app, add the step to one of them only, or the row is written twice on every push.
+        4. Commit the composer files, whatever design:update changed, and the workflow. If design:update left audit findings, do not fix them in this commit; report the count and leave them.
+        5. Stop and tell me to add two repository secrets, DESIGN_TOKEN and DESIGN_SOURCE, on GitHub. I will do that myself. Never ask me for the token value and never write it into a file.
 
         The row on the board fills in on the first run of that workflow after the secrets exist. End with a report: which major the app was on and which it is on now, the standard version, the audit count, and the workflow file you edited.
         TXT;
