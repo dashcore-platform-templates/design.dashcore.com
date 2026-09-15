@@ -82,6 +82,14 @@ The mirror is private, so Composer needs its own GitHub credentials once per mac
 composer config --global github-oauth.github.com <a GitHub token with repo scope>
 ```
 
+## Unreleased, waiting for 4.0
+
+On master and not tagged, on purpose, so it can go out with whatever else lands:
+
+**A Flux button at `size="sm"` is a tap target finding.** 05 has always said a touch target is never under 36px. Flux's `sm` is `h-8`, which is 32px, and only `base` at `h-10` clears the floor. The rule caught `xs` and not `sm`, while already reporting a hand-written `h-8` button, so it was inconsistent with itself. Measured on five apps here: 63 in one, 68 in another which is the same product, and nothing in the other three.
+
+A kit on `^3.0` does not have this yet. `design:update` will bring the standard text across and audit it with 3.0's rules, so the count will not move until this is tagged.
+
 ## Upgrading to 3.0
 
 One thing breaks: the audit gains a rule that fires on every app in the fleet.
