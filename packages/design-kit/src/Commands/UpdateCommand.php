@@ -2,6 +2,7 @@
 
 namespace Dashcore\DesignKit\Commands;
 
+use Dashcore\DesignKit\Source;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
@@ -28,20 +29,33 @@ class UpdateCommand extends Command
 
     public function handle(): int
     {
-        $source = $this->argument('source');
+        $file = base_path('design/design.json');
 
-        if (! is_string($source) || $source === '') {
-            $this->components->error('Give the design slug or its pack URL, the same one you applied with.');
-            $this->line('  <fg=gray>Example: php artisan design:update harbor-point</fg=gray>');
-
-            return self::FAILURE;
-        }
-
-        if (! File::exists(base_path('design/design.json'))) {
+        if (! File::exists($file)) {
             $this->components->error('This app has no design/design.json, so it is not on the standard yet.');
             $this->line('  <fg=gray>Use the Use this design panel on design.dashcore.com to set it up first.</>');
 
             return self::FAILURE;
+        }
+
+        $source = $this->argument('source');
+
+        // The design file names its own slug, so an app on the standard can be
+        // updated without anybody remembering which design it took.
+        if (! is_string($source) || $source === '') {
+            $design = json_decode(File::get($file), true);
+            $source = is_array($design) ? Source::designSlug($design) : null;
+
+            if ($source === null) {
+                $this->components->error('Give the design slug or its pack URL, the same one you applied with.');
+                $this->line('  <fg=gray>This app\'s design/design.json does not name one, which means it was applied</>');
+                $this->line('  <fg=gray>before design files carried their slug. Passing it once writes it in.</>');
+                $this->line('  <fg=gray>Example: php artisan design:update harbor-point</fg=gray>');
+
+                return self::FAILURE;
+            }
+
+            $this->line("  <fg=gray>Using {$source}, which is the design this app already has.</>");
         }
 
         $this->components->info('Run `composer update dashcore/design-kit` before this if you have not. New audit rules arrive with the package.');

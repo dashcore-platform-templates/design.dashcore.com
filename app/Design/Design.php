@@ -90,6 +90,11 @@ final class Design
     {
         return array_filter([
             'schema' => self::SCHEMA,
+            // The design's own name for itself. Without it an applied kit holds
+            // a design it cannot name, and working out which one it is means
+            // comparing accent colours against every design in the tool. Every
+            // command that takes a slug can now read it from the file instead.
+            'slug' => $this->slug,
             'generated_at' => $this->generatedAt,
             'generator' => $this->generator,
             'brief' => $this->brief,

@@ -71,6 +71,23 @@ class SourceTest extends TestCase
     }
 
     #[Test]
+    public function a_design_file_names_its_own_slug(): void
+    {
+        $this->assertSame('harbor-point', Source::designSlug($this->exported()));
+        $this->assertSame('northline', Source::designSlug($this->exported('northline')));
+
+        // Files written before the slug existed cannot have one inferred, so
+        // the answer is null and the command asks rather than guesses.
+        $this->assertNull(Source::designSlug(['schema' => 'dashcore-design/1']));
+
+        // It reaches a URL, so anything that is not a slug is not a slug.
+        $this->assertNull(Source::designSlug(['slug' => '../../etc/passwd']));
+        $this->assertNull(Source::designSlug(['slug' => 'Harbor Point']));
+        $this->assertNull(Source::designSlug(['slug' => '']));
+        $this->assertNull(Source::designSlug(['slug' => ['harbor-point']]));
+    }
+
+    #[Test]
     public function anything_else_is_refused(): void
     {
         $this->expectExceptionMessage('neither a design pack nor a design file');

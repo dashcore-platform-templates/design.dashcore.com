@@ -50,6 +50,25 @@ final class Source
         return is_string($standard) ? self::standardVersion($standard) : null;
     }
 
+    /**
+     * The slug an applied design file names for itself, when it has one.
+     *
+     * Files written before this was added have no slug, and there is no way to
+     * infer one: the only alternative was matching the accent and pairing
+     * against every design in the tool, which stops working the moment two
+     * designs share both. So this returns null and the caller asks.
+     *
+     * Validated on the way out, because it becomes part of a URL.
+     *
+     * @param  array<string,mixed>  $design
+     */
+    public static function designSlug(array $design): ?string
+    {
+        $slug = $design['slug'] ?? null;
+
+        return is_string($slug) && preg_match('/^[a-z0-9-]+$/', $slug) === 1 ? $slug : null;
+    }
+
     /** 'file', 'url' or 'slug'. */
     public static function kind(string $argument): string
     {
