@@ -92,6 +92,14 @@ final class Audit
                 $findings[] = self::finding('tap target under 36px', $n, $m, '05 sets the control height at 40px, or 36px compact, and nothing interactive goes under it. Use h-9 or the --ds-control value.');
             }
 
+            // 03 and 06: flux:heading size="lg" is 16px at weight 500 where the
+            // section heading role is 18px at 600. size="xl" is caught by the
+            // page-title rule below, and the default size is the UI emphasis
+            // role, which Flux gets right.
+            foreach (self::matches($line, '/<flux:heading[^>]*size="lg"/') as $m) {
+                $findings[] = self::finding('Flux heading at section size', $n, $m, 'Use x-ds::section-heading: 18px at 600. Flux renders size="lg" as 16px at 500.');
+            }
+
             foreach (self::matches($line, '/<flux:badge\b/') as $m) {
                 $findings[] = self::finding('Flux badge', $n, $m, 'Use x-ds::badge: a status for the four the standard names, no status for a category, a role or a plan. Flux paints badges from Tailwind, not the standard roles.');
             }

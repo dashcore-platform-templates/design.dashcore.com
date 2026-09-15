@@ -128,6 +128,24 @@ class AuditTest extends TestCase
     }
 
     #[Test]
+    public function a_flux_heading_at_section_size_is_reported(): void
+    {
+        // Flux renders size="lg" as text-base at font-medium, which is 16px at
+        // 500. 03 asks for 18px at 600, and the size is a plain utility class
+        // on the element, so a class of your own does not reliably win.
+        $this->assertSame(['Flux heading at section size'], $this->rules('<flux:heading size="lg">Recent activity</flux:heading>'));
+        $this->assertSame(['Flux heading at section size'], $this->rules('<flux:heading level="2" size="lg" class="mb-2">Delete this?</flux:heading>'));
+
+        // size="xl" is a page title, which the rule further down already names.
+        $this->assertSame(['page title not in the page header'], $this->rules('<flux:heading size="xl">Today</flux:heading>'));
+
+        // The default size is 14px at 500, which is the UI emphasis role in 03.
+        $this->assertSame([], $this->rules('<flux:heading>Filters</flux:heading>'));
+        $this->assertSame([], $this->rules('<x-ds::section-heading>Recent activity</x-ds::section-heading>'));
+        $this->assertSame([], $this->rules('<flux:callout.heading>Card on file expires soon</flux:callout.heading>'), 'a callout heading is its own component');
+    }
+
+    #[Test]
     public function the_prose_type_size_used_as_a_width_is_reported(): void
     {
         // Found by writing it. --ds-prose is 14px, so this is a column one word

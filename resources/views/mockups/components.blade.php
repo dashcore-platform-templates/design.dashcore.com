@@ -30,9 +30,8 @@
         {{-- Text --}}
         <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card) lg:col-span-4 {{ $section }}">
             <p class="{{ $eyebrowClass }}">Text</p>
-            <flux:heading size="xl">Heading xl</flux:heading>
-            <flux:heading size="lg">Heading lg</flux:heading>
-            <flux:heading>Heading</flux:heading>
+            <h2 class="text-lg font-semibold leading-[1.33] text-(--ds-text-strong)">Section heading, 18px at 600</h2> {{-- x-ds::section-heading in a kit --}}
+            <flux:heading>UI emphasis, 14px at 500</flux:heading>
             <flux:subheading>Subheading, one sentence under a title.</flux:subheading>
             <flux:text>Body text at 14px. <flux:link href="#">A link</flux:link> takes accent-content and underlines on hover.</flux:text>
             <flux:text variant="subtle">Muted text, measured at 4.5:1 on this surface.</flux:text>
@@ -290,7 +289,7 @@
                 <div>
                     <p class="ds-label mb-2">Modal</p>
                     <div class="rounded-(--radius-xl) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card) shadow-lg">
-                        <flux:heading size="lg">Delete this item?</flux:heading>
+                        <h3 class="text-lg font-semibold leading-[1.33] text-(--ds-text-strong)">Delete this item?</h3>
                         <flux:text class="mt-2">It leaves the list for everyone. This cannot be undone.</flux:text>
                         <div class="mt-6 flex justify-end gap-2">
                             <flux:button size="sm" variant="ghost">Cancel</flux:button>

@@ -10,6 +10,18 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ---
 
+## 16 September 2026
+
+**Three places where 06 and Flux disagreed are settled.** Checked against Flux 2.19 rather than against the note that recorded them, and one of the three turned out not to be a disagreement at all.
+
+**Section headings get a component.** Tightening, and the audit checks it. `flux:heading` cannot make either heading role in 03: `size="lg"` renders 16px at weight 500 where the section heading is 18px at 600, and `size="xl"` renders 24px at 500 where the page title is 24px at 600. The weight is wrong at every size. Its sizes are plain utility classes on the element, so passing a class of your own leaves two competing and the stylesheet order decides rather than you. `x-ds::section-heading` is the role: 18px, 600, body face, for a section heading, a card title or a modal title. It takes the body face and never the second one, because 03 gives the second face the page title, the sign-in headline and stat values, and bars a serif from anything under 24px. The audit reports `flux:heading size="lg"`. The default size is 14px at 500, which is the UI emphasis role, and Flux gets that one right.
+
+**`callout.button` never existed.** No rule changed, 06 named a component that is not there. Flux ships four callout parts, `index`, `heading`, `text` and `link`, and Flux Pro adds none. Anyone following 06 literally got a Blade error. The action on a callout is `callout.link`, an inline underlined link, and "at most one action" is unchanged.
+
+**The toast width was not a disagreement.** No rule changed. 06 has never specified a toast width, so Flux's 384px, dropping to 320px below `sm` inside a group, contradicts nothing. The number is now written into 06 so it does not get reopened as one.
+
+---
+
 ## 15 September 2026
 
 **Public pages are governed rather than exempted.** Tightening, and the audit checks most of it. Section 13 is new. A landing page used to carry `@ds-audit-ignore-file`, which was never a decision: nobody had written the rules, so the audit was told to look away, and from inside a repo an exemption and a rule look the same. 13 says what carries over from the app standard (the roles, both registers, the pairing, the spacing scale, the icon set, the three widths, the voice) and what does not (the shell, density, `x-ds::page-header`). It adds the one type step the app scale does not have, a hero at 48px, capped there. It also names ten things a public page never does, each of them something a generator reaches for when nobody has said otherwise: gradients as backgrounds or on text, emoji in headings, a badge above the hero, glassmorphism, grain over a gradient, three icon boxes in a row, scroll fades and cursor beams, serif italic accents, and copy that would survive swapping the product name. A public page now says `@ds-public` instead of opting out, which keeps every rule except the page title, since a hero is not a page header. Laravel's `welcome.blade.php` needs no marker. Swapping the two markers on an existing landing page will produce findings, and that is the point.
