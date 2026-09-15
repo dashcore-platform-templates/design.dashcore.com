@@ -293,14 +293,14 @@ new #[Layout('layouts::tool')] class extends Component
         <div class="space-y-6">
             <div>
                 <x-ds::section-heading level="2">Use this design</x-ds::section-heading>
-                <flux:text class="mt-1">Paste the prompt into Claude Code opened in the target repo. The agent installs the adapter, applies {{ $title }}, builds, commits, and if the app already has screens, migrates them one commit at a time. You review the commits.</flux:text>
+                <flux:text class="mt-1">Paste it into Claude Code in the target repo. The agent sets the app up and migrates existing screens one commit at a time, for you to review.</flux:text>
             </div>
 
             <x-copy-block label="Agent prompt" :text="$handoff['prompt']" />
 
             <div>
                 <x-copy-block label="GitHub token" :text="$handoff['token']" />
-                <p class="mt-1.5 text-xs leading-snug text-(--ds-text-muted)">The package is private, so Composer needs its own GitHub token. The agent is never given it: if Composer cannot reach the repository, the agent stops and asks you to run this.</p>
+                <p class="mt-1.5 text-xs leading-snug text-(--ds-text-muted)">Once per machine. The package is private and the agent is never given the token, so it stops and asks if Composer cannot reach the repository.</p>
             </div>
 
             <flux:accordion>
@@ -308,7 +308,7 @@ new #[Layout('layouts::tool')] class extends Component
                     <flux:accordion.heading>Updating</flux:accordion.heading>
                     <flux:accordion.content>
                         <div class="space-y-4 pt-1">
-                            <p class="text-xs leading-snug text-(--ds-text-muted)">Setting an app up happens once, so do not repeat it when a rule changes. The standard is at version <span class="font-mono text-(--ds-text-strong)">{{ $handoff['version'] }}</span>, and an app whose <code>design/STANDARD.md</code> shows a different one is behind. <a href="{{ route('changelog') }}" wire:navigate class="text-(--ds-accent-content) hover:underline">What changed</a>.</p>
+                            <p class="text-xs leading-snug text-(--ds-text-muted)">The standard is at <span class="font-mono text-(--ds-text-strong)">{{ $handoff['version'] }}</span>. An app whose <code>design/STANDARD.md</code> shows anything else is behind. <a href="{{ route('changelog') }}" wire:navigate class="text-(--ds-accent-content) hover:underline">What changed</a>.</p>
                             <x-copy-block label="Agent prompt" :text="$handoff['updatePrompt']" />
                             <x-copy-block label="Commands" :text="$handoff['updateCommands']" />
                         </div>
@@ -320,14 +320,14 @@ new #[Layout('layouts::tool')] class extends Component
                         <div class="space-y-4 pt-1">
                             {{-- The label used to carry this. A label is the name
                                  of the thing, and where to run it is a sentence. --}}
-                            <p class="text-xs leading-snug text-(--ds-text-muted)">Run these in the target repo, in this order.</p>
+                            <p class="text-xs leading-snug text-(--ds-text-muted)">In the target repo, in this order.</p>
                             <x-copy-block label="Commands" :text="$handoff['commands']" />
                             <x-copy-block label="CLAUDE.md snippet" :text="$handoff['snippet']" />
                             <div class="flex flex-wrap items-center gap-2">
                                 <flux:button :href="route('designs.pack', $slug)" size="sm" icon="arrow-down-tray">Download pack</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
                                 <flux:button :href="route('designs.json', $slug)" size="sm" variant="ghost">JSON</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
                             </div>
-                            <p class="text-xs leading-snug text-(--ds-text-muted)">The zip is the same four files, for anyone offline. Unzip it into the repo root, then <code>php artisan design:apply design/design.json</code>.</p>
+                            <p class="text-xs leading-snug text-(--ds-text-muted)">The same files, for anyone offline. Unzip into the repo root, then <code>php artisan design:apply design/design.json</code>.</p>
                         </div>
                     </flux:accordion.content>
                 </flux:accordion.item>

@@ -123,7 +123,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
         <div class="mb-(--ds-section) space-y-(--ds-section) rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-accent-soft) p-(--ds-card)">
             <div>
                 <x-ds::section-heading level="2">Connect {{ $repo }}</x-ds::section-heading>
-                <flux:text class="mt-1">Paste the prompt into Claude Code opened in that repo. The agent brings the app onto the current package, re-applies the design, adds the reporting step to the workflow that already builds it, and commits. It stops before the secrets, which are yours.</flux:text>
+                <flux:text class="mt-1">Paste it into Claude Code in that repo. The agent does the repo work and stops at the secrets.</flux:text>
             </div>
 
             <x-copy-block label="Agent prompt" :text="$connectPrompt" />
@@ -133,7 +133,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                  cannot do sits next to the one it can. --}}
             <div>
                 <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-(--ds-text-strong)">
-                    <span>Add these two to that repository, yourself</span>
+                    <span>Secrets</span>
                     @if ($issuedSecretsUrl)
                         <flux:link href="{{ $issuedSecretsUrl }}" target="_blank" class="inline-flex items-center gap-1 font-normal">
                             Open that page
@@ -141,7 +141,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                         </flux:link>
                     @endif
                 </p>
-                <p class="mt-1 text-sm text-(--ds-text-muted)">On GitHub: Settings → Secrets and variables → Actions → New repository secret. The token is shown here and never again.</p>
+                <p class="mt-1 text-sm text-(--ds-text-muted)">Settings → Secrets and variables → Actions on that repo. The token is shown once.</p>
                 <div class="mt-3 grid gap-3 md:grid-cols-2">
                     <x-copy-block label="DESIGN_TOKEN" :text="$issued" />
                     <x-copy-block label="DESIGN_SOURCE" :text="rtrim(config('app.url'), '/')" />
@@ -154,14 +154,14 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                     <flux:accordion.content>
                         <div class="space-y-4 pt-1">
                             <div>
-                                <p class="text-xs leading-snug text-(--ds-text-muted)">In that repo, then commit the lock file. Skip if it is already on {{ \App\Design\Handoff::MAJOR }}. Plain <code>composer update</code> stays inside the major the app is pinned to and reports nothing to do.</p>
+                                <p class="text-xs leading-snug text-(--ds-text-muted)">Skip if already on {{ \App\Design\Handoff::MAJOR }}. <code>composer update</code> will not get there: it stays inside the major the app is pinned to.</p>
                                 <x-copy-block label="Commands" :text="$upgrade" />
                             </div>
                             <div>
-                                <p class="text-xs leading-snug text-(--ds-text-muted)">Then one step in the workflow that already installs the app, after <code>composer install</code>. It never fails the build, and the <code>if</code> keeps a pull request from overwriting the row with a branch nobody has merged.</p>
+                                <p class="text-xs leading-snug text-(--ds-text-muted)">In the workflow that already installs the app, after <code>composer install</code>. The <code>if</code> stops a pull request overwriting the row.</p>
                                 <x-copy-block label="In .github/workflows" :text="$ciStep" />
                             </div>
-                            <p class="text-xs leading-snug text-(--ds-text-muted)">The row above fills in on the first run after the secrets exist. If it does not, the job's output says which of the two is missing or wrong.</p>
+                            <p class="text-xs leading-snug text-(--ds-text-muted)">The row fills in on the first run after the secrets exist. If it does not, the job says which one is wrong.</p>
                         </div>
                     </flux:accordion.content>
                 </flux:accordion.item>

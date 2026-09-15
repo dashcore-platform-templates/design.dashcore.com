@@ -192,7 +192,7 @@ class FleetPageTest extends TestCase
         Livewire::actingAs(User::factory()->create())
             ->test('pages::fleet')
             ->call('rotate', $site->id)
-            ->assertSee('shown here and never again');
+            ->assertSee('The token is shown once');
 
         $this->assertNull(Site::byToken($old));
     }
