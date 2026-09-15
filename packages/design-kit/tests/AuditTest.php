@@ -127,6 +127,19 @@ class AuditTest extends TestCase
         $this->assertSame(['colour off the roles', 'spacing off the scale', 'text under 12px', 'weight off the scale'], $this->publicRules($off));
     }
 
+    #[Test]
+    public function the_prose_type_size_used_as_a_width_is_reported(): void
+    {
+        // Found by writing it. --ds-prose is 14px, so this is a column one word
+        // wide, and the name reads like a measure rather than a size.
+        $this->assertSame(['--ds-prose used as a length'], $this->rules('<div class="mx-auto max-w-(--ds-prose)">'));
+        $this->assertSame(['--ds-prose used as a length'], $this->rules('<div class="w-(--ds-prose) h-(--ds-prose)">'));
+
+        $this->assertSame([], $this->rules('<div class="mx-auto max-w-prose">'), '03 caps prose at 65 characters, which is this');
+        $this->assertSame([], $this->rules('<p class="text-(length:--ds-prose)">'), 'as a type size it is what it is for');
+        $this->assertSame([], $this->rules('<div class="p-(--ds-card) h-(--ds-row)">'), 'the other density tokens really are lengths');
+    }
+
     /** @return list<string> */
     private function publicRules(string $blade): array
     {

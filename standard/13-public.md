@@ -71,7 +71,9 @@ Where a brand genuinely requires one, that is allowed, and it goes in the design
 
 ## Legal pages
 
-Terms, privacy and anything else long. One column, `prose` width from 05, body face, no hero. Headings step down normally and the page is readable at `md` without a sidebar of contents.
+Terms, privacy and anything else long. One column, body face, no hero, and the 65-character line cap from 03, which is `max-w-prose`. Headings step down normally and the page is readable at `md` without a sidebar of contents.
+
+`--ds-prose` is not that cap. It is the prose type size from 05, and using it as a width gives a column 14 pixels wide.
 
 These are not marketing pages and they do not take the landing header. The brand mark and a way back is enough.
 

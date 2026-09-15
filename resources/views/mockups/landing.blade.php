@@ -7,7 +7,12 @@
     the hero heading, and the proof section shows a frame of the product rather
     than three icon boxes in a row. Both are bans in 13, and both are what a
     generator reaches for when nobody has said otherwise.
+
+    Marked @ds-public so it answers to 13 rather than to the app rules: the
+    two headings here are heroes, not page titles. Everything else still
+    applies, which is why the off-scale padding was a finding.
 --}}
+{{-- @ds-public --}}
 @php
     $name = $design->name();
     $initial = mb_substr($name, 0, 1);
@@ -54,7 +59,7 @@
                 </header>
 
                 {{-- 2. The hero. Nothing above the heading: no badge, no pill, no eyebrow. --}}
-                <div class="px-(--ds-gutter) py-16 text-center md:py-20">
+                <div class="px-(--ds-gutter) py-12 text-center md:py-16">
                     <h1 class="mx-auto max-w-2xl text-4xl font-semibold leading-[1.1] text-(--ds-text-strong) md:text-5xl {{ $titleFont }}">{{ $headline }}</h1>
                     <p class="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-(--ds-text-muted)">{{ $sentence }}</p>
                     <div class="mt-8 flex justify-center">
@@ -137,8 +142,8 @@
         {{-- The legal page: one column at prose width, no hero, no landing header. --}}
         <section>
             <p class="ds-label mb-1.5">Terms, privacy and anything else long</p>
-            <div class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-page) px-(--ds-gutter) py-10">
-                <div class="mx-auto max-w-(--ds-prose)">
+            <div class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-page) px-(--ds-gutter) py-12">
+                <div class="mx-auto max-w-prose">
                     <div class="mb-8 flex items-center gap-2.5">
                         {!! $brand !!}
                         <span class="text-sm font-medium text-(--ds-text-strong)">{{ $name }}</span>

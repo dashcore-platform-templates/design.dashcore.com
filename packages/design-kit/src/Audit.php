@@ -69,6 +69,13 @@ final class Audit
                 $findings[] = self::finding('spacing off the scale', $n, $m, 'The scale is 1 2 3 4 6 8 12 16. Pick the nearest, or a --ds-* density value.');
             }
 
+            // --ds-prose is the prose type size from 05, not a column width, and
+            // the name invites the mistake. As a width it gives a 14px column,
+            // which is one word per line and obvious on screen but easy to write.
+            foreach (self::matches($line, '/\b(?:max-w|min-w|w|max-h|min-h|h)-\(--ds-prose\)/') as $m) {
+                $findings[] = self::finding('--ds-prose used as a length', $n, $m, 'It is a type size. The prose line cap in 03 is 65 characters: max-w-prose.');
+            }
+
             foreach (self::matches($line, '/\bfont-(?:bold|extrabold|black|light|thin|extralight)\b/') as $m) {
                 $findings[] = self::finding('weight off the scale', $n, $m, 'Three weights: font-normal, font-medium, font-semibold.');
             }
