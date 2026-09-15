@@ -197,13 +197,24 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                         <td class="px-(--ds-cell-x) py-3 text-end">
                             @if ($report === null)
                                 <span class="text-(--ds-text-muted)">—</span>
+                            @elseif ($report->total_findings === 0)
+                                {{-- Zero is an answer and reads better as a word than
+                                     as a nought sitting under numbers in the hundreds. --}}
+                                <span class="text-(--ds-text-muted)">None</span>
                             @else
-                                {{-- A count means nothing without the package that produced
-                                     it, which is the column beside this one. --}}
-                                <span class="font-medium tabular-nums {{ $report->total_findings === 0 ? 'text-(--ds-text-muted)' : 'text-(--ds-text-strong)' }}">{{ $report->total_findings }}</span>
-                                @if ($report->files_with_findings > 0)
-                                    <span class="ms-1 text-xs text-(--ds-text-muted)">in {{ $report->files_with_findings }}</span>
-                                @endif
+                                {{-- "22 in 8" was a riddle: in eight what. The unit goes
+                                     in, and the rules behind the number are on hover,
+                                     because the count alone never says what to fix.
+
+                                     A count also means nothing without the package that
+                                     produced it, which is the column beside this one. --}}
+                                <span
+                                    class="cursor-help"
+                                    title="{{ collect($report->findings)->map(fn (int $n, string $rule) => "{$rule}: {$n}")->implode("\n") }}"
+                                >
+                                    <span class="font-medium tabular-nums text-(--ds-text-strong)">{{ $report->total_findings }}</span>
+                                    <span class="ms-1 text-xs text-(--ds-text-muted)">in {{ $report->files_with_findings }} {{ Str::plural('file', $report->files_with_findings) }}</span>
+                                </span>
                             @endif
                         </td>
                         <td class="px-(--ds-cell-x) py-3 text-(--ds-text-muted)">{{ $site->last_reported_at?->diffForHumans() ?? 'never' }}</td>

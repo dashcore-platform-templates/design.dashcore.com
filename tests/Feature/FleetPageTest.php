@@ -71,7 +71,26 @@ class FleetPageTest extends TestCase
             ->assertSee('executiveos.dashcore.com')
             ->assertSee('dashcore-product-executiveos')
             ->assertSee('Current')
-            ->assertSee('6');
+            // "6 in 1" was a riddle: in one what. And the rules behind the
+            // number are the thing somebody actually wants, so they are on the
+            // cell rather than nowhere.
+            ->assertSee('in 1 file')
+            ->assertSee('tap target under 36px: 6');
+    }
+
+    #[Test]
+    public function an_app_with_nothing_wrong_says_none(): void
+    {
+        $site = Site::factory()->create();
+        SiteReport::factory()->for($site)->create();
+
+        // Zero reads better as a word than as a nought under numbers in the
+        // hundreds, and it is a different row from never having reported.
+        $this->actingAs(User::factory()->create())
+            ->get('/fleet')
+            ->assertOk()
+            ->assertSee('None')
+            ->assertDontSee('Never reported');
     }
 
     #[Test]
