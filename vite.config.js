@@ -7,7 +7,11 @@ import { defineConfig, lazyPlugins } from 'vite-plus';
 export default defineConfig({
     plugins: lazyPlugins(() => [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            // passkeys.js is loaded by the sign-in page through @vite. Left out
+            // of this list it is never built, so it is missing from the
+            // manifest and every built deployment throws on /login. It worked
+            // locally only because the dev server answers without a manifest.
+            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/passkeys.js'],
             refresh: true,
         }),
         tailwindcss(),
