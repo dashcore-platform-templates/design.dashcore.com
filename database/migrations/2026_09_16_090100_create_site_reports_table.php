@@ -30,7 +30,11 @@ return new class extends Migration
             // Counts by rule, not the findings themselves. The tool does not
             // need to know which line of somebody's view is wrong, and sending
             // that would put other people's source in this database.
-            $table->json('findings');
+            // jsonb rather than json on Postgres: it is the one with operators
+            // and indexes, and the impact preview will ask questions inside
+            // this column rather than only reading it back whole. SQLite has
+            // no JSON type either way, so nothing changes locally.
+            $table->jsonb('findings');
             $table->unsignedInteger('total_findings')->default(0);
             $table->unsignedInteger('files_with_findings')->default(0);
             $table->unsignedInteger('files_checked')->default(0);

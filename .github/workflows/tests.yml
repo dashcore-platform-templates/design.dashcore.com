@@ -13,6 +13,38 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    # Postgres here rather than the SQLite the suite used to run on, because
+    # production is Postgres and this was the last place to find out. The two
+    # disagree on things this app does: SQLite takes a string into an integer
+    # column where Postgres throws, its LIKE is case-insensitive, it sorts
+    # NULLs first rather than last, and it has no real JSON type. Running the
+    # suite on the engine that serves the app is the only way those surface
+    # before somebody opens the page.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: testing
+          POSTGRES_PASSWORD: testing
+        ports:
+          - 5432:5432
+        # Without this the job races the container and the first query fails
+        # on a connection that is not listening yet.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: testing
+      DB_USERNAME: testing
+      DB_PASSWORD: testing
+
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -24,6 +56,9 @@ jobs:
         with:
           php-version: '8.4'
           tools: composer:v2
+          # The suite talks to the Postgres service above, and the runner's PHP
+          # does not carry that driver by default.
+          extensions: pdo_pgsql
           coverage: none
 
       - name: Setup Node
