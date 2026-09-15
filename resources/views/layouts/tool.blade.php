@@ -72,6 +72,13 @@
                                 </x-slot:marker>
                             </x-tool-nav-item>
                         </div>
+
+                        {{-- Only for people who can open it. A link that always
+                             bounces to sign-in is a link that teaches people the
+                             nav lies. --}}
+                        @auth
+                            <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Fleet</x-tool-nav-item>
+                        @endauth
                     </div>
                     <div>
                         <p class="ds-eyebrow px-2 pb-1.5">Designs</p>

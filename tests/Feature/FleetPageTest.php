@@ -27,6 +27,20 @@ class FleetPageTest extends TestCase
     }
 
     #[Test]
+    public function the_nav_links_to_the_fleet_only_for_people_who_can_open_it(): void
+    {
+        // It was reachable only by typing the URL, which is the same as not
+        // existing. And a link that always bounces to sign-in teaches people
+        // the nav lies, so signed-out visitors do not get one.
+        $this->get('/designs')->assertOk()->assertDontSee('>Fleet<', false);
+
+        $this->actingAs(User::factory()->create())
+            ->get('/designs')
+            ->assertOk()
+            ->assertSee('>Fleet<', false);
+    }
+
+    #[Test]
     public function nobody_can_sign_themselves_up(): void
     {
         // The page lists every Dashcore product and its failings, so accounts
