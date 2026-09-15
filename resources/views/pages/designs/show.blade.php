@@ -60,10 +60,13 @@ new #[Layout('layouts::tool')] class extends Component
         // and mobile: the second default survives because nothing replaced it.
         // The property therefore defaults to empty and the default list is
         // applied here, once, only when the URL asked for nothing.
+        //
+        // Only an array counts as an answer. A scalar means an old link from
+        // before the binding was right, where the menu wrote ?viewports=true,
+        // and treating that as "none ticked" would show an empty menu over a
+        // canvas drawing two frames.
         $asked = request()->query('viewports');
-        $this->viewports = $asked === null
-            ? Artboard::DEFAULT_SHOWN
-            : Artboard::valid(is_array($asked) ? $asked : [$asked]);
+        $this->viewports = is_array($asked) ? Artboard::valid($asked) : Artboard::DEFAULT_SHOWN;
 
         $this->load();
     }
@@ -348,14 +351,20 @@ new #[Layout('layouts::tool')] class extends Component
                     <flux:button size="sm" variant="ghost" icon="computer-desktop" icon:trailing="chevron-down">{{ count($viewports) }}</flux:button>
                     <flux:menu class="w-64">
                         <flux:menu.heading>Show viewports</flux:menu.heading>
-                        @foreach (Artboard::VIEWPORTS as $name => $frame)
-                            <flux:menu.checkbox wire:model.live="viewports" :value="$name">
-                                <span class="flex w-full items-center justify-between gap-4">
-                                    <span>{{ $frame['label'] }}</span>
-                                    <span class="text-xs tabular-nums text-(--ds-text-muted)">{{ $frame['width'] }}×{{ $frame['height'] }}</span>
-                                </span>
-                            </flux:menu.checkbox>
-                        @endforeach
+                        {{-- The group carries the binding and each box carries a
+                             value. Putting wire:model on the boxes instead binds
+                             four booleans to one array property, which throws on
+                             the first click and ticks every box until it does. --}}
+                        <flux:menu.checkbox.group wire:model.live="viewports">
+                            @foreach (Artboard::VIEWPORTS as $name => $frame)
+                                <flux:menu.checkbox :value="$name">
+                                    <span class="flex w-full items-center justify-between gap-4">
+                                        <span>{{ $frame['label'] }}</span>
+                                        <span class="text-xs tabular-nums text-(--ds-text-muted)">{{ $frame['width'] }}×{{ $frame['height'] }}</span>
+                                    </span>
+                                </flux:menu.checkbox>
+                            @endforeach
+                        </flux:menu.checkbox.group>
                         <flux:menu.separator />
                         <p class="px-2 py-1.5 text-xs leading-snug text-(--ds-text-muted)">Two to a row, wrapping below. Unticking the last one puts Desktop and Mobile back.</p>
                     </flux:menu>
