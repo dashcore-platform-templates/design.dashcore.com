@@ -32,12 +32,12 @@ class FleetPageTest extends TestCase
         // It was reachable only by typing the URL, which is the same as not
         // existing. And a link that always bounces to sign-in teaches people
         // the nav lies, so signed-out visitors do not get one.
-        $this->get('/designs')->assertOk()->assertDontSee('>Fleet<', false);
+        $this->get('/designs')->assertOk()->assertDontSee('>Sites<', false);
 
         $this->actingAs(User::factory()->create())
             ->get('/designs')
             ->assertOk()
-            ->assertSee('>Fleet<', false);
+            ->assertSee('>Sites<', false);
     }
 
     #[Test]

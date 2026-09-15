@@ -73,13 +73,20 @@
                             </x-tool-nav-item>
                         </div>
 
-                        {{-- Only for people who can open it. A link that always
-                             bounces to sign-in is a link that teaches people the
-                             nav lies. --}}
-                        @auth
-                            <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Fleet</x-tool-nav-item>
-                        @endauth
                     </div>
+
+                    {{-- Its own group. The fleet is not reference material: the
+                         standard and the changelog are things to read, and this
+                         is the state of fifteen running apps.
+
+                         Only for people who can open it, because a link that
+                         always bounces to sign-in teaches people the nav lies. --}}
+                    @auth
+                        <div>
+                            <p class="ds-eyebrow px-2 pb-1.5">Fleet</p>
+                            <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Sites</x-tool-nav-item>
+                        </div>
+                    @endauth
                     <div>
                         <p class="ds-eyebrow px-2 pb-1.5">Designs</p>
                         @foreach (\App\Design\Design::all() as $design)
