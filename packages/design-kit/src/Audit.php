@@ -100,6 +100,16 @@ final class Audit
                 $findings[] = self::finding('Flux heading at section size', $n, $m, 'Use x-ds::section-heading: 18px at 600. Flux renders size="lg" as 16px at 500.');
             }
 
+            // 06 is in the applied CSS block for the table: head on sunken at
+            // 12px muted, body at 14px on the density row height, first column
+            // strong. A screen that writes any of it again reaches into Flux's
+            // internals to say what the adapter already says, and then stops
+            // matching the moment the adapter moves. Found on a real screen
+            // whose own comment said it belonged in the adapter.
+            foreach (self::matches($line, '/\[data-flux-(?:table|column|cell|row)\]/') as $m) {
+                $findings[] = self::finding('Flux table styled on the screen', $n, $m, "06's table styling is in the applied CSS block. Use a plain flux:table and let the adapter do it.");
+            }
+
             foreach (self::matches($line, '/<flux:badge\b/') as $m) {
                 $findings[] = self::finding('Flux badge', $n, $m, 'Use x-ds::badge: a status for the four the standard names, no status for a category, a role or a plan. Flux paints badges from Tailwind, not the standard roles.');
             }

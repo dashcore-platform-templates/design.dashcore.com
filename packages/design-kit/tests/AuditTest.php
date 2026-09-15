@@ -146,6 +146,26 @@ class AuditTest extends TestCase
     }
 
     #[Test]
+    public function a_screen_restyling_the_flux_table_is_reported(): void
+    {
+        // The real one, off a kit built before the adapter carried the table.
+        // Its own comment said it belonged in the adapter, and keeping both was
+        // worse than either: the screen won on the head and the adapter won on
+        // the hover, so the table matched neither.
+        $blade = '<flux:table class="[&_[data-flux-cell]]:h-(--ds-row) [&_[data-flux-column]]:bg-(--ds-sunken)">';
+        $this->assertSame(['Flux table styled on the screen'], $this->rules($blade));
+
+        $this->assertSame(['Flux table styled on the screen'], $this->rules('<div class="[&_[data-flux-row]]:border-0">'));
+
+        // A plain table is the whole point.
+        $this->assertSame([], $this->rules('<flux:table><flux:table.column>Invoice</flux:table.column></flux:table>'));
+        $this->assertSame([], $this->rules('<flux:table.cell align="end">{{ $invoice[\'amount\'] }}</flux:table.cell>'));
+
+        // Other Flux internals are somebody else's argument, not 06's.
+        $this->assertSame([], $this->rules('<div class="[&_[data-flux-field]]:mt-0">'));
+    }
+
+    #[Test]
     public function the_prose_type_size_used_as_a_width_is_reported(): void
     {
         // Found by writing it. --ds-prose is 14px, so this is a column one word
