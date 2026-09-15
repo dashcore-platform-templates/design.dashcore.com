@@ -23,6 +23,7 @@ final class Screens
         'components' => 'Components',
         'email' => 'Email',
         'errors' => 'Errors',
+        'landing' => 'Landing',
     ];
 
     public static function has(string $screen): bool

@@ -24,6 +24,9 @@ final class Audit
     /** A whole file that is deliberately outside the standard says so once, with a reason. */
     public const IGNORE_FILE = '@ds-audit-ignore-file';
 
+    /** A page a signed-out person reaches, which 13 governs rather than exempts. */
+    public const PUBLIC_FILE = '@ds-public';
+
     /**
      * @param  string|null  $path  Where the file lives, when known. A sign-in view
      *                             keeps its own heading, so the page-title rule
@@ -38,7 +41,12 @@ final class Audit
 
         $findings = [];
         $lines = preg_split('/\R/', $contents) ?: [];
-        $isAuth = $path !== null && self::isAuthView($path);
+
+        // 13: a public page has a hero, not a page header, so the title rule is
+        // wrong there for the same reason it is wrong on sign-in. Everything
+        // else still applies, because a public page is on the roles and the
+        // scale like any other view.
+        $noPageHeader = ($path !== null && self::isAuthView($path)) || self::isPublicView($contents, $path);
 
         foreach ($lines as $i => $line) {
             $n = $i + 1;
@@ -85,7 +93,7 @@ final class Audit
                 $findings[] = self::finding('Lucide icon name', $n, $m, 'Heroicons only. `design:apply` renames these.');
             }
 
-            if (! $isAuth) {
+            if (! $noPageHeader) {
                 foreach (self::matches($line, '/<flux:heading[^>]*size="xl"|<h1\b/') as $m) {
                     $findings[] = self::finding('page title not in the page header', $n, $m, 'Titles go through x-ds::page-header, which applies the pairing second face.');
                 }
@@ -99,6 +107,24 @@ final class Audit
     public static function optsOut(string $contents): bool
     {
         return str_contains($contents, self::IGNORE_FILE);
+    }
+
+    /**
+     * A public page, which 13 governs. It says so with a marker rather than by
+     * where it lives, because "public" is a decision about who reaches a page
+     * and no path spells that reliably. Laravel's own welcome.blade.php is the
+     * exception: every app has one and it is always the landing page.
+     *
+     * This is not an exemption. A public page is still audited for colour,
+     * spacing, weights and text size. It loses one rule, the page title.
+     */
+    public static function isPublicView(string $contents, ?string $path = null): bool
+    {
+        if (str_contains($contents, self::PUBLIC_FILE)) {
+            return true;
+        }
+
+        return $path !== null && str_ends_with(str_replace('\\', '/', $path), '/welcome.blade.php');
     }
 
     /**

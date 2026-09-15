@@ -109,6 +109,34 @@ class AuditTest extends TestCase
     }
 
     #[Test]
+    public function a_public_page_keeps_its_hero_but_nothing_else(): void
+    {
+        $hero = '<h1 class="text-5xl font-semibold text-(--ds-text-strong)">Run the clinic, not the paperwork</h1>';
+
+        $this->assertSame(['page title not in the page header'], $this->rules($hero), 'an app screen still has to use the page header');
+
+        // 13: a hero is not a page title, so the rule goes. The marker says so
+        // rather than the folder, because public is about who reaches a page.
+        $this->assertSame([], Audit::file("{{-- @ds-public --}}\n".$hero));
+        $this->assertSame([], Audit::file($hero, 'resources/views/welcome.blade.php'), 'every Laravel app has one and it is always the landing page');
+        $this->assertNotSame([], Audit::file($hero, 'resources/views/welcome-back.blade.php'), 'only that filename counts');
+
+        // Losing one rule is not an exemption. Everything else still applies,
+        // which is the whole difference between 13 and the old ignore-file.
+        $off = "{{-- @ds-public --}}\n".'<p class="p-5 font-bold text-gray-600 text-[10px]">Best in class solutions</p>';
+        $this->assertSame(['colour off the roles', 'spacing off the scale', 'text under 12px', 'weight off the scale'], $this->publicRules($off));
+    }
+
+    /** @return list<string> */
+    private function publicRules(string $blade): array
+    {
+        $rules = array_values(array_unique(array_map(fn (array $f): string => $f['rule'], Audit::file($blade))));
+        sort($rules);
+
+        return $rules;
+    }
+
+    #[Test]
     public function an_interactive_element_under_36px_is_reported(): void
     {
         foreach ([

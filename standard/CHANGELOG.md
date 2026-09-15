@@ -10,6 +10,12 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ---
 
+## 15 September 2026
+
+**Public pages are governed rather than exempted.** Tightening, and the audit checks most of it. Section 13 is new. A landing page used to carry `@ds-audit-ignore-file`, which was never a decision: nobody had written the rules, so the audit was told to look away, and from inside a repo an exemption and a rule look the same. 13 says what carries over from the app standard (the roles, both registers, the pairing, the spacing scale, the icon set, the three widths, the voice) and what does not (the shell, density, `x-ds::page-header`). It adds the one type step the app scale does not have, a hero at 48px, capped there. It also names ten things a public page never does, each of them something a generator reaches for when nobody has said otherwise: gradients as backgrounds or on text, emoji in headings, a badge above the hero, glassmorphism, grain over a gradient, three icon boxes in a row, scroll fades and cursor beams, serif italic accents, and copy that would survive swapping the product name. A public page now says `@ds-public` instead of opting out, which keeps every rule except the page title, since a hero is not a page header. Laravel's `welcome.blade.php` needs no marker. Swapping the two markers on an existing landing page will produce findings, and that is the point.
+
+---
+
 ## 14 September 2026
 
 **An app can ask whether the standard moved.** No rule changed. `php artisan design:check --against=<slug>` compares the stamp in `design/STANDARD.md` with the version the tool is publishing now, and says which. Until this, `design:apply` was the only thing that reported it, so finding out meant re-applying, which is a change made to answer a question. It writes nothing and never changes the exit code, because half the entries in this file are relaxations with nothing to do.
