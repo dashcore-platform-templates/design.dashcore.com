@@ -96,14 +96,14 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 }; ?>
 
 <div class="px-(--ds-gutter) py-(--ds-section)">
-    <x-ds::page-header eyebrow="Fleet" title="Who is on the standard" class="mb-(--ds-section)">
+    <x-ds::page-header title="Fleet" class="mb-(--ds-section)">
         <x-slot:description>What each app last reported about itself. The standard reads <code class="font-mono text-xs">{{ $current }}</code> today.</x-slot:description>
 
         {{-- Adding a site happens once per app and then never again, so it is
              behind a button. A permanent form under the table would be the
              largest thing on a page that exists to be read at a glance. --}}
         <flux:modal.trigger name="add-site">
-            <flux:button variant="primary" icon="plus">Add a site</flux:button>
+            <flux:button variant="primary" icon="plus">Add site</flux:button>
         </flux:modal.trigger>
     </x-ds::page-header>
 
@@ -114,7 +114,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
         @php $host = $issuedHost ?? 'the app'; @endphp
         <div class="mb-(--ds-section) space-y-(--ds-section) rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-accent-soft) p-(--ds-card)">
             <div>
-                <x-ds::section-heading level="2">Set {{ $host }} up to report</x-ds::section-heading>
+                <x-ds::section-heading level="2">Connect {{ $host }}</x-ds::section-heading>
                 <p class="mt-1 text-sm text-(--ds-text-muted)">Three steps, once per app. The token is shown here and never again.</p>
             </div>
 
@@ -199,7 +199,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                             <flux:dropdown position="bottom" align="end">
                                 <flux:button variant="ghost" icon="ellipsis-horizontal" />
                                 <flux:menu>
-                                    <flux:menu.item wire:click="rotate({{ $site->id }})" icon="key">Issue a new token</flux:menu.item>
+                                    <flux:menu.item wire:click="rotate({{ $site->id }})" icon="key">New token</flux:menu.item>
                                     <flux:menu.separator />
                                     <flux:menu.item wire:click="forget({{ $site->id }})" wire:confirm="Remove {{ $site->host }} and every report it has sent?" icon="trash" variant="danger">Remove</flux:menu.item>
                                 </flux:menu>
@@ -225,7 +225,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
     <flux:modal name="add-site" class="md:w-96">
         <form wire:submit="add" class="space-y-(--ds-section)">
             <div>
-                <x-ds::section-heading>Add a site</x-ds::section-heading>
+                <x-ds::section-heading>Add site</x-ds::section-heading>
                 <p class="mt-1 text-sm text-(--ds-text-muted)">It is given a token, which goes in that app's CI. A report authenticates as a site rather than claiming to be one, so nothing can add itself by finding the endpoint.</p>
             </div>
 
@@ -238,7 +238,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                 <flux:modal.close>
                     <flux:button variant="ghost">Cancel</flux:button>
                 </flux:modal.close>
-                <flux:button type="submit" variant="primary">Add and issue a token</flux:button>
+                <flux:button type="submit" variant="primary">Add site</flux:button>
             </div>
         </form>
     </flux:modal>

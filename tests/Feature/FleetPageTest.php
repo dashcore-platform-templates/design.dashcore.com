@@ -32,12 +32,12 @@ class FleetPageTest extends TestCase
         // It was reachable only by typing the URL, which is the same as not
         // existing. And a link that always bounces to sign-in teaches people
         // the nav lies, so signed-out visitors do not get one.
-        $this->get('/designs')->assertOk()->assertDontSee('>Sites<', false);
+        $this->get('/designs')->assertOk()->assertDontSee('>Fleet<', false);
 
         $this->actingAs(User::factory()->create())
             ->get('/designs')
             ->assertOk()
-            ->assertSee('>Sites<', false);
+            ->assertSee('>Fleet<', false);
     }
 
     #[Test]
@@ -112,7 +112,7 @@ class FleetPageTest extends TestCase
             // everything in front of them. It names the repository, where the
             // secrets go, and the step to add, rather than saying "that app's
             // CI" and leaving them to work out where that is.
-            ->assertSee('Set newproject.dashcore.com up to report')
+            ->assertSee('Connect newproject.dashcore.com')
             ->assertSee('Settings → Secrets and variables → Actions', false)
             ->assertSee('DESIGN_TOKEN')
             ->assertSee('DESIGN_SOURCE')

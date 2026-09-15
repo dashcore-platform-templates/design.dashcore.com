@@ -58,8 +58,7 @@ new #[Layout('layouts::tool')] #[Title('New design')] class extends Component
 
 <div class="px-(--ds-gutter) py-(--ds-section)">
     <x-ds::page-header
-        eyebrow="New design"
-        title="Describe the project"
+        title="New design"
         description="Two sentences are enough. The generator reads the standard and this brief, then chooses the seven decisions the standard leaves open. You can change any of them afterwards."
         class="mb-(--ds-section)"
     />

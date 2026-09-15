@@ -16,8 +16,8 @@ class DesignViewerTest extends TestCase
     public function the_pages_render_without_a_login(): void
     {
         $this->get('/')->assertRedirect('/designs');
-        $this->get('/designs')->assertOk()->assertSee('Every design in the fleet');
-        $this->get('/standard')->assertOk()->assertSee('The Dashcore Standard');
+        $this->get('/designs')->assertOk()->assertSee('Designs');
+        $this->get('/standard')->assertOk()->assertSee('Standard');
         $this->get('/designs/dashcore')->assertOk()->assertSee('Download pack');
         $this->get('/designs/does-not-exist')->assertNotFound();
     }

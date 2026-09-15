@@ -14,7 +14,7 @@ use Livewire\Component;
  * Kept off the Standard page on purpose. That page is reference, read while
  * building a screen. This one is read when something has moved.
  */
-new #[Layout('layouts::tool')] #[Title('What changed')] class extends Component
+new #[Layout('layouts::tool')] #[Title('Changelog')] class extends Component
 {
     public function with(): array
     {
@@ -31,8 +31,7 @@ new #[Layout('layouts::tool')] #[Title('What changed')] class extends Component
 <div class="flex">
     <div class="min-w-0 flex-1 px-(--ds-gutter) py-(--ds-section)">
         <x-ds::page-header
-            eyebrow="Reference"
-            title="What changed"
+            title="Changelog"
             :description="$count.' '.Str::plural('change', $count).' to the standard so far. An app compares its own stamp against this one.'"
             class="mb-(--ds-section)"
         >

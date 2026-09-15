@@ -20,8 +20,7 @@ new #[Layout('layouts::tool')] #[Title('The Standard')] class extends Component
 <div class="flex">
     <div class="min-w-0 flex-1 px-(--ds-gutter) py-(--ds-section)">
         <x-ds::page-header
-            eyebrow="Reference"
-            title="The Dashcore Standard"
+            title="Standard"
             description="Draft zero. Files 01 to 09 are also the generator's instructions, word for word."
             class="mb-(--ds-section)"
         >

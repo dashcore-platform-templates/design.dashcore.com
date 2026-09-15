@@ -154,6 +154,6 @@ class GenerateDesignTest extends TestCase
     #[Test]
     public function the_new_design_page_renders(): void
     {
-        $this->get('/designs/new')->assertOk()->assertSee('Describe the project');
+        $this->get('/designs/new')->assertOk()->assertSee('New design');
     }
 }

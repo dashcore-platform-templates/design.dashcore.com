@@ -28,7 +28,7 @@
                 <nav class="flex flex-1 flex-col gap-4 px-2 py-4 text-sm">
                     <div>
                         <p class="ds-eyebrow px-2 pb-1.5">Reference</p>
-                        <x-tool-nav-item :href="route('standard')" :active="request()->routeIs('standard')" icon="book-open">The Standard</x-tool-nav-item>
+                        <x-tool-nav-item :href="route('standard')" :active="request()->routeIs('standard')" icon="book-open">Standard</x-tool-nav-item>
                         {{--
                             How many changes this browser has not looked at. There
                             is no login here, so the count is per browser and lives
@@ -65,7 +65,7 @@
                             },
                         }">
                             <x-tool-nav-item :href="route('changelog')" :active="request()->routeIs('changelog')" icon="sparkles">
-                                What changed
+                                Changelog
                                 <x-slot:marker>
                                     <span x-cloak x-show="unseen > 0" x-text="unseen"
                                           class="ms-auto inline-flex min-w-5 shrink-0 items-center justify-center rounded-(--radius-sm) bg-(--ds-accent) px-1.5 py-0.5 text-xs font-medium tabular-nums text-(--ds-on-accent)"></span>
@@ -83,8 +83,7 @@
                          always bounces to sign-in teaches people the nav lies. --}}
                     @auth
                         <div>
-                            <p class="ds-eyebrow px-2 pb-1.5">Fleet</p>
-                            <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Sites</x-tool-nav-item>
+                            <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Fleet</x-tool-nav-item>
                         </div>
                     @endauth
                     <div>
