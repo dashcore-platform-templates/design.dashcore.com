@@ -82,13 +82,28 @@ The mirror is private, so Composer needs its own GitHub credentials once per mac
 composer config --global github-oauth.github.com <a GitHub token with repo scope>
 ```
 
-## Unreleased, waiting for 4.0
+## Upgrading to 4.0
 
-On master and not tagged, on purpose, so it can go out with whatever else lands:
+One thing breaks, and it lands on one product rather than the fleet.
 
-**A Flux button at `size="sm"` is a tap target finding.** 05 has always said a touch target is never under 36px. Flux's `sm` is `h-8`, which is 32px, and only `base` at `h-10` clears the floor. The rule caught `xs` and not `sm`, while already reporting a hand-written `h-8` button, so it was inconsistent with itself. Measured on five apps here: 63 in one, 68 in another which is the same product, and nothing in the other three.
+**A Flux button at `size="sm"` is a tap target finding.** 05 has always said a touch target is never under 36px. Flux's heights are `h-10` at 40px for `base`, `h-8` at 32px for `sm` and `h-6` at 24px for `xs`, so `base` is the only size that clears the floor.
 
-A kit on `^3.0` does not have this yet. `design:update` will bring the standard text across and audit it with 3.0's rules, so the count will not move until this is tagged.
+The rule caught `xs` and not `sm`, while already reporting a hand-written `h-8` button, so it was inconsistent with itself.
+
+Measured on five apps: **63 in one and 68 in another, which are the same product, and nothing at all in the other three.** So this is one app's bill, not the fleet's, and it is a real one.
+
+An inline action in a dense row is a full-height button, or it is not a button. Where a control genuinely is not a tap target, say so on the line with a reason:
+
+```blade
+<flux:button size="sm">Save</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody opens on a phone --}}
+```
+
+That is not a loophole to reach for. design.dashcore.com itself took eight of them and said why on each, which is worth knowing when you decide whether your own are the same case.
+
+**Nothing else here breaks.** The rest is new:
+
+- **A design file names its own slug.** `design.json` carries `slug`, so `php artisan design:update` takes no argument on an app already on the standard. A file written before this cannot have one inferred, and the command says so rather than guessing; pass the slug once and it is written in.
+- **`php artisan design:audit --report`** sends counts by rule to design.dashcore.com, for the fleet view. It needs `DESIGN_TOKEN`, which is that app's token, issued on the Fleet page and set in CI. Counts by rule and two version stamps only, never findings, never file paths, never any of the repo's source. It never fails the audit: a dashboard that could not be updated is not a reason for a build to go red.
 
 ## Upgrading to 3.0
 
@@ -138,7 +153,7 @@ The Flux table also picks up the styling 06 always specified, and the empty stat
 
 ## Versions
 
-A kit on `^2.0` does not get 3.0, on purpose: a release that can fail a passing build stops and waits for a person. Change the constraint to `^3.0` once, then `composer update dashcore/design-kit`.
+A kit on an older major does not get the next one, on purpose: a release that can fail a passing build stops and waits for a person. Change the constraint to `^4.0` once, then `composer update dashcore/design-kit`.
 
 Releases are tagged, and `composer require` writes `^1.0` for you. Every later 1.x release then reaches every kit on the next `composer update`, which is the whole point: a rule added to the standard should not need fifteen repos edited by hand to arrive. A change that would break an app already on the standard goes to 2.0 instead, so it stops and waits for a person rather than arriving quietly.
 
