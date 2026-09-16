@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -46,6 +47,19 @@ class User extends Authenticatable implements PasskeyUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * The tokens this person's own machines carry.
+     *
+     * CI proves which repository it is to GitHub and holds nothing. These are
+     * for the things a person runs, where there is nothing to prove it to.
+     *
+     * @return HasMany<PersonalToken, $this>
+     */
+    public function personalTokens(): HasMany
+    {
+        return $this->hasMany(PersonalToken::class)->latest();
     }
 
     /**
