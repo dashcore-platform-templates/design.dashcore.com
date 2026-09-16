@@ -45,7 +45,14 @@ PHP 8.3 and Node. Served by Herd at `design.dashcore.com.test`.
 ```bash
 composer install && npm install
 cp .env.example .env && php artisan key:generate
+php artisan migrate
 npm run dev
+```
+
+Postgres, not SQLite, and the same for the test suite. Production and CI run Postgres, and the two engines disagree in ways a test on SQLite cannot see: `jsonb` does not keep object key order, which reordered every design on the way out and reached production once. Herd ships Postgres on port 5433 with a `root` user and no password, so make the two databases before migrating:
+
+```bash
+psql -h 127.0.0.1 -p 5433 -U root -d postgres -c "create database design_dashcore; create database design_dashcore_test;"
 ```
 
 Generation needs `ANTHROPIC_API_KEY` in `.env`. Without it the viewer still works in full; generating is a suggest button, never a dependency. The model is `DESIGN_MODEL`, defaulting to Claude Fable 5.1 after a three-way comparison recorded on DAS-2016.
