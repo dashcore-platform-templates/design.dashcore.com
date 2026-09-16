@@ -10,26 +10,16 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * Reading a design is open. Changing one is not.
+ * Reaching a design page is one gate. Changing a design is another.
  *
  * Both pages shipped with no gate at all, so anyone who found the site could
  * repaint a design every kit pulls, or spend a model call per press on the
- * generator.
+ * generator. The pages went behind the login afterwards; these hold the gate
+ * underneath it, because a Livewire method can be called past the markup.
  */
 class DesignWritesTest extends TestCase
 {
     use RefreshDatabase;
-
-    #[Test]
-    public function looking_stays_open(): void
-    {
-        // A kit pulls its pack without a session, so none of this may move
-        // behind the login with the writes.
-        $this->get('/designs')->assertOk();
-        $this->get('/designs/harbor-point')->assertOk();
-        $this->get('/designs/harbor-point/pack.json')->assertOk();
-        $this->get('/designs/harbor-point/design.json')->assertOk();
-    }
 
     #[Test]
     public function a_stranger_cannot_repaint_a_design(): void
@@ -55,15 +45,12 @@ class DesignWritesTest extends TestCase
     }
 
     #[Test]
-    public function the_controls_are_only_offered_to_people_who_can_use_them(): void
+    public function the_controls_are_drawn_for_the_people_who_reach_the_page(): void
     {
-        $this->get('/designs/harbor-point')
-            ->assertOk()
-            ->assertDontSee('wire:click="save"', false)
-            ->assertDontSee('wire:click="regenerate"', false);
-
-        $this->get('/designs')->assertOk()->assertDontSee('>New design<', false);
-
+        // Nobody signed out reaches the page at all now, which
+        // DashboardIsPrivateTest holds. The checks above are the second gate,
+        // and the one that matters: a Livewire method is callable past the
+        // markup that hides its button.
         $this->actingAs(User::factory()->create())
             ->get('/designs/harbor-point')
             ->assertOk()

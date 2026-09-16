@@ -37,10 +37,8 @@ class AccountPageTest extends TestCase
     }
 
     #[Test]
-    public function the_nav_links_to_the_account_only_for_people_who_can_open_it(): void
+    public function the_nav_carries_the_account(): void
     {
-        $this->get('/designs')->assertOk()->assertDontSee('>Account<', false);
-
         $this->actingAs(User::factory()->create())
             ->get('/designs')
             ->assertOk()

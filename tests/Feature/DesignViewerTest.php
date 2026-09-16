@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Design\Design;
 use App\Design\Pack;
 use App\Design\Standard;
+use App\Models\User;
 use Dashcore\DesignKit\Source;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
@@ -18,9 +19,12 @@ class DesignViewerTest extends TestCase
     use RefreshDatabase;
 
     #[Test]
-    public function the_pages_render_without_a_login(): void
+    public function the_pages_render(): void
     {
-        $this->get('/')->assertRedirect('/designs');
+        // Who may open them is DashboardIsPrivateTest's job. This is about what
+        // comes back when they do.
+        $this->actingAs(User::factory()->create());
+
         $this->get('/designs')->assertOk()->assertSee('Designs');
         $this->get('/standard')->assertOk()->assertSee('Standard');
         $this->get('/designs/dashcore')->assertOk()->assertSee('Download pack');

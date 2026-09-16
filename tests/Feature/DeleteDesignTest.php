@@ -71,10 +71,8 @@ class DeleteDesignTest extends TestCase
     }
 
     #[Test]
-    public function the_control_is_only_drawn_for_people_who_can_use_it(): void
+    public function the_control_is_on_the_page(): void
     {
-        $this->get('/designs')->assertOk()->assertDontSee('wire:click="ask(', false);
-
         $this->actingAs(User::factory()->create())
             ->get('/designs')
             ->assertOk()

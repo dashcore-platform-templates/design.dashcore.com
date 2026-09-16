@@ -285,28 +285,19 @@ new #[Layout('layouts::tool')] class extends Component
             @if ($notice)
                 <p class="text-xs text-(--ds-text-muted)">{{ $notice }}</p>
             @endif
-            @auth
-                <div class="flex gap-2">
-                    <flux:button wire:click="save" variant="primary" size="sm" :disabled="! $dirty" class="flex-1">Save</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
-                    <flux:button wire:click="revert" size="sm" :disabled="! $dirty">Revert</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
-                </div>
-                <flux:button wire:click="regenerate" wire:confirm="Run the brief through the generator again? Unsaved changes here will be replaced." size="sm" icon="sparkles" class="w-full"> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
-                    <span wire:loading.remove wire:target="regenerate">Regenerate from brief</span>
-                    <span wire:loading wire:target="regenerate">Choosing again…</span>
-                </flux:button>
-            @endauth
+            <div class="flex gap-2">
+                <flux:button wire:click="save" variant="primary" size="sm" :disabled="! $dirty" class="flex-1">Save</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
+                <flux:button wire:click="revert" size="sm" :disabled="! $dirty">Revert</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
+            </div>
+            <flux:button wire:click="regenerate" wire:confirm="Run the brief through the generator again? Unsaved changes here will be replaced." size="sm" icon="sparkles" class="w-full"> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
+                <span wire:loading.remove wire:target="regenerate">Regenerate from brief</span>
+                <span wire:loading wire:target="regenerate">Choosing again…</span>
+            </flux:button>
             <flux:modal.trigger name="use-design">
                 <flux:button size="sm" icon="command-line" class="w-full">Use this design</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
             </flux:modal.trigger>
             @if ($dirty)
-                {{-- Signed out the controls still move, so say where that ends
-                     rather than letting somebody tune a design for ten minutes
-                     and then look for a Save button that was never there. --}}
-                <p class="text-xs text-(--ds-warning)">
-                    @auth Unsaved changes. The pack is built from the saved file.
-                    @else Yours to look at. Signing in is what makes a change stick.
-                    @endauth
-                </p>
+                <p class="text-xs text-(--ds-warning)">Unsaved changes. The pack is built from the saved design.</p>
             @endif
         </div>
     </aside>

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Design\Screens;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -12,6 +13,15 @@ class ScreensTest extends TestCase
     // A design is a row now, and the migration seeds the five in
     // database/seeders/designs as it creates the table.
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // The dashboard needs a session. What these check is what the
+        // pages render, not who may open them.
+        $this->actingAs(User::factory()->create());
+    }
 
     #[Test]
     public function every_listed_screen_has_a_mockup_and_renders(): void

@@ -77,30 +77,22 @@
 
                     {{-- Its own group. The fleet is not reference material: the
                          standard and the changelog are things to read, and this
-                         is the state of fifteen running apps.
-
-                         Only for people who can open it, because a link that
-                         always bounces to sign-in teaches people the nav lies. --}}
-                    @auth
-                        <div>
-                            <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Fleet</x-tool-nav-item>
-                            <x-tool-nav-item :href="route('account')" :active="request()->routeIs('account*')" icon="user-circle">Account</x-tool-nav-item>
-                        </div>
-                    @endauth
+                         is the state of fifteen running apps. --}}
+                    <div>
+                        <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Fleet</x-tool-nav-item>
+                        <x-tool-nav-item :href="route('account')" :active="request()->routeIs('account*')" icon="user-circle">Account</x-tool-nav-item>
+                    </div>
                     <div>
                         <p class="ds-eyebrow px-2 pb-1.5">Designs</p>
                         @foreach (\App\Design\Design::all() as $design)
                             <x-tool-nav-item :href="route('designs.show', $design->slug)" :active="request()->routeIs('designs.show') && request()->route('slug') === $design->slug" icon="swatch">{{ $design->name() }}</x-tool-nav-item>
                         @endforeach
                         <x-tool-nav-item :href="route('designs.index')" :active="request()->routeIs('designs.index')" icon="squares-2x2">All designs</x-tool-nav-item>
-                        @auth
-                            <x-tool-nav-item :href="route('designs.create')" :active="request()->routeIs('designs.create')" icon="plus">New design</x-tool-nav-item>
-                        @endauth
+                        <x-tool-nav-item :href="route('designs.create')" :active="request()->routeIs('designs.create')" icon="plus">New design</x-tool-nav-item>
                     </div>
                 </nav>
                 <div class="border-t border-(--ds-border) px-4 py-3">
-                    @auth
-                        <div class="mb-3 flex items-center gap-2">
+                    <div class="mb-3 flex items-center gap-2">
                             <span class="grid size-7 shrink-0 place-items-center rounded-full bg-(--ds-accent-soft) text-xs font-medium text-(--ds-accent-content)">{{ auth()->user()->initials() }}</span>
                             <span class="min-w-0 flex-1 truncate text-sm text-(--ds-text)">{{ auth()->user()->name }}</span>
                             {{-- A POST, because a link that ends a session can be
@@ -109,8 +101,7 @@
                                 @csrf
                                 <flux:button type="submit" variant="ghost" icon="arrow-right-start-on-rectangle" aria-label="Sign out" />
                             </form>
-                        </div>
-                    @endauth
+                    </div>
                     <flux:radio.group x-data variant="segmented" size="sm" x-model="$flux.appearance">
                         <flux:radio value="light" icon="sun" />
                         <flux:radio value="dark" icon="moon" />

@@ -6,6 +6,7 @@ use App\Design\Design;
 use App\Design\Handoff;
 use App\Design\Pack;
 use App\Design\Standard;
+use App\Models\User;
 use Dashcore\DesignKit\Audit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
@@ -21,6 +22,15 @@ class HandoffTest extends TestCase
     // A design is a row now, and the migration seeds the five in
     // database/seeders/designs as it creates the table.
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // The dashboard needs a session. What these check is what the
+        // pages render, not who may open them.
+        $this->actingAs(User::factory()->create());
+    }
 
     #[Test]
     public function the_prompt_gives_the_agent_everything_and_never_the_token(): void

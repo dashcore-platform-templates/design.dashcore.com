@@ -64,8 +64,7 @@
         </div>
     </a>
 
-    @auth
-        <flux:dropdown position="bottom" align="end" class="absolute bottom-(--ds-card) end-(--ds-card)">
+    <flux:dropdown position="bottom" align="end" class="absolute bottom-(--ds-card) end-(--ds-card)">
             <flux:button variant="subtle" icon="ellipsis-horizontal" aria-label="Actions for {{ $design->name() }}" />
 
             <flux:menu>
@@ -82,6 +81,5 @@
                     <flux:menu.item wire:click="ask('{{ $design->slug }}')" icon="trash" variant="danger">Delete</flux:menu.item>
                 @endif
             </flux:menu>
-        </flux:dropdown>
-    @endauth
+    </flux:dropdown>
 </div>

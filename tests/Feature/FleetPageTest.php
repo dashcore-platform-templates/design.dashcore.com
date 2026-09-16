@@ -15,25 +15,10 @@ class FleetPageTest extends TestCase
     use RefreshDatabase;
 
     #[Test]
-    public function the_fleet_is_behind_sign_in_and_the_design_pages_are_not(): void
-    {
-        $this->get('/fleet')->assertRedirect('/login');
-
-        // A kit pulls its pack without a session, so nothing below may move
-        // behind the login with it.
-        $this->get('/designs')->assertOk();
-        $this->get('/designs/dashcore/pack.json')->assertOk();
-        $this->get('/standard')->assertOk();
-    }
-
-    #[Test]
-    public function the_nav_links_to_the_fleet_only_for_people_who_can_open_it(): void
+    public function the_nav_carries_the_fleet(): void
     {
         // It was reachable only by typing the URL, which is the same as not
-        // existing. And a link that always bounces to sign-in teaches people
-        // the nav lies, so signed-out visitors do not get one.
-        $this->get('/designs')->assertOk()->assertDontSee('>Fleet<', false);
-
+        // existing.
         $this->actingAs(User::factory()->create())
             ->get('/designs')
             ->assertOk()

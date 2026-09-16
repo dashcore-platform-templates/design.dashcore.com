@@ -107,14 +107,12 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
 <div class="px-(--ds-gutter) py-(--ds-section)">
     <x-ds::page-header title="Designs" class="mb-(--ds-section)">
         <x-slot:description>One per project. Open one to change its decisions and export the pack.</x-slot:description>
-        @auth
-            @if ($archived->isNotEmpty())
-                <flux:button wire:click="$toggle('showArchived')" variant="{{ $showArchived ? 'filled' : 'ghost' }}" icon="archive-box">
-                    {{ $showArchived ? 'Hide' : 'Show' }} archived ({{ $archived->count() }})
-                </flux:button>
-            @endif
-            <flux:button :href="route('designs.create')" wire:navigate variant="primary" icon="plus">New design</flux:button>
-        @endauth
+        @if ($archived->isNotEmpty())
+            <flux:button wire:click="$toggle('showArchived')" variant="{{ $showArchived ? 'filled' : 'ghost' }}" icon="archive-box">
+                {{ $showArchived ? 'Hide' : 'Show' }} archived ({{ $archived->count() }})
+            </flux:button>
+        @endif
+        <flux:button :href="route('designs.create')" wire:navigate variant="primary" icon="plus">New design</flux:button>
     </x-ds::page-header>
 
     <div class="grid gap-(--ds-section) md:grid-cols-2 xl:grid-cols-3">
@@ -123,8 +121,7 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
         @endforeach
     </div>
 
-    @auth
-        @if ($showArchived && $archived->isNotEmpty())
+    @if ($showArchived && $archived->isNotEmpty())
             <div class="mt-(--ds-section)">
                 <x-ds::section-heading level="2">Archived</x-ds::section-heading>
                 {{-- Said once here rather than on every card. The whole reason to
@@ -138,8 +135,7 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
                     @endforeach
                 </div>
             </div>
-        @endif
-    @endauth
+    @endif
 
     {{-- What it costs, taken from the fleet rather than guessed at. Every repo
          reports the design it uses, so the modal can name them. --}}
