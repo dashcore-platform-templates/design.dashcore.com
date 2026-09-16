@@ -27,6 +27,12 @@ final class Design
     public const SCHEMA = 'dashcore-design/1';
 
     /**
+     * The design the tool itself wears. Its tokens are on :root in every
+     * layout, so it is not one of the designs a person can throw away.
+     */
+    public const OWN = 'dashcore';
+
+    /**
      * @param  array<string,mixed>  $brief
      * @param  array<string,mixed>  $decisions
      * @param  array<string,mixed>|null  $generator
@@ -73,7 +79,7 @@ final class Design
     public static function all(): Collection
     {
         return self::table()
-            ->orderByRaw("CASE WHEN slug = 'dashcore' THEN 0 ELSE 1 END")
+            ->orderByRaw('CASE WHEN slug = ? THEN 0 ELSE 1 END', [self::OWN])
             ->orderBy('slug')
             ->get()
             ->map(fn (object $row) => self::fromRow($row));
@@ -149,8 +155,18 @@ final class Design
         self::table()->insert($values + ['slug' => $this->slug, 'created_at' => now()]);
     }
 
+    /** Everything except the one the tool is wearing. */
+    public function deletable(): bool
+    {
+        return $this->slug !== self::OWN;
+    }
+
     public function delete(): void
     {
+        if (! $this->deletable()) {
+            throw new InvalidArgumentException('The tool wears '.self::OWN.'. Deleting it takes every page down, sign-in included.');
+        }
+
         self::table()->where('slug', $this->slug)->delete();
     }
 
