@@ -43,6 +43,72 @@ final class Applier
      * icon="name", icon: 'name', or <flux:icon.name. Deleting the override
      * files without this breaks the kit's own sidebar.
      */
+    /**
+     * Lines the Laravel starter kit ships that are off the standard, and the
+     * exact line each becomes.
+     *
+     * Every kit in the fleet starts from the same starter kit, so these arrive
+     * identical in every one: the same greys in the same components, the same
+     * green for a saved confirmation, the same off-scale margin. They were
+     * fixed by hand three times in three apps before this existed, with the
+     * same answer each time, which is the definition of something the adapter
+     * should do once.
+     *
+     * Matched byte for byte on purpose. An app that has touched one of these
+     * lines has made a decision, and a decision is not drift: the match fails
+     * and the line is left for the audit to report and a person to judge.
+     *
+     * Only the mechanical half is here. A grey becoming text-muted has one
+     * right answer. Whether an underlined link should have been a button, or
+     * which heading is a section heading, does not, and that work belongs to
+     * whoever is reading the screen.
+     *
+     * @return array<string,string>
+     */
+    public static function starterKitFixes(): array
+    {
+        // The same focus ring and underline on a resend-verification control,
+        // in two files, identical in both.
+        $verifyButton = 'rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2';
+        $verifyButtonFixed = 'rounded-md text-sm text-(--ds-text-muted) underline hover:text-(--ds-text) focus:outline-hidden focus:ring-2 focus:ring-(--ds-accent) focus:ring-offset-2';
+
+        return [
+            // A saved-confirmation line is secondary text.
+            "'class' => 'text-sm text-gray-600'" => "'class' => 'text-sm text-(--ds-text-muted)'",
+
+            // Green here means one thing: it worked.
+            "'class' => 'font-medium text-sm text-green-600'" => "'class' => 'text-sm font-medium text-(--ds-success)'",
+
+            // 05: the scale is 1 2 3 4 6 8 12 16. Ten is on neither end of it.
+            'class="mr-10 w-full pb-4 md:w-[220px]"' => 'class="mr-8 w-full pb-4 md:w-[220px]"',
+
+            'class="text-center text-sm text-gray-600"' => 'class="text-center text-sm text-(--ds-text-muted)"',
+            'class="font-medium text-center text-sm text-green-600"' => 'class="text-center text-sm font-medium text-(--ds-success)"',
+            'class="mt-2 text-sm text-gray-800"' => 'class="mt-2 text-sm text-(--ds-text)"',
+            'class="mt-2 text-sm font-medium text-green-600"' => 'class="mt-2 text-sm font-medium text-(--ds-success)"',
+
+            "class=\"{$verifyButton}\"" => "class=\"{$verifyButtonFixed}\"",
+        ];
+    }
+
+    /** Whether this file carries any starter-kit line the adapter can fix. */
+    public static function hasStarterKitDrift(string $blade): bool
+    {
+        foreach (array_keys(self::starterKitFixes()) as $from) {
+            if (str_contains($blade, $from)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** The same file with those lines on the roles. Running it twice changes nothing. */
+    public static function fixStarterKit(string $blade): string
+    {
+        return str_replace(array_keys(self::starterKitFixes()), array_values(self::starterKitFixes()), $blade);
+    }
+
     public static function renameLucide(string $blade): string
     {
         foreach (self::LUCIDE_RENAMES as $lucide => $hero) {

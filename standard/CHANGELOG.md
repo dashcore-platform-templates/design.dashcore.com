@@ -10,6 +10,12 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ---
 
+## 17 September 2026
+
+**`design:apply` fixes the starter kit's own drift.** No rule changed, and nothing an app has to do. Every kit in the fleet begins from the same Laravel starter kit, so every kit begins with the same lines off the standard: greys where text-muted belongs, a green confirmation where success belongs, one off-scale margin. Those exact lines were fixed by hand in three apps before this, with the same answer each time. `design:apply` now rewrites them, alongside the Lucide renames it already did. Measured on a real untouched starter kit: 19 findings across eight files becomes 7 across three. The seven left are the ones with a decision in them, and they stay with whoever is reading the screen: whether an underlined link should have been a button, and which heading is a section heading rather than a page title. The match is byte for byte, so a line an app has already touched is left alone, because a line somebody edited is a decision rather than drift.
+
+---
+
 ## 16 September 2026
 
 **A screen may not restyle the Flux table.** Tightening, and the audit checks it. 06's table styling has been in the applied CSS block since 14 September, and a screen built before that did the job itself, with six arbitrary variant classes reaching into `data-flux-column` and `data-flux-cell`. Its own comment said it belonged in the adapter. Keeping both was worse than either: the screen used `text-muted-on-sunken` for the head and the adapter uses `text-muted`, so the utilities won on the head while the adapter supplied the hover and the first column, and the table matched neither the mockup nor the standard. The audit now reports `[data-flux-table]`, `[data-flux-column]`, `[data-flux-cell]` and `[data-flux-row]` in a view. Measured before shipping it: nothing across the three apps here, because the one screen that had it was fixed first. It is a rule for the next one rather than a bill for anybody.

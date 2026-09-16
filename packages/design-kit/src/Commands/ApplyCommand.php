@@ -212,10 +212,14 @@ class ApplyCommand extends Command
                     continue;
                 }
                 $before = File::get($file->getPathname());
-                if (! Applier::mentionsLucide($before)) {
+
+                if (! Applier::mentionsLucide($before) && ! Applier::hasStarterKitDrift($before)) {
                     continue;
                 }
-                $after = Applier::renameLucide($before);
+
+                // Both are exact rewrites of lines nobody chose, so they run in
+                // one pass and the file is written once.
+                $after = Applier::fixStarterKit(Applier::renameLucide($before));
                 $changes[] = ['path' => $file->getPathname(), 'action' => 'write', 'after' => $after, 'changed' => $after !== $before];
             }
         }

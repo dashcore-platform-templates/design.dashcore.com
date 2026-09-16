@@ -148,6 +148,53 @@ class ApplierTest extends TestCase
     }
 
     #[Test]
+    public function the_starter_kit_lines_nobody_chose_are_fixed_on_apply(): void
+    {
+        // Real lines, taken from two kits' history. They were byte-identical in
+        // both, which is the whole reason this belongs in the adapter: every
+        // app starts from the same starter kit and inherits the same drift.
+        $blade = <<<'BLADE'
+        {{ $attributes->merge(['class' => 'text-sm text-gray-600']) }}
+        <div {{ $attributes->merge(['class' => 'font-medium text-sm text-green-600']) }}>
+        <div class="mr-10 w-full pb-4 md:w-[220px]">
+        <div class="text-center text-sm text-gray-600">
+        <p class="mt-2 text-sm text-gray-800">
+        BLADE;
+
+        $this->assertTrue(Applier::hasStarterKitDrift($blade));
+        $fixed = Applier::fixStarterKit($blade);
+
+        $this->assertStringContainsString("'class' => 'text-sm text-(--ds-text-muted)'", $fixed);
+        $this->assertStringContainsString("'class' => 'text-sm font-medium text-(--ds-success)'", $fixed);
+        $this->assertStringContainsString('class="mr-8 w-full pb-4 md:w-[220px]"', $fixed);
+        $this->assertStringContainsString('class="mt-2 text-sm text-(--ds-text)"', $fixed);
+
+        $this->assertStringNotContainsString('text-gray-', $fixed);
+        $this->assertStringNotContainsString('text-green-', $fixed);
+        $this->assertStringNotContainsString('mr-10', $fixed);
+
+        // Applying a design twice changes nothing, and this is part of that.
+        $this->assertSame($fixed, Applier::fixStarterKit($fixed));
+        $this->assertFalse(Applier::hasStarterKitDrift($fixed));
+    }
+
+    #[Test]
+    public function a_line_somebody_has_edited_is_left_alone(): void
+    {
+        // The match is byte for byte because an app that has touched one of
+        // these lines has made a decision, and a decision is not drift. The
+        // audit still reports it, and a person judges it.
+        $edited = '<div class="text-center text-sm text-gray-600 mt-4">';
+
+        $this->assertFalse(Applier::hasStarterKitDrift($edited));
+        $this->assertSame($edited, Applier::fixStarterKit($edited));
+
+        // And nothing outside the starter kit's own lines is touched.
+        $ours = '<p class="text-sm text-gray-600">a line somebody wrote</p>';
+        $this->assertSame($ours, Applier::fixStarterKit($ours));
+    }
+
+    #[Test]
     public function lucide_icon_names_become_heroicons_wherever_a_view_names_them(): void
     {
         $blade = "<flux:sidebar.item icon=\"folder-git-2\" href=\"#\">Repo</flux:sidebar.item>\n<flux:icon.book-open-text />\n@php \$icon = 'layout-grid'; @endphp\n<flux:icon name=\"chevrons-up-down\" />\n<p>book-open-text is also just text here</p>\n";
