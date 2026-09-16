@@ -35,7 +35,7 @@ class DesignKitServiceProvider extends ServiceProvider
         $this->publishes([__DIR__.'/../resources/views' => resource_path('views/vendor/design-kit')], 'design-kit-views');
 
         if ($this->app->runningInConsole()) {
-            $this->commands([ApplyCommand::class, AuditCommand::class, CheckCommand::class, UpdateCommand::class]);
+            $this->commands([ApplyCommand::class, AuditCommand::class, CheckCommand::class, ConnectCommand::class, UpdateCommand::class]);
         }
     }
 }

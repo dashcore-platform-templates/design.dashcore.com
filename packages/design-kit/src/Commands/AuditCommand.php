@@ -2,6 +2,7 @@
 
 namespace Dashcore\DesignKit\Commands;
 
+use Dashcore\DesignKit\ActionsToken;
 use Dashcore\DesignKit\Audit;
 use Dashcore\DesignKit\Report;
 use Dashcore\DesignKit\Source;
@@ -158,11 +159,33 @@ class AuditCommand extends Command
             return;
         }
 
-        $token = (string) config('design-kit.token');
+        $source = rtrim((string) config('design-kit.source'), '/');
 
-        if ($token === '') {
+        // GitHub's word first. A workflow with id-token permission proves which
+        // repository this is without anybody pasting a secret into it, and a
+        // repository proving itself that way joins the board by reporting.
+        $token = ActionsToken::forAudience($source)
+            // Still supported, because every app in the fleet is on one today.
+            ?? (string) config('design-kit.token');
+
+        if ((string) $token === '') {
             $this->line('');
-            $this->line('  <fg=gray>--report needs DESIGN_TOKEN, which is this app\'s token from design.dashcore.com.</>');
+
+            if (ActionsToken::inActions() && ! ActionsToken::hasPermission()) {
+                // The one mistake worth naming outright. Everything else is in
+                // place and one line is missing from the workflow.
+                $this->line('  <fg=gray>This job cannot prove which repository it is. Add to the workflow:</>');
+                $this->line('');
+                $this->line('    <fg=cyan>permissions:</>');
+                $this->line('      <fg=cyan>id-token: write</>');
+                $this->line('      <fg=cyan>contents: read</>');
+                $this->line('');
+                $this->line('  <fg=gray>Naming any permission turns the defaults off, so keep contents: read.</>');
+
+                return;
+            }
+
+            $this->line('  <fg=gray>--report runs in GitHub Actions, where it proves which repository it is. Nothing was sent.</>');
 
             return;
         }
@@ -183,7 +206,7 @@ class AuditCommand extends Command
             is_array($design) ? Source::designSlug($design) : null,
         );
 
-        $url = rtrim((string) config('design-kit.source'), '/').'/api/reports';
+        $url = $source.'/api/reports';
 
         $this->line('');
 
@@ -199,7 +222,7 @@ class AuditCommand extends Command
             $this->line("  <fg=gray>{$url} answered HTTP {$response->status()}, so nothing was reported.</>");
 
             if ($response->status() === 401) {
-                $this->line('  <fg=gray>That is the token. Reissue it on design.dashcore.com and set DESIGN_TOKEN again.</>');
+                $this->line('  <fg=gray>That is the credential. If this app still uses DESIGN_TOKEN, reissue it on design.dashcore.com; otherwise check the workflow asks for id-token: write.</>');
             }
 
             return;
