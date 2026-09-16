@@ -19,6 +19,9 @@ Route::redirect('/', '/designs')->name('home');
 | the pages are open teaches people to guess which half.
 */
 Route::middleware('auth')->group(function () {
+    // Step one, and soon a prerequisite: a repository is connected here, gets
+    // its token, and only then has anything to report or anything to pull.
+    Route::livewire('connect', 'pages::connect')->name('connect');
     Route::livewire('fleet', 'pages::fleet')->name('fleet');
 
     Route::livewire('account', 'pages::account.index')->name('account');

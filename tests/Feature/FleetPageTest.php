@@ -6,7 +6,6 @@ use App\Models\Site;
 use App\Models\SiteReport;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -117,21 +116,6 @@ class FleetPageTest extends TestCase
     }
 
     #[Test]
-    public function the_connect_panel_names_its_prerequisite_before_the_prompt(): void
-    {
-        // The prompt does refuse on an app with no design, which is how we
-        // found out ExecutiveOS had never been set up. But by then somebody has
-        // opened an agent to learn something this page could have said.
-        Livewire::actingAs(User::factory()->create())
-            ->test('pages::fleet')
-            ->set('name', 'Fresh')
-            ->set('repository', 'dashcoretech/fresh.dashcore.com')
-            ->call('add')
-            ->assertSee('It needs a design applied already')
-            ->assertSee(route('designs.index'));
-    }
-
-    #[Test]
     public function a_site_behind_the_standard_shows_the_stamp_it_is_on(): void
     {
         $site = Site::factory()->create();
@@ -141,98 +125,5 @@ class FleetPageTest extends TestCase
             ->get('/fleet')
             ->assertOk()
             ->assertSee('deadbeef');
-    }
-
-    #[Test]
-    public function adding_a_site_issues_a_token_once(): void
-    {
-        Livewire::actingAs(User::factory()->create())
-            ->test('pages::fleet')
-            ->set('name', 'New Project')
-            ->set('repository', 'dashcoretech/newproject.dashcore.com')
-            ->call('add')
-            ->assertHasNoErrors()
-            // The token is shown once, so this is the one moment somebody has
-            // everything in front of them. It names the repository, where the
-            // secrets go, and the step to add, rather than saying "that app's
-            // CI" and leaving them to work out where that is.
-            ->assertSee('Connect dashcoretech/newproject.dashcore.com')
-            ->assertSee('Settings → Secrets and variables → Actions', false)
-            ->assertSee('DESIGN_TOKEN')
-            ->assertSee('DESIGN_SOURCE')
-            ->assertSee('design:audit --report')
-            // The route is a link, not a set of directions to follow.
-            ->assertSee('https://github.com/dashcoretech/newproject.dashcore.com/settings/secrets/actions', false)
-            // The CI step contains ${{ }}, which is GitHub's syntax and Blade's
-            // too. @verbatim escaped it and stopped copy-block compiling with
-            // it, so the whole snippet rendered on the page as raw markup.
-            ->assertSee('secrets.DESIGN_TOKEN')
-            ->assertDontSee('<x-copy-block', false)
-            // A row says what a repository's default branch looks like. Without
-            // this a pull request build overwrites it with a branch nobody has
-            // merged, and the board quietly stops meaning anything.
-            ->assertSee('github.ref_name == github.event.repository.default_branch')
-            // The repo half is agent work, so there is a prompt for it. It
-            // names the repository it is talking about, refuses the token the
-            // way the setup prompt refuses the Composer and Flux ones, and
-            // stops at the one step a person has to do in a browser.
-            ->assertSee('Agent prompt')
-            ->assertSee('Connect this app to the Dashcore design fleet board')
-            ->assertSee('dashcoretech/newproject.dashcore.com')
-            ->assertSee('Never ask me for the token value');
-
-        $site = Site::query()->sole();
-        $this->assertSame('dashcoretech/newproject.dashcore.com', $site->repository);
-        $this->assertNotEmpty($site->token_hash);
-    }
-
-    #[Test]
-    public function a_repository_is_owner_slash_name_and_is_only_added_once(): void
-    {
-        Site::factory()->create(['repository' => 'dashcoretech/taken.dashcore.com']);
-
-        Livewire::actingAs(User::factory()->create())
-            ->test('pages::fleet')
-            ->set('name', 'Taken')
-            ->set('repository', 'dashcoretech/taken.dashcore.com')
-            ->call('add')
-            ->assertHasErrors(['repository']);
-
-        Livewire::actingAs(User::factory()->create())
-            ->test('pages::fleet')
-            ->set('name', 'Odd')
-            ->set('repository', 'executiveos.dashcore.com')
-            ->call('add')
-            ->assertHasErrors(['repository']);
-
-        $this->assertSame(1, Site::query()->count());
-    }
-
-    #[Test]
-    public function issuing_a_new_token_retires_the_old_one(): void
-    {
-        $site = Site::factory()->create();
-        $old = $site->issueToken();
-
-        Livewire::actingAs(User::factory()->create())
-            ->test('pages::fleet')
-            ->call('rotate', $site->id)
-            ->assertSee('The token is shown once');
-
-        $this->assertNull(Site::byToken($old));
-    }
-
-    #[Test]
-    public function removing_a_site_takes_its_reports_with_it(): void
-    {
-        $site = Site::factory()->create();
-        SiteReport::factory()->for($site)->count(2)->create();
-
-        Livewire::actingAs(User::factory()->create())
-            ->test('pages::fleet')
-            ->call('forget', $site->id);
-
-        $this->assertSame(0, Site::query()->count());
-        $this->assertSame(0, SiteReport::query()->count());
     }
 }

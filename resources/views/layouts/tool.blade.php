@@ -79,6 +79,7 @@
                          standard and the changelog are things to read, and this
                          is the state of fifteen running apps. --}}
                     <div>
+                        <x-tool-nav-item :href="route('connect')" :active="request()->routeIs('connect')" icon="link">Connect</x-tool-nav-item>
                         <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Fleet</x-tool-nav-item>
                         <x-tool-nav-item :href="route('account')" :active="request()->routeIs('account*')" icon="user-circle">Account</x-tool-nav-item>
                     </div>
