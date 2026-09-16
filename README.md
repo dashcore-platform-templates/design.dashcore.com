@@ -50,7 +50,7 @@ npm run dev
 
 Generation needs `ANTHROPIC_API_KEY` in `.env`. Without it the viewer still works in full; generating is a suggest button, never a dependency. The model is `DESIGN_MODEL`, defaulting to Claude Fable 5.1 after a three-way comparison recorded on DAS-2016.
 
-There is no database and no login. Designs are JSON files in `resources/designs`, one per project.
+Designs are rows in `designs`, one per project. They were JSON files in the repo until 17 September 2026, which did not survive a deploy once the tool was hosted; the five that existed then are in `database/seeders/designs` and the migration imports them, so a fresh clone has them too. Reading a design needs no login. Making or changing one does.
 
 ```bash
 php artisan design:check                      # contrast for every design, both registers

@@ -15,7 +15,7 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
 
 <div class="px-(--ds-gutter) py-(--ds-section)">
     <x-ds::page-header title="Designs" class="mb-(--ds-section)">
-        <x-slot:description>One file per project in <code class="font-mono text-xs">resources/designs</code>. Open one to change its decisions and export the pack.</x-slot:description>
+        <x-slot:description>One per project. Open one to change its decisions and export the pack.</x-slot:description>
         @auth
             <flux:button :href="route('designs.create')" wire:navigate variant="primary" icon="plus">New design</flux:button>
         @endauth

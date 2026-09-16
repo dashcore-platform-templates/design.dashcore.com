@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Design\Design;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Blade;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -14,6 +15,10 @@ use Tests\TestCase;
  */
 class DesignKitBadgeTest extends TestCase
 {
+    // A design is a row now, and the migration seeds the five in
+    // database/seeders/designs as it creates the table.
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();

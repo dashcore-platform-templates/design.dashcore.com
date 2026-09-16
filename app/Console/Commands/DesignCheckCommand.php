@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
  */
 class DesignCheckCommand extends Command
 {
-    protected $signature = 'design:check {slug? : A design in resources/designs, or all when omitted}';
+    protected $signature = 'design:check {slug? : One design by slug, or all of them when omitted}';
 
     protected $description = 'Measure contrast for every text role in a design, both registers';
 

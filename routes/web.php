@@ -3,8 +3,8 @@
 use App\Http\Controllers\Design\ExportController;
 use Illuminate\Support\Facades\Route;
 
-// The viewer. No auth, no database: designs are JSON files in resources/designs
-// and the standard is markdown in standard/. See standard/README.md.
+// The viewer. Designs are rows in `designs`; the standard is markdown in
+// standard/. See standard/README.md.
 
 Route::redirect('/', '/designs')->name('home');
 

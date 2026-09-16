@@ -7,6 +7,7 @@ use App\Design\Handoff;
 use App\Design\Pack;
 use App\Design\Standard;
 use Dashcore\DesignKit\Audit;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -17,6 +18,10 @@ use Tests\TestCase;
  */
 class HandoffTest extends TestCase
 {
+    // A design is a row now, and the migration seeds the five in
+    // database/seeders/designs as it creates the table.
+    use RefreshDatabase;
+
     #[Test]
     public function the_prompt_gives_the_agent_everything_and_never_the_token(): void
     {

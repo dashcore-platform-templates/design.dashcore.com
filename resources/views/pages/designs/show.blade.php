@@ -99,7 +99,7 @@ new #[Layout('layouts::tool')] class extends Component
 
         $this->design()->save();
         $this->dirty = false;
-        $this->notice = 'Saved to resources/designs/'.$this->slug.'.json';
+        $this->notice = 'Saved. Every kit that pulls the pack gets this.';
     }
 
     public function revert(): void

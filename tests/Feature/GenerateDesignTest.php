@@ -8,7 +8,6 @@ use App\Design\Generation\DesignGenerator;
 use App\Design\Standard;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\FakeDecisionSource;
@@ -29,14 +28,6 @@ class GenerateDesignTest extends TestCase
         $this->app->instance(DecisionSource::class, $this->source);
         config()->set('design.keep_raw', false);
         config()->set('design.model', 'claude-test-model');
-    }
-
-    protected function tearDown(): void
-    {
-        foreach (File::glob(Design::directory().'/tidewater*.json') as $path) {
-            File::delete($path);
-        }
-        parent::tearDown();
     }
 
     #[Test]

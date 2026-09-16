@@ -6,12 +6,17 @@ use App\Design\Design;
 use App\Design\Pack;
 use App\Design\Standard;
 use Dashcore\DesignKit\Source;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use ZipArchive;
 
 class DesignViewerTest extends TestCase
 {
+    // A design is a row now, and the migration seeds the five in
+    // database/seeders/designs as it creates the table.
+    use RefreshDatabase;
+
     #[Test]
     public function the_pages_render_without_a_login(): void
     {

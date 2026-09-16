@@ -19,7 +19,7 @@ class DesignGenerateCommand extends Command
         {--shell=sidebar : sidebar or top-nav}
         {--brand-colour= : A hex the client already owns}
         {--notes= : Anything else}
-        {--slug= : File name under resources/designs; derived from the client when omitted}
+        {--slug= : The name the design is saved under; derived from the client when omitted}
         {--dry-run : Print the decisions without saving}';
 
     protected $description = 'Generate the seven design decisions for a brief and save them as a design';
@@ -73,7 +73,7 @@ class DesignGenerateCommand extends Command
         }
 
         $design->save();
-        $this->components->info("Saved resources/designs/{$design->slug}.json. Open ".url('/designs/'.$design->slug));
+        $this->components->info("Saved {$design->slug}. Open ".url('/designs/'.$design->slug));
 
         return self::SUCCESS;
     }
