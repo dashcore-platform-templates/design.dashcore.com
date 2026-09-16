@@ -84,6 +84,7 @@
                     @auth
                         <div>
                             <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Fleet</x-tool-nav-item>
+                            <x-tool-nav-item :href="route('account')" :active="request()->routeIs('account*')" icon="user-circle">Account</x-tool-nav-item>
                         </div>
                     @endauth
                     <div>
@@ -96,6 +97,18 @@
                     </div>
                 </nav>
                 <div class="border-t border-(--ds-border) px-4 py-3">
+                    @auth
+                        <div class="mb-3 flex items-center gap-2">
+                            <span class="grid size-7 shrink-0 place-items-center rounded-full bg-(--ds-accent-soft) text-xs font-medium text-(--ds-accent-content)">{{ auth()->user()->initials() }}</span>
+                            <span class="min-w-0 flex-1 truncate text-sm text-(--ds-text)">{{ auth()->user()->name }}</span>
+                            {{-- A POST, because a link that ends a session can be
+                                 followed by a prefetcher or a scanner. --}}
+                            <form method="POST" action="{{ route('logout') }}" class="shrink-0">
+                                @csrf
+                                <flux:button type="submit" variant="ghost" icon="arrow-right-start-on-rectangle" aria-label="Sign out" />
+                            </form>
+                        </div>
+                    @endauth
                     <flux:radio.group x-data variant="segmented" size="sm" x-model="$flux.appearance">
                         <flux:radio value="light" icon="sun" />
                         <flux:radio value="dark" icon="moon" />
@@ -107,6 +120,9 @@
                 {{ $slot }}
             </main>
         </div>
+        <flux:toast.group>
+            <flux:toast />
+        </flux:toast.group>
         @fluxScripts
     </body>
 </html>

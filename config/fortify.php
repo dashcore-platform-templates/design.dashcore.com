@@ -164,6 +164,8 @@ return [
         // No registration. The fleet view lists every Dashcore product and how
         // far off the standard each one is, so accounts are made by somebody
         // who already has one, with `php artisan fleet:invite`.
+        Features::updateProfileInformation(),
+        Features::updatePasswords(),
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([

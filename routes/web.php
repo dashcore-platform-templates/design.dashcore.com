@@ -11,10 +11,21 @@ Route::redirect('/', '/designs')->name('home');
 // The sign-in screens are Fortify's, pointed at this kit's views by
 // FortifyServiceProvider. Nothing for them here.
 //
-// The one page behind sign-in. It lists every Dashcore product and how far
-// off the standard each one is, which is not a public fact. Everything below
-// stays open, because kits pull their pack over HTTP without a session.
+// The fleet lists every Dashcore product and how far off the standard each
+// one is, which is not a public fact. The design pages stay open, because kits
+// pull their pack over HTTP without a session.
 Route::livewire('fleet', 'pages::fleet')->middleware('auth')->name('fleet');
+
+// The account, behind the same gate. Security is its own route so it can carry
+// password confirmation: everything on it changes how somebody proves who they
+// are, and a session left open should not be enough to reach it. A name change
+// should not be behind that, which is why the two are not one page.
+Route::middleware('auth')->group(function () {
+    Route::livewire('account', 'pages::account.index')->name('account');
+    Route::livewire('account/security', 'pages::account.security')
+        ->middleware('password.confirm')
+        ->name('account.security');
+});
 
 Route::livewire('standard', 'pages::standard')->name('standard');
 Route::livewire('changelog', 'pages::changelog')->name('changelog');
