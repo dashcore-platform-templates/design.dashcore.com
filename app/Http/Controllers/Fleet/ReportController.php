@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Fleet;
 
 use App\Design\Standard;
+use App\Fleet\GitHubIdentity;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use Illuminate\Http\JsonResponse;
@@ -11,15 +12,21 @@ use Illuminate\Http\Request;
 /**
  * Where an app says how far off the standard it is.
  *
- * `php artisan design:audit --report` posts here from a kit's CI. The token
- * says which site is speaking, so a report cannot claim to be somebody else,
- * and a site that was never added here cannot create itself.
+ * `php artisan design:audit --report` posts here from a kit's CI. Whatever it
+ * carries has to prove which repository it is, so a report cannot claim to be
+ * somebody else's.
+ *
+ * Two ways in, on purpose. A GitHub Actions token proves the repository
+ * without anybody pasting a secret anywhere, and a repository proving itself
+ * that way joins the board by reporting rather than being declared first. The
+ * per-site token stays because every app in the fleet is using one today, and
+ * a gate that turns fifteen apps off is not a gate.
  */
 class ReportController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
-        $site = Site::byToken((string) $request->bearerToken());
+        $site = $this->speaker((string) $request->bearerToken());
 
         if ($site === null) {
             // Deliberately the same answer for a missing token and a wrong one.
@@ -69,5 +76,35 @@ class ReportController extends Controller
         return response()->json([
             'standard_version' => Standard::version(),
         ], 201);
+    }
+
+    /**
+     * Which repository is speaking, or null.
+     *
+     * A GitHub Actions token is tried first, because it is the one that can
+     * create a row: it names a repository GitHub signed for, so accepting it
+     * from a repository nobody added here is accepting a fact rather than a
+     * claim. The board then shows what is running instead of what somebody
+     * remembered to declare.
+     *
+     * The per-site token cannot do that and never will. It says "whoever holds
+     * this", which is only an identity because we issued it to one repository,
+     * so an unrecognised one stays a refusal.
+     */
+    private function speaker(string $bearer): ?Site
+    {
+        $repository = GitHubIdentity::repository($bearer);
+
+        if ($repository !== null) {
+            return Site::firstOrCreate(
+                ['repository' => $repository],
+                // The name is the repository until somebody gives it a better
+                // one. Guessing a product name out of a slug reads worse than
+                // the thing it actually is.
+                ['name' => $repository],
+            );
+        }
+
+        return Site::byToken($bearer);
     }
 }

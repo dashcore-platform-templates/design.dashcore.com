@@ -1,0 +1,12 @@
+{
+    "keys": [
+        {
+            "kty": "RSA",
+            "kid": "dashcore-test-key",
+            "use": "sig",
+            "alg": "RS256",
+            "n": "qkC9uOMYniATbvy529i6nlegNHv4-HuWKqFcu6QGdK_TaC3bzKy_Jx8g2pkI3CcvRQAjarVgosvfMbxDz4UsSp4ebj7zdey_WiKgARhL0T6evxMWG9q_f7ERVwYy0sh6WWFBhSFVv7e2xPI8i3OPsAtPYFW8hlcwLeTh2qm2cjyey4z37YFy8du1am6TKXs1EawPm4bit9Yz4CephNWtTs-4z6t0wFVfSZYsKVsYomOe5CcmHsP_9gU-TQlrZn88kYegRKE8lBvdm2uy3qeI_veI9INUIJGd69cntacB056rWlgQWIzbFultqMxrV2CB-_gD8eots6zWR1y3hDUHIw",
+            "e": "AQAB"
+        }
+    ]
+}
