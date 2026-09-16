@@ -39,7 +39,7 @@ class DesignStorageTest extends TestCase
         // run and a deploy all get the designs from the migration itself.
         $slugs = Design::all()->pluck('slug');
 
-        $this->assertSame('dashcore', $slugs->first(), 'the tool wears its own design, so it leads the nav');
+        $this->assertSame('dashcore', $slugs->first(), 'the tool uses its own design, so it leads the nav');
         $this->assertCount(count(glob(database_path('seeders/designs/*.json'))), $slugs);
     }
 

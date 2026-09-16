@@ -91,7 +91,7 @@ new #[Layout('layouts::tool')] class extends Component
      * The page is open on purpose: a kit pulls its pack from here without a
      * session, and somebody deciding between two designs should be able to
      * push the controls about. Keeping is the part that needs an account,
-     * because a saved design is worn by every kit that pulls it.
+     * because a saved design is used by every kit that pulls it.
      */
     public function save(): void
     {

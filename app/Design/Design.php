@@ -27,7 +27,7 @@ final class Design
     public const SCHEMA = 'dashcore-design/1';
 
     /**
-     * The design the tool itself wears. Its tokens are on :root in every
+     * The design the tool itself uses. Its tokens are on :root in every
      * layout, so it is not one of the designs a person can throw away.
      */
     public const OWN = 'dashcore';
@@ -43,6 +43,7 @@ final class Design
         public array $decisions,
         public ?string $generatedAt = null,
         public ?array $generator = null,
+        public ?string $archivedAt = null,
     ) {}
 
     /**
@@ -71,14 +72,38 @@ final class Design
     }
 
     /**
-     * Every design, the tool's own first and the rest by slug. That is the
-     * nav's order, decided here rather than in the sidebar.
+     * The designs in use, the tool's own first and the rest by slug. That is
+     * the nav's order, decided here rather than in the sidebar.
      *
      * @return Collection<int, Design>
      */
     public static function all(): Collection
     {
+        return self::listed(fn (Builder $q) => $q->whereNull('archived_at'));
+    }
+
+    /**
+     * The retired ones, newest first. Their packs still serve; they are only
+     * off the board.
+     *
+     * @return Collection<int, Design>
+     */
+    public static function archived(): Collection
+    {
         return self::table()
+            ->whereNotNull('archived_at')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn (object $row) => self::fromRow($row));
+    }
+
+    /**
+     * @param  callable(Builder): Builder  $scope
+     * @return Collection<int, Design>
+     */
+    private static function listed(callable $scope): Collection
+    {
+        return $scope(self::table())
             ->orderByRaw('CASE WHEN slug = ? THEN 0 ELSE 1 END', [self::OWN])
             ->orderBy('slug')
             ->get()
@@ -155,16 +180,55 @@ final class Design
         self::table()->insert($values + ['slug' => $this->slug, 'created_at' => now()]);
     }
 
-    /** Everything except the one the tool is wearing. */
+    /**
+     * The design the tool uses is not one of the designs it holds, as far
+     * as these two are concerned. Its tokens are on :root in every layout, so
+     * removing it takes every page down and hiding it leaves the nav lying.
+     */
+    public function isOwn(): bool
+    {
+        return $this->slug === self::OWN;
+    }
+
     public function deletable(): bool
     {
-        return $this->slug !== self::OWN;
+        return ! $this->isOwn();
+    }
+
+    public function archivable(): bool
+    {
+        return ! $this->isOwn();
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archivedAt !== null;
+    }
+
+    /**
+     * Off the board, and every export answering exactly as before. An app that
+     * already pulled this design keeps pulling it.
+     */
+    public function archive(): void
+    {
+        if (! $this->archivable()) {
+            throw new InvalidArgumentException('The tool uses '.self::OWN.'. Hiding it would leave the nav lying about what is here.');
+        }
+
+        $this->archivedAt = (string) now();
+        self::table()->where('slug', $this->slug)->update(['archived_at' => $this->archivedAt, 'updated_at' => now()]);
+    }
+
+    public function restore(): void
+    {
+        $this->archivedAt = null;
+        self::table()->where('slug', $this->slug)->update(['archived_at' => null, 'updated_at' => now()]);
     }
 
     public function delete(): void
     {
         if (! $this->deletable()) {
-            throw new InvalidArgumentException('The tool wears '.self::OWN.'. Deleting it takes every page down, sign-in included.');
+            throw new InvalidArgumentException('The tool uses '.self::OWN.'. Deleting it takes every page down, sign-in included.');
         }
 
         self::table()->where('slug', $this->slug)->delete();
@@ -203,6 +267,7 @@ final class Design
             // isset is false for a null column, which is the answer wanted here.
             generatedAt: isset($data['generated_at']) ? (string) $data['generated_at'] : null,
             generator: isset($data['generator']) ? self::decode($data['generator']) : null,
+            archivedAt: isset($data['archived_at']) ? (string) $data['archived_at'] : null,
         );
     }
 

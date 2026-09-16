@@ -23,9 +23,9 @@ class DeleteDesignTest extends TestCase
             ->call('ask', 'harbor-point')
             ->assertSet('pending', 'harbor-point')
             ->assertSee('Delete Harbor Point Physical Therapy?')
-            // The cost, said in the modal rather than left for somebody to find
-            // out when a kit's next update 404s.
-            ->assertSee('design:apply harbor-point');
+            // No fleet rows in this test, so the modal says what it knows rather
+            // than warning about apps it has no evidence for.
+            ->assertSee('Nothing reports using this');
 
         // Asking is not doing.
         $this->assertTrue(Design::exists('harbor-point'));
@@ -82,7 +82,7 @@ class DeleteDesignTest extends TestCase
     }
 
     #[Test]
-    public function the_design_the_tool_wears_cannot_be_deleted(): void
+    public function the_design_the_tool_uses_cannot_be_deleted(): void
     {
         // Every layout puts its tokens on :root, so deleting it would 500 every
         // page in the app, sign-in included.

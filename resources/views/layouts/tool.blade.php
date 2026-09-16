@@ -1,5 +1,5 @@
 @php
-    // The tool wears the Dashcore default design. Its tokens are emitted on
+    // The tool uses the Dashcore default design. Its tokens are emitted on
     // :root so the chrome is the first thing built to the standard.
     $own = \App\Design\Design::load(\App\Design\Design::OWN);
     $ownTokens = $own->tokens();

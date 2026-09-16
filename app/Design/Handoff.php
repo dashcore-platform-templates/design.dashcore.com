@@ -3,7 +3,7 @@
 namespace App\Design;
 
 /**
- * The handoff from a finished design to the repo that will wear it. The
+ * The handoff from a finished design to the repo that will use it. The
  * person's job ends at judging the mockup; from here one pasted prompt lets
  * an agent in the target repo install the adapter, pull and apply the pack,
  * build, and migrate the screens. The design page's panel, the walkthrough

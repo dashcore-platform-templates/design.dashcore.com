@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -118,5 +119,42 @@ class Site extends Model
     public function latestReport(): HasMany
     {
         return $this->reports()->latest('reported_at')->limit(1);
+    }
+
+    /**
+     * Which repositories use which design, keyed by slug.
+     *
+     * Read from each site's newest report, because a repo that moved to a
+     * different design last week is not still using the old one. It is what
+     * the delete modal shows instead of guessing out loud.
+     *
+     * Only as good as the reports: a repo whose CI never reports here is not
+     * in this at all, so an empty list means nobody has said so rather than
+     * nobody using it.
+     *
+     * @return Collection<string, Collection<int, string>>
+     */
+    public static function usage(): Collection
+    {
+        /** @var array<string, list<string>> $usage */
+        $usage = [];
+
+        foreach (self::query()->with('latestReport')->get() as $site) {
+            $slug = $site->latestReport->first()?->design_slug;
+
+            if ($slug === null || $slug === '') {
+                continue;
+            }
+
+            $usage[$slug][] = $site->repository;
+        }
+
+        ksort($usage);
+
+        return collect($usage)->map(function (array $repositories): Collection {
+            sort($repositories);
+
+            return collect($repositories);
+        });
     }
 }
