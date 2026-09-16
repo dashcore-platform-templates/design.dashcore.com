@@ -31,7 +31,14 @@ Route::livewire('standard', 'pages::standard')->name('standard');
 Route::livewire('changelog', 'pages::changelog')->name('changelog');
 
 Route::livewire('designs', 'pages::designs.index')->name('designs.index');
-Route::livewire('designs/new', 'pages::designs.create')->name('designs.create');
+
+// Above the {slug} route, or 'new' is read as a slug and 404s. Making one is
+// not reading one: the generator costs a model call per press, and the result
+// is a design every kit that pulls the pack will wear.
+Route::livewire('designs/new', 'pages::designs.create')
+    ->middleware('auth')
+    ->name('designs.create');
+
 Route::livewire('designs/{slug}', 'pages::designs.show')->name('designs.show');
 
 Route::get('designs/{slug}/design.json', [ExportController::class, 'json'])->name('designs.json');

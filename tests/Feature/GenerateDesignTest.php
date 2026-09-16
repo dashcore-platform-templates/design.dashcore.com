@@ -6,6 +6,8 @@ use App\Design\Design;
 use App\Design\Generation\DecisionSource;
 use App\Design\Generation\DesignGenerator;
 use App\Design\Standard;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
@@ -14,6 +16,10 @@ use Tests\TestCase;
 
 class GenerateDesignTest extends TestCase
 {
+    // Making and changing a design needs an account, so these need a database
+    // to put one in.
+    use RefreshDatabase;
+
     private FakeDecisionSource $source;
 
     protected function setUp(): void
@@ -103,7 +109,8 @@ class GenerateDesignTest extends TestCase
 
         $this->assertSame(0, $this->source->calls);
 
-        Livewire::test('pages::designs.create')
+        Livewire::actingAs(User::factory()->create())
+            ->test('pages::designs.create')
             ->set('client', 'Tidewater Port Services')
             ->set('product', 'Berth scheduling for a container port. Used all shift by dispatchers.')
             ->set('shell', 'top-nav')
@@ -121,7 +128,8 @@ class GenerateDesignTest extends TestCase
     {
         $this->artisan('design:generate', ['client' => 'Tidewater', 'product' => 'Berth scheduling for a port, used all shift.'])->assertSuccessful();
 
-        Livewire::test('pages::designs.show', ['slug' => 'tidewater'])
+        Livewire::actingAs(User::factory()->create())
+            ->test('pages::designs.show', ['slug' => 'tidewater'])
             ->set('decisions.radius.value', 'round')
             ->call('regenerate')
             ->assertSet('decisions.radius.value', 'soft')
@@ -139,7 +147,8 @@ class GenerateDesignTest extends TestCase
         $generatedAt = Design::load('tidewater')->generatedAt;
         $this->assertNotNull($generatedAt);
 
-        Livewire::test('pages::designs.show', ['slug' => 'tidewater'])
+        Livewire::actingAs(User::factory()->create())
+            ->test('pages::designs.show', ['slug' => 'tidewater'])
             ->set('decisions.radius.value', 'round')
             ->call('save')
             ->assertSet('dirty', false);
@@ -154,6 +163,9 @@ class GenerateDesignTest extends TestCase
     #[Test]
     public function the_new_design_page_renders(): void
     {
-        $this->get('/designs/new')->assertOk()->assertSee('New design');
+        $this->actingAs(User::factory()->create())
+            ->get('/designs/new')
+            ->assertOk()
+            ->assertSee('New design');
     }
 }
