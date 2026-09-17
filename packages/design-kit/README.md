@@ -186,11 +186,11 @@ composer config repositories.design-kit path ../design.dashcore.com/packages/des
 composer require dashcore/design-kit:@dev
 ```
 
-On Windows that copies rather than symlinks, so edits to the package do not appear in the kit. Composer will not notice them either, and `composer update` reports nothing to do. Delete the copy and install again:
+Composer links rather than copies, including on Windows, where it makes a junction. Edits to the package are live in the kit with nothing to re-run. Checked on Windows 11 with Composer 2: `vendor/dashcore/design-kit` came back as `LinkType: Junction` pointing at the package, and an edit made a minute earlier was already there.
 
-```bash
-rm -rf vendor/dashcore/design-kit && composer install
-```
+Do not `rm -rf` that directory. It is a link into the design repo, and some tools delete through a junction rather than removing it, which takes the package source with it. `composer remove dashcore/design-kit` if you want it gone.
+
+A kit set up this way is a development kit, not a fleet app. It has no version, so `composer update` has nothing to do and `composer require "dashcore/design-kit:5.*"` cannot resolve: a directory carries no tags, which is why the installed version reads `dev-master`. It also runs whatever is in the design repo's working tree, including changes nobody has released, so what it reports to the fleet board is evidence about that tree rather than about the fleet. Useful as a canary, and worth remembering before reading its row as a fact about the apps.
 
 ## Connect to the fleet board
 
