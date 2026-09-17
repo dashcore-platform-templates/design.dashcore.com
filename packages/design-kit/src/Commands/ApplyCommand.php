@@ -61,7 +61,7 @@ class ApplyCommand extends Command
                 $url = Source::kind($source) === 'url' ? $source : Source::url($source, (string) config('design-kit.source'));
                 $response = Http::timeout(30)->acceptJson()->get($url);
                 if ($response->failed()) {
-                    $this->components->error("Could not fetch {$url} (HTTP {$response->status()}). Check the slug, and that design.dashcore.com is reachable from here.");
+                    $this->reportFetchFailure($url, $response->status(), $source);
 
                     return self::FAILURE;
                 }
@@ -325,5 +325,64 @@ class ApplyCommand extends Command
             return;
         }
         File::delete($path);
+    }
+
+    /**
+     * Say what to do about it, not that it happened.
+     *
+     * "Check the slug" is not help: the slug came out of design/design.json
+     * without anybody typing it, so being told to check it leaves somebody
+     * looking at a file they did not write for a mistake they did not make.
+     * A 404 has one meaning here, and there is one command that fixes it.
+     */
+    private function reportFetchFailure(string $url, int $status, string $source): void
+    {
+        if ($status !== 404) {
+            $this->components->error("{$url} answered HTTP {$status}.");
+            $this->line('');
+            $this->line('  <fg=gray>The design was not fetched, so nothing has changed here. If that site is up,</>');
+            $this->line('  <fg=gray>this is usually a network between you and it rather than anything in this repo.</>');
+
+            return;
+        }
+
+        $site = rtrim((string) config('design-kit.source'), '/');
+        $named = Source::kind($source) === 'slug' ? $source : null;
+
+        $this->components->error($named === null
+            ? "Nothing is published at {$url}."
+            : "There is no design called {$named} at {$site}.");
+
+        $this->line('');
+
+        if ($named !== null && $this->cameFromTheDesignFile($named)) {
+            // The common one, and the one with no fault in it: the app was set
+            // up against a design that has since been renamed or removed.
+            $this->line("  <fg=gray>design/design.json says this app is on {$named}, so it was applied when that</>");
+            $this->line('  <fg=gray>design existed. It has been renamed or removed since.</>');
+            $this->line('');
+        }
+
+        $this->line("  <fg=gray>Open {$site}/designs and read the slug out of the design's address bar,</>");
+        $this->line('  <fg=gray>then pass it once. It is written into design/design.json and you will not</>');
+        $this->line('  <fg=gray>need it again.</>');
+        $this->line('');
+        $this->line('    <fg=cyan>php artisan design:update <slug></>');
+        $this->line('');
+        $this->line('  <fg=gray>Applying a different design repaints this app, so check the mockup first.</>');
+    }
+
+    /** Whether the slug was read out of the app rather than typed on the command line. */
+    private function cameFromTheDesignFile(string $slug): bool
+    {
+        $file = base_path('design/design.json');
+
+        if (! File::exists($file)) {
+            return false;
+        }
+
+        $design = json_decode(File::get($file), true);
+
+        return is_array($design) && Source::designSlug($design) === $slug;
     }
 }
