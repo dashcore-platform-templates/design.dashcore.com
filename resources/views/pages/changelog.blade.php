@@ -32,7 +32,7 @@ new #[Layout('layouts::tool')] #[Title('Changelog')] class extends Component
     <div class="min-w-0 flex-1 px-(--ds-gutter) py-(--ds-section)">
         <x-ds::page-header
             title="Changelog"
-            :description="$count.' '.Str::plural('change', $count).' to the standard so far. An app compares its own stamp against this one.'"
+            :description="$count.' '.Str::plural('change', $count).' to the standard so far.'"
             class="mb-(--ds-section)"
         >
             <div class="text-end">
@@ -43,10 +43,12 @@ new #[Layout('layouts::tool')] #[Title('Changelog')] class extends Component
 
         <section class="mb-(--ds-section) rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">
             <p class="ds-label mb-1.5">Picking a change up</p>
+            {{-- Two commands, not the seven from setup. Installing the adapter,
+                 replacing the sign-in layout and pasting the CLAUDE snippet are
+                 all one-time, and repeating them is noise. --}}
             <p class="mb-4 max-w-2xl text-sm text-(--ds-text-muted)">
-                Setting an app up happens once, so do not repeat it. An app whose <code>design/STANDARD.md</code> shows a version other than
-                <span class="font-mono text-(--ds-text-strong)">{{ $version }}</span> is behind. Replace <code>&lt;slug&gt;</code> with that app's design, or open the design and use
-                the panel there, which fills it in.
+                An app whose <code>design/STANDARD.md</code> shows anything other than
+                <span class="font-mono text-(--ds-text-strong)">{{ $version }}</span> is behind. Replace <code>&lt;slug&gt;</code> with that app's design, or open the design and the panel fills it in.
             </p>
             <div class="grid gap-4 lg:grid-cols-2">
                 <x-copy-block label="Prompt for the agent" :text="$prompt" />

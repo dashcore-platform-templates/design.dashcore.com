@@ -39,8 +39,8 @@ class FleetPageTest extends TestCase
         // Asserting the redirect target is not the same as loading it. Turning
         // registration off left the login view linking to route('register'),
         // so every sign-in was a 500 and the test above still passed.
-        $this->get('/login')->assertOk()->assertSee('Log in to your account');
-        $this->get('/forgot-password')->assertOk();
+        $this->get('/login')->assertOk()->assertSee('The Dashcore design standard.');
+        $this->get('/forgot-password')->assertOk()->assertSee('We will email you a link to set a new one.');
     }
 
     #[Test]

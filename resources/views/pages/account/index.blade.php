@@ -157,7 +157,7 @@ new #[Layout('layouts::tool')] #[Title('Account')] class extends Component
             <x-ds::section-heading level="2">Password</x-ds::section-heading>
             {{-- Said outright, because every account here starts with a password
                  `fleet:invite` printed into somebody else's terminal. --}}
-            <flux:text class="mt-1">If yours came from an invite, somebody else has seen it. Change it once and that stops being true.</flux:text>
+            <flux:text class="mt-1">If yours came from an invite, somebody else has seen it.</flux:text>
 
             <form wire:submit="savePassword" class="mt-6 space-y-4">
                 <flux:input wire:model="current_password" label="Current password" type="password" autocomplete="current-password" viewable required />
@@ -176,7 +176,11 @@ new #[Layout('layouts::tool')] #[Title('Account')] class extends Component
                     <x-ds::section-heading level="2">Tokens</x-ds::section-heading>
                     {{-- Says what it is for. A token nobody can explain is a
                          token nobody dares revoke. --}}
-                    <flux:text class="mt-1">What your terminal uses to pull a design. CI needs none of these: it proves which repository it is to GitHub every run.</flux:text>
+                    {{-- CI carries no token at all: a workflow proves which
+                         repository it is to GitHub on every run. Said here as
+                         the short version, because the reason belongs on
+                         /connect where somebody is setting CI up. --}}
+                    <flux:text class="mt-1">What your terminal uses to pull a design. CI needs none.</flux:text>
                 </div>
                 <flux:modal.trigger name="new-token">
                     <flux:button icon="plus">New token</flux:button>
@@ -216,7 +220,10 @@ new #[Layout('layouts::tool')] #[Title('Account')] class extends Component
         <form wire:submit="issueToken" class="space-y-(--ds-section)">
             <div>
                 <x-ds::section-heading>New token</x-ds::section-heading>
-                <p class="mt-1 text-sm text-(--ds-text-muted)">One per machine, so a laptop can be cut off without taking the rest with it.</p>
+                {{-- One per machine so a lost laptop can be revoked on its own.
+                     The field below asks where it will live, which is the same
+                     point made as a question somebody answers. --}}
+                <p class="mt-1 text-sm text-(--ds-text-muted)">One per machine.</p>
             </div>
 
             <flux:input wire:model="tokenName" label="Where it will live" placeholder="Work laptop" />

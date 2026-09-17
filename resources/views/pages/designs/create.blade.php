@@ -57,9 +57,12 @@ new #[Layout('layouts::tool')] #[Title('New design')] class extends Component
 }; ?>
 
 <div class="px-(--ds-gutter) py-(--ds-section)">
+    {{-- What the generator reads and which decisions it is allowed to make are
+         both answered by the panel on the right. The header said them again in
+         a longer form, which is how a form gets a paragraph nobody reads. --}}
     <x-ds::page-header
         title="New design"
-        description="Two sentences are enough. The generator reads the standard and this brief, then chooses the seven decisions the standard leaves open. You can change any of them afterwards."
+        description="Two sentences are enough. Change any decision afterwards."
         class="mb-(--ds-section)"
     />
 
@@ -78,7 +81,10 @@ new #[Layout('layouts::tool')] #[Title('New design')] class extends Component
             </flux:field>
 
             <flux:field>
-                <flux:label>Shell <span class="ds-label ms-1.5 font-normal">a person decides this</span></flux:label>
+                {{-- Same two words as the design page's shell field. It was "a
+                     person decides this" here and "brief, not generated" there,
+                     for one field with one rule behind it. --}}
+                <flux:label>Shell <span class="ds-label ms-1.5 font-normal">not generated</span></flux:label>
                 <flux:description>Sidebar for tools used for hours with many destinations. Top nav for a portal opened now and then with six or fewer.</flux:description>
                 {{--
                     Live, not deferred. The shell is the one field whose wrong
@@ -122,7 +128,9 @@ new #[Layout('layouts::tool')] #[Title('New design')] class extends Component
                     <span wire:loading.remove wire:target="generate">Generate</span>
                     <span wire:loading wire:target="generate">Choosing the seven decisions…</span>
                 </flux:button>
-                <span wire:loading wire:target="generate" class="text-xs text-(--ds-text-muted)">Ten to twenty seconds. The standard is read in full every time.</span>
+                {{-- The standard goes in as a cached prompt on every call, which
+                     is where the time goes. A person waiting wants the number. --}}
+                <span wire:loading wire:target="generate" class="text-xs text-(--ds-text-muted)">Ten to twenty seconds.</span>
             </div>
         </div>
 
@@ -138,7 +146,7 @@ new #[Layout('layouts::tool')] #[Title('New design')] class extends Component
                     <li><span class="font-medium text-(--ds-text-strong)">Motif</span>, one structural habit.</li>
                     <li><span class="font-medium text-(--ds-text-strong)">Sign-in copy</span>, eyebrow, headline, tagline.</li>
                 </ul>
-                <p class="mt-4 text-xs text-(--ds-text-muted)">Everything else, shell regions, scales, components, icons, motion and status colours, is fixed by the standard and is not up for generation.</p>
+                <p class="mt-4 text-xs text-(--ds-text-muted)">Fixed by the standard: shell regions, scales, components, icons, motion, status colours.</p>
                 <p class="mt-2 text-xs text-(--ds-text-muted)">Model: <span class="font-mono">{{ config('design.model') }}</span></p>
             </div>
         </aside>

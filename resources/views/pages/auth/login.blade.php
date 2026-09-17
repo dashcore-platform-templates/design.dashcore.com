@@ -1,6 +1,9 @@
 <x-layouts::auth :title="__('Log in')">
     <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
+        {{-- The description names the tool rather than narrating the two fields
+             under it. Nobody reaches a sign-in page unsure whether to type their
+             email; they reach it unsure which internal tool this is. --}}
+        <x-auth-header :title="__('Log in')" :description="__('The Dashcore design standard.')" />
 
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />

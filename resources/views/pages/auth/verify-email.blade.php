@@ -1,12 +1,15 @@
 <x-layouts::auth :title="__('Email verification')">
     <div class="mt-4 flex flex-col gap-6">
         <flux:text class="text-center">
-            {{ __('Please verify your email address by clicking on the link we just emailed to you.') }}
+            {{ __('Click the link we just emailed you.') }}
         </flux:text>
 
         @if (session('status') == 'verification-link-sent')
+            {{-- Said no address. There is no registration here, so the starter
+                 kit's "the email address you provided during registration" named
+                 a step that never happened: `fleet:invite` made the account. --}}
             <flux:text class="text-center font-medium !dark:text-(--ds-success) !text-(--ds-success)">
-                {{ __('A new verification link has been sent to the email address you provided during registration.') }}
+                {{ __('New link sent.') }}
             </flux:text>
         @endif
 

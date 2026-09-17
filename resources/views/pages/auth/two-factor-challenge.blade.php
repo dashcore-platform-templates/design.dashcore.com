@@ -29,17 +29,20 @@
                 },
             }"
         >
+            {{-- Both descriptions name the thing the person is holding, in the
+                 words /account/security used when they set it up: "a six-digit
+                 code from an authenticator app", and codes each good once. --}}
             <div x-show="!showRecoveryInput">
                 <x-auth-header
                     :title="__('Authentication code')"
-                    :description="__('Enter the authentication code provided by your authenticator application.')"
+                    :description="__('The six-digit code from your authenticator app.')"
                 />
             </div>
 
             <div x-show="showRecoveryInput">
                 <x-auth-header
                     :title="__('Recovery code')"
-                    :description="__('Please confirm access to your account by entering one of your emergency recovery codes.')"
+                    :description="__('One of the codes you saved when you turned two-factor on.')"
                 />
             </div>
 
@@ -53,7 +56,7 @@
                                 x-model="code"
                                 length="6"
                                 name="code"
-                                label="OTP Code"
+                                label="Authentication code"
                                 label:sr-only
                                 class="mx-auto"
                              />
@@ -65,6 +68,8 @@
                             <flux:input
                                 type="text"
                                 name="recovery_code"
+                                label="Recovery code"
+                                label:sr-only
                                 x-ref="recovery_code"
                                 x-bind:required="showRecoveryInput"
                                 autocomplete="one-time-code"
@@ -88,11 +93,13 @@
                     </flux:button>
                 </div>
 
-                <div class="mt-6 space-x-0.5 text-sm leading-5 text-center">
-                    <span class="opacity-50">{{ __('or you can') }}</span>
+                {{-- One link, no lead-in. "or you can login using a recovery
+                     code" spent three words getting to the verb and used login
+                     as one. --}}
+                <div class="mt-6 text-sm leading-5 text-center">
                     <div class="inline font-medium underline cursor-pointer opacity-80">
-                        <span x-show="!showRecoveryInput" @click="toggleInput()">{{ __('login using a recovery code') }}</span>
-                        <span x-show="showRecoveryInput" @click="toggleInput()">{{ __('login using an authentication code') }}</span>
+                        <span x-show="!showRecoveryInput" @click="toggleInput()">{{ __('Use a recovery code instead') }}</span>
+                        <span x-show="showRecoveryInput" @click="toggleInput()">{{ __('Use an authenticator code instead') }}</span>
                     </div>
                 </div>
             </form>

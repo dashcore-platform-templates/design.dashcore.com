@@ -99,13 +99,18 @@ new #[Layout('layouts::tool')] class extends Component
 
         $this->design()->save();
         $this->dirty = false;
-        $this->notice = 'Saved. Every kit that pulls the pack gets this.';
+        // Just "Saved." The warning that saving publishes to every kit belongs
+        // beside the unsaved state, where somebody can still act on it, not in
+        // a toast after the decision is already made.
+        $this->notice = 'Saved.';
     }
 
     public function revert(): void
     {
         $this->load();
-        $this->notice = 'Reverted to the file.';
+        // Not "the file". Designs have been rows in `designs` since 17 Sep 2026,
+        // and a message naming a file sends somebody looking for one.
+        $this->notice = 'Reverted.';
     }
 
     /** Run the brief through the generator again. Replaces the decisions in the session, not the file, until Save. */
@@ -191,7 +196,7 @@ new #[Layout('layouts::tool')] class extends Component
         <div class="flex-1 space-y-6 overflow-y-auto px-(--ds-card) py-4">
             {{-- Shell: a person's choice, in the brief --}}
             <flux:field>
-                <flux:label>Shell <span class="ds-label ms-1.5 font-normal">brief, not generated</span></flux:label>
+                <flux:label>Shell <span class="ds-label ms-1.5 font-normal">not generated</span></flux:label>
                 <flux:radio.group wire:model.live="brief.shell" variant="segmented" size="sm">
                     <flux:radio value="sidebar" label="Sidebar" />
                     <flux:radio value="top-nav" label="Top nav" />
@@ -272,7 +277,7 @@ new #[Layout('layouts::tool')] class extends Component
                 <p class="ds-label mb-1.5">Contrast, measured</p>
                 @php $c = $tokens['contrast']; @endphp
                 <p class="text-sm {{ $c['passes'] ? 'text-(--ds-success)' : 'text-(--ds-danger)' }}">
-                    {{ $c['passes'] ? 'Every text role passes 4.5:1 in both registers.' : 'A text role fails the floor.' }}
+                    {{ $c['passes'] ? 'Every text role passes 4.5:1 in both registers.' : 'A text role is under 4.5:1.' }}
                 </p>
                 <p class="mt-0.5 text-xs text-(--ds-text-muted)">Lowest: {{ $c['lowest']['pair'] }} at {{ $c['lowest']['ratio'] }}:1</p>
                 @foreach ($c['notes'] as $note)
@@ -297,7 +302,10 @@ new #[Layout('layouts::tool')] class extends Component
                 <flux:button size="sm" icon="command-line" class="w-full">Use this design</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
             </flux:modal.trigger>
             @if ($dirty)
-                <p class="text-xs text-(--ds-warning)">Unsaved changes. The pack is built from the saved design.</p>
+                {{-- The one place the publishing consequence is actionable, so
+                     it reads as an instruction rather than as how the pack is
+                     built. --}}
+                <p class="text-xs text-(--ds-warning)">Unsaved changes. Save before a kit pulls this.</p>
             @endif
         </div>
     </aside>
@@ -314,7 +322,10 @@ new #[Layout('layouts::tool')] class extends Component
 
             <div>
                 <x-copy-block label="GitHub token" :text="$handoff['token']" />
-                <p class="mt-1.5 text-xs leading-snug text-(--ds-text-muted)">Once per machine. The package is private and the agent is never given the token, so it stops and asks if Composer cannot reach the repository.</p>
+                {{-- The package is private and the prompt never hands the agent
+                     a credential, which is why the agent stops rather than
+                     solving it. The panel says the part somebody acts on. --}}
+                <p class="mt-1.5 text-xs leading-snug text-(--ds-text-muted)">Once per machine. The agent stops and asks for this rather than running it.</p>
             </div>
 
             <flux:accordion>
@@ -382,7 +393,9 @@ new #[Layout('layouts::tool')] class extends Component
                             @endforeach
                         </flux:menu.checkbox.group>
                         <flux:menu.separator />
-                        <p class="px-2 py-1.5 text-xs leading-snug text-(--ds-text-muted)">Two to a row, wrapping below. Unticking the last one puts Desktop and Mobile back.</p>
+                        {{-- Two to a row is visible the moment the menu closes.
+                             What is not visible is the floor under unticking. --}}
+                        <p class="px-2 py-1.5 text-xs leading-snug text-(--ds-text-muted)">Unticking the last one puts Desktop and Mobile back.</p>
                     </flux:menu>
                 </flux:dropdown>
 

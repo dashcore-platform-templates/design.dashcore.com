@@ -155,14 +155,17 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
                                 <span class="block font-mono text-xs">{{ $repository }}</span>
                             @endforeach
                         </span>
-                        <span class="mt-2 block">Each one pulls this slug on every update, and those pulls would start returning 404. Archive it instead and the pack keeps serving.</span>
+                        <span class="mt-2 block">Each one pulls this slug on every update. Archive it instead and the pack keeps serving.</span>
                     </flux:callout.text>
                 </flux:callout>
             @elseif ($going)
                 <flux:callout icon="information-circle">
                     <flux:callout.heading>Nothing reports using this</flux:callout.heading>
                     <flux:callout.text>
-                        No repository on the fleet board named <code class="font-mono text-xs">{{ $going->slug }}</code> in its last report. An app whose CI does not report here would not show up, so this is what has been said rather than what is true everywhere.
+                        {{-- The board only knows what has been reported to it,
+                             which is why the heading says "nothing reports
+                             using this" rather than "nothing uses this". --}}
+                        No repository on the fleet board named <code class="font-mono text-xs">{{ $going->slug }}</code> in its last report. An app whose CI never reports would not show here.
                     </flux:callout.text>
                 </flux:callout>
             @endif
