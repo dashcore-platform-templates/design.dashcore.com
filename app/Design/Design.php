@@ -110,6 +110,58 @@ final class Design
             ->map(fn (object $row) => self::fromRow($row));
     }
 
+    /**
+     * A design built from a design.json an app is already wearing.
+     *
+     * The way back in. An app can be on a design this tool does not hold: one
+     * made before it was saved, or renamed, or removed. Until this, the only
+     * way to make a design was to generate one, which needs a model to pick
+     * the decisions and would pick different ones, so the app would be
+     * repainted to fix a bookkeeping problem.
+     *
+     * Tokens are not read. They are derived from the decisions, and trusting
+     * them out of a file would let an import carry colours the standard would
+     * never produce.
+     *
+     * @param  array<string,mixed>  $data
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function fromExport(array $data): self
+    {
+        $slug = $data['slug'] ?? null;
+
+        if (! is_string($slug) || ! self::valid($slug)) {
+            throw new InvalidArgumentException('That file does not name a design. A design.json carries its own slug.');
+        }
+
+        if (($data['schema'] ?? null) !== self::SCHEMA) {
+            throw new InvalidArgumentException('That is not a '.self::SCHEMA.' file.');
+        }
+
+        $decisions = $data['decisions'] ?? null;
+
+        if (! is_array($decisions) || $decisions === []) {
+            throw new InvalidArgumentException('That file has no decisions in it.');
+        }
+
+        $design = new self(
+            slug: $slug,
+            brief: is_array($data['brief'] ?? null) ? $data['brief'] : [],
+            decisions: $decisions,
+            // Kept as written. It says when the model chose, and choosing is
+            // not what happened here.
+            generatedAt: is_string($data['generated_at'] ?? null) ? $data['generated_at'] : null,
+            generator: is_array($data['generator'] ?? null) ? $data['generator'] : null,
+        );
+
+        // Resolved before it is offered, so a file that cannot make a design
+        // fails here rather than on the page that tries to render it.
+        $design->tokens();
+
+        return $design;
+    }
+
     /** @return array<string,mixed> */
     public function tokens(): array
     {

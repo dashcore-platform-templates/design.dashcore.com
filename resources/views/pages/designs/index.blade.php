@@ -48,6 +48,59 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
         Flux::toast("{$design->name()} is back on the board.", variant: 'success');
     }
 
+    public string $importing = '';
+
+    /**
+     * Put a design this tool does not hold back into it.
+     *
+     * An app can be on one: made before it was saved here, or renamed, or
+     * removed. The only other way to make a design is to generate one, which
+     * needs a model to pick the decisions and would pick different ones, so
+     * the app would be repainted to fix a bookkeeping problem.
+     *
+     * Paste, rather than upload. The file is a few kilobytes of JSON already
+     * open in somebody's editor, and a file input is a browser dialog for
+     * something they can select and copy.
+     */
+    public function import(): void
+    {
+        abort_unless(Auth::check(), 403);
+
+        $this->resetValidation();
+
+        $data = json_decode($this->importing, true);
+
+        if (! is_array($data)) {
+            $this->addError('importing', 'That is not JSON. Paste the whole of the app\'s design/design.json.');
+
+            return;
+        }
+
+        try {
+            $design = Design::fromExport($data);
+        // Global, and a page component compiles into the global namespace, so
+        // importing it is a no-op PHP warns about.
+        } catch (InvalidArgumentException $e) {
+            $this->addError('importing', $e->getMessage());
+
+            return;
+        }
+
+        if (Design::exists($design->slug)) {
+            // Never a silent overwrite. A design something is wearing is not a
+            // thing to replace because a file was pasted at it.
+            $this->addError('importing', "There is already a design called {$design->slug}. Open it instead.");
+
+            return;
+        }
+
+        $design->save();
+
+        $this->reset('importing');
+        Flux::modal('import-design')->close();
+        Flux::toast("{$design->name()} is here.", variant: 'success');
+    }
+
     /**
      * One modal for the whole page rather than one per card. The card says
      * which design, the modal repeats it back with what uses it.
@@ -112,6 +165,10 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
                 {{ $showArchived ? 'Hide' : 'Show' }} archived ({{ $archived->count() }})
             </flux:button>
         @endif
+
+        <flux:modal.trigger name="import-design">
+            <flux:button icon="arrow-down-tray">Import</flux:button>
+        </flux:modal.trigger>
         <flux:button :href="route('designs.create')" wire:navigate variant="primary" icon="plus">New design</flux:button>
     </x-ds::page-header>
 
@@ -136,6 +193,28 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
                 </div>
             </div>
     @endif
+
+    <flux:modal name="import-design" class="md:w-[32rem]">
+        <form wire:submit="import" class="space-y-(--ds-section)">
+            <div>
+                <x-ds::section-heading>Import a design</x-ds::section-heading>
+                <flux:text class="mt-1">For an app wearing a design that is not here. Paste its <code class="font-mono text-xs">design/design.json</code> and it comes back under the slug it already uses, so nothing is repainted.</flux:text>
+            </div>
+
+            <flux:field>
+                <flux:label>design.json</flux:label>
+                <flux:textarea wire:model="importing" rows="8" class="font-mono text-xs" placeholder='{"schema": "dashcore-design/1", "slug": "…"}' />
+                <flux:error name="importing" />
+            </flux:field>
+
+            <div class="flex justify-end gap-2">
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button type="submit" variant="primary">Import</flux:button>
+            </div>
+        </form>
+    </flux:modal>
 
     {{-- What it costs, taken from the fleet rather than guessed at. Every repo
          reports the design it uses, so the modal can name them. --}}
