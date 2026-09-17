@@ -85,11 +85,12 @@ final class Handoff
     public static function updateCommands(?Design $design = null): array
     {
         return [
-            // require rather than update, and with the major named. `composer
-            // update` keeps an app inside the major it is already pinned to, so
-            // on a kit still on ^3.0 it reports nothing to do and the app sits
-            // there looking current.
-            'composer require "dashcore/design-kit:'.self::MAJOR.'"',
+            // Plain update, which is what taking a release is everywhere else
+            // and what every app already on this major needs. Naming a version
+            // here was wrong: it made the ordinary case look like a decision,
+            // and a decision people would then copy into the one place it does
+            // matter without knowing why it was there.
+            'composer update dashcore/design-kit',
             // No argument. The app's design/design.json names its own slug, so
             // asking somebody to fill in a placeholder is asking them for
             // something the app already knows. A file written before designs
@@ -99,43 +100,17 @@ final class Handoff
     }
 
     /**
-     * What to paste into Claude Code to put an app on the fleet board.
+     * The one command that needs a version, for an app still on an older major.
      *
-     * Three of the four steps on that panel are work in a repo, which is an
-     * agent's job. The fourth is setting two secrets on GitHub, which needs a
-     * browser and admin on the repo, and one of them is a credential. So the
-     * prompt does the three and stops at the fourth rather than asking for the
-     * token, the same way the setup prompt refuses the Composer and Flux ones.
-     *
-     * @param  string  $repository  owner/name, so the prompt can name the file it is editing.
+     * `composer update` will not cross a major, on purpose: a release that can
+     * fail a passing build stops and waits for a person. This is a person
+     * deciding. A bare `composer require dashcore/design-kit` would cross every
+     * major at once and rewrite the constraint to match, which is the same
+     * decision made by accident.
      */
-    public static function connectPrompt(string $repository, string $source): string
+    public static function crossMajorCommand(): string
     {
-        [$composer, $update] = self::updateCommands();
-        $major = self::MAJOR;
-
-        return <<<TXT
-        Connect this app to the Dashcore design fleet board at {$source}. The repository is {$repository}.
-
-        1. Check for design/design.json first. If it is not there, stop and say so: this app has never had a design applied, so it cannot report one, and setting it up is a different job with its own prompt on the design's page at {$source}. Do not install anything.
-        2. Move it onto the current design-kit if it is not there already: `{$composer}`. Plain `composer update` will not do it, because it stays inside the major the app is pinned to. Then `{$update}`, with no argument, which reads the slug out of design/design.json.
-        3. Find the workflow that already installs this app for its tests, usually under .github/workflows. Add one step to it, after composer install and beside the tests:
-
-        ```yaml
-        - name: Report to design.dashcore.com
-          if: github.ref_name == github.event.repository.default_branch
-          env:
-            DESIGN_SOURCE: \${{ secrets.DESIGN_SOURCE }}
-            DESIGN_TOKEN: \${{ secrets.DESIGN_TOKEN }}
-          run: php artisan design:audit --report
-        ```
-
-        The `if` keeps a pull request build from overwriting the row with a branch nobody has merged. `design:audit --report` never fails a build, so it does not need `continue-on-error`. If that file has more than one job installing the app, add the step to one of them only, or the row is written twice on every push.
-        4. Commit the composer files, whatever design:update changed, and the workflow. If design:update left audit findings, do not fix them in this commit; report the count and leave them.
-        5. Stop and tell me to add two repository secrets, DESIGN_TOKEN and DESIGN_SOURCE, on GitHub. I will do that myself. Never ask me for the token value and never write it into a file.
-
-        The row on the board fills in on the first run of that workflow after the secrets exist. End with a report: which major the app was on and which it is on now, the standard version, the audit count, and the workflow file you edited.
-        TXT;
+        return 'composer require "dashcore/design-kit:'.self::MAJOR.'"';
     }
 
     /**
@@ -147,11 +122,12 @@ final class Handoff
     {
         $on = $design === null ? 'already on the Dashcore standard' : 'already on the '.$design->name().' design';
         [$composer, $update] = self::updateCommands($design);
+        $crossMajor = self::crossMajorCommand();
 
         return <<<TXT
         The Dashcore design standard has changed. Pick the change up in this app, which is {$on}.
 
-        1. Run `{$composer}` first. The components and the audit rules arrive with the package.
+        1. Run `{$composer}` first. The components and the audit rules arrive with the package. If it reports nothing to do, this app is on an older major and needs `{$crossMajor}` once instead.
         2. Run `{$update}`. It re-applies the design, says whether the standard moved, and audits this app against the rules as they now read.
         3. Read design/CHANGELOG.md. Each entry says whether it is a relaxation, which needs nothing, or a tightening, which means screens have drifted. It also says whether the audit can check it. Where the audit cannot, look for those screens yourself, because nothing will report them.
         4. Work the audit findings the way design/MIGRATION.md says: one screen per commit, most-used first, checking each with `php artisan design:audit <file>` before committing. Do not invent a component or a colour the standard lacks; leave it and say so.

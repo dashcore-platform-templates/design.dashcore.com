@@ -124,7 +124,7 @@ class HandoffTest extends TestCase
         $prompt = Handoff::updatePrompt($design);
 
         $this->assertSame([
-            'composer require "dashcore/design-kit:5.*"',
+            'composer update dashcore/design-kit',
             'php artisan design:update harbor-point',
         ], Handoff::updateCommands($design));
 
@@ -146,7 +146,7 @@ class HandoffTest extends TestCase
             ->assertSee(Standard::version())
             ->assertSee('What changed in the standard')
             ->assertSee('Picking a change up')
-            ->assertSee('composer require "dashcore/design-kit:5.*"')
+            ->assertSee('composer update dashcore/design-kit')
             // No placeholder. The app reads its own slug out of design.json,
             // so asking for one is asking for something it already knows.
             ->assertSee('php artisan design:update')
@@ -169,9 +169,14 @@ class HandoffTest extends TestCase
     public function the_update_snippet_reads_generically_without_a_design(): void
     {
         $this->assertSame([
-            'composer require "dashcore/design-kit:5.*"',
+            'composer update dashcore/design-kit',
             'php artisan design:update',
         ], Handoff::updateCommands());
+
+        // The exception, kept apart from the ordinary case. composer update
+        // will not cross a major on purpose, so crossing one is a person
+        // deciding rather than a command they run every week.
+        $this->assertSame('composer require "dashcore/design-kit:5.*"', Handoff::crossMajorCommand());
 
         $this->assertStringContainsString('already on the Dashcore standard', Handoff::updatePrompt());
         $this->assertStringContainsString('already on the Harbor Point', Handoff::updatePrompt(Design::load('harbor-point')));
