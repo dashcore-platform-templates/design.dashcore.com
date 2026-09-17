@@ -58,8 +58,9 @@ class FleetInviteCommand extends Command
         $this->line('');
         $this->components->twoColumnDetail('<fg=cyan>Password</>', $password);
         $this->line('');
-        $this->line('  <fg=gray>Shown once. Send it to them however you would send anything else, and</>');
-        $this->line('  <fg=gray>ask them to change it at '.route('account').' once they are in.</>');
+        // Generated rather than invented, and printed into somebody else's
+        // terminal, so /account leads with telling them to change it.
+        $this->line('  <fg=gray>Shown once. Send it to them; they change it at '.route('account').'.</>');
 
         return self::SUCCESS;
     }

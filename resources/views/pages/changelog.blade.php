@@ -48,7 +48,7 @@ new #[Layout('layouts::tool')] #[Title('Changelog')] class extends Component
                  all one-time, and repeating them is noise. --}}
             <p class="mb-4 max-w-2xl text-sm text-(--ds-text-muted)">
                 An app whose <code>design/STANDARD.md</code> shows anything other than
-                <span class="font-mono text-(--ds-text-strong)">{{ $version }}</span> is behind. Replace <code>&lt;slug&gt;</code> with that app's design, or open the design and the panel fills it in.
+                <span class="font-mono text-(--ds-text-strong)">{{ $version }}</span> is behind. Run these in that app.
             </p>
             <div class="grid gap-4 lg:grid-cols-2">
                 <x-copy-block label="Prompt for the agent" :text="$prompt" />

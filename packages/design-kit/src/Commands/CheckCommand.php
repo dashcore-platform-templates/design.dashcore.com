@@ -74,14 +74,15 @@ class CheckCommand extends Command
         $this->line('');
 
         if (! is_string($against) || $against === '') {
-            $this->line('  <fg=gray>Pass --against=<slug> to also find out whether the standard moved since this app applied.</>');
+            $this->line('  <fg=gray>Pass --against=<slug> to also check whether the standard moved.</>');
 
             return;
         }
 
         $local = base_path('design/STANDARD.md');
         if (! File::exists($local)) {
-            $this->line('  <fg=gray>No design/STANDARD.md here, so there is no applied version to compare against.</>');
+            // No STANDARD.md means no design was ever applied here.
+            $this->line('  <fg=gray>No design/STANDARD.md here. Nothing to compare.</>');
 
             return;
         }
@@ -89,16 +90,18 @@ class CheckCommand extends Command
         $before = Source::standardVersion(File::get($local));
         $url = Source::kind($against) === 'url' ? $against : Source::url($against, (string) config('design-kit.source'));
 
+        // Every branch below leads with what happened, because the outcome is
+        // the same in four of them and only the cause differs.
         try {
             $response = Http::timeout(15)->acceptJson()->get($url);
         } catch (ConnectionException $e) {
-            $this->line("  <fg=gray>Could not reach {$url}, so the standard was not compared. ({$e->getMessage()})</>");
+            $this->line("  <fg=gray>Standard not compared: could not reach {$url}. ({$e->getMessage()})</>");
 
             return;
         }
 
         if ($response->failed()) {
-            $this->line("  <fg=gray>Could not fetch {$url} (HTTP {$response->status()}), so the standard was not compared.</>");
+            $this->line("  <fg=gray>Standard not compared: {$url} answered HTTP {$response->status()}.</>");
 
             return;
         }
@@ -107,19 +110,21 @@ class CheckCommand extends Command
         $after = is_array($document) ? Source::publishedStandardVersion($document) : null;
 
         if ($after === null) {
-            $this->line("  <fg=gray>{$url} did not state a standard version, so there was nothing to compare.</>");
+            $this->line("  <fg=gray>Standard not compared: {$url} states no version.</>");
 
             return;
         }
 
         if ($before === null) {
-            $this->line("  <fg=gray>Standard version {$after} is current. This app's copy is not stamped, so it was applied before stamping and may be well behind.</>");
+            // Unstamped means applied before stamping existed, so how far
+            // behind it is cannot be worked out from here.
+            $this->line("  <fg=gray>Standard version {$after} is current. This app's copy is unstamped: apply again to find out where it stands.</>");
 
             return;
         }
 
         if ($before === $after) {
-            $this->line("  <fg=gray>Standard version {$before}, which is current.</>");
+            $this->line("  <fg=gray>Standard version {$before}. Current.</>");
 
             return;
         }

@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use SplFileInfo;
 
 /**
@@ -94,7 +95,7 @@ class AuditCommand extends Command
             // console's width maths count as one column and the terminal draws
             // as two, so a padded right column comes out garbled.
             $this->line('');
-            $this->line("  <fg=cyan>{$relative}</>  <fg=gray>".count($findings).' to look at</>');
+            $this->line("  <fg=cyan>{$relative}</>  <fg=gray>".count($findings).' '.Str::plural('finding', count($findings)).'</>');
 
             $shown = $this->option('full') ? $findings : array_slice($findings, 0, 4);
             foreach ($shown as $f) {
@@ -112,11 +113,11 @@ class AuditCommand extends Command
 
         $this->line('');
         if ($fixedFiles > 0) {
-            $this->components->info("Mechanical rewrites applied to {$fixedFiles} file(s). Check the diff, then run your tests.");
+            $this->components->info("Fixed {$fixedFiles} ".Str::plural('file', $fixedFiles).'. Check the diff, then run your tests.');
         }
 
         if ($skipped !== []) {
-            $this->components->twoColumnDetail('<fg=gray>Skipped by request</>', count($skipped).' file(s)');
+            $this->components->twoColumnDetail('<fg=gray>Skipped by request</>', count($skipped).' '.Str::plural('file', count($skipped)));
             foreach ($skipped as $s) {
                 $this->line("    <fg=gray>{$s}</>");
             }
@@ -132,13 +133,16 @@ class AuditCommand extends Command
         }
 
         arsort($byRule);
-        $this->components->twoColumnDetail('<fg=cyan>By rule</>', "{$totalFindings} in {$filesWithFindings} file(s)");
+        // "22 in 8" is a riddle: in eight what. The unit goes in, the same way
+        // the fleet board's findings column carries it.
+        $this->components->twoColumnDetail('<fg=cyan>By rule</>', "{$totalFindings} in {$filesWithFindings} ".Str::plural('file', $filesWithFindings));
         foreach ($byRule as $rule => $count) {
             $this->components->twoColumnDetail("  {$rule}", (string) $count);
         }
 
         $this->line('');
-        $this->components->warn('These need a person or an agent. design/MIGRATION.md in the pack says how to work through them.');
+        // None of these are mechanical, or --fix would have taken them.
+        $this->components->warn('Work through these with design/MIGRATION.md: one screen per commit, most-used first.');
 
         return self::FAILURE;
     }
@@ -174,18 +178,23 @@ class AuditCommand extends Command
             if (ActionsToken::inActions() && ! ActionsToken::hasPermission()) {
                 // The one mistake worth naming outright. Everything else is in
                 // place and one line is missing from the workflow.
-                $this->line('  <fg=gray>This job cannot prove which repository it is. Add to the workflow:</>');
+                $this->line('  <fg=gray>Nothing reported: this job has no id-token permission. Add beside runs-on:</>');
                 $this->line('');
                 $this->line('    <fg=cyan>permissions:</>');
                 $this->line('      <fg=cyan>id-token: write</>');
                 $this->line('      <fg=cyan>contents: read</>');
                 $this->line('');
-                $this->line('  <fg=gray>Naming any permission turns the defaults off, so keep contents: read.</>');
+                // Naming any permission turns GitHub's defaults off, so a job
+                // asking for id-token alone cannot check itself out. It still
+                // runs, which is what makes it expensive to find.
+                $this->line('  <fg=gray>Keep contents: read, or the job cannot check itself out.</>');
 
                 return;
             }
 
-            $this->line('  <fg=gray>--report runs in GitHub Actions, where it proves which repository it is. Nothing was sent.</>');
+            // Outside Actions there is nothing to prove identity with, and an
+            // older kit's DESIGN_TOKEN was not set either.
+            $this->line('  <fg=gray>Nothing reported: --report only works in GitHub Actions.</>');
 
             return;
         }
@@ -222,7 +231,10 @@ class AuditCommand extends Command
             $this->line("  <fg=gray>{$url} answered HTTP {$response->status()}, so nothing was reported.</>");
 
             if ($response->status() === 401) {
-                $this->line('  <fg=gray>That is the credential. If this app still uses DESIGN_TOKEN, reissue it on design.dashcore.com; otherwise check the workflow asks for id-token: write.</>');
+                // 401 is the credential and nothing else, so it is worth
+                // naming both paths: the current one is id-token, and every
+                // app still on an older kit sends a DESIGN_TOKEN.
+                $this->line('  <fg=gray>Check the workflow asks for id-token: write. On an older kit, reissue DESIGN_TOKEN on design.dashcore.com.</>');
             }
 
             return;

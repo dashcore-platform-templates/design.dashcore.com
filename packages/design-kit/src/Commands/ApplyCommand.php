@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use JsonException;
 use LogicException;
@@ -50,7 +51,7 @@ class ApplyCommand extends Command
             if (Source::kind($source) === 'file') {
                 $path = base_path($source);
                 if (! File::exists($path)) {
-                    $this->components->error("No file at {$source}. Give the design's slug or its pack URL from design.dashcore.com instead, or unzip the pack into the repo root first.");
+                    $this->components->error("No file at {$source}. Pass the design's slug or its pack URL instead, or unzip the pack into the repo root first.");
 
                     return self::FAILURE;
                 }
@@ -103,7 +104,7 @@ class ApplyCommand extends Command
 
         if ($this->option('check')) {
             $this->line('');
-            $this->components->{$changed === [] ? 'info' : 'warn'}($changed === [] ? 'Nothing to change.' : count($changed).' file(s) would change.');
+            $this->components->{$changed === [] ? 'info' : 'warn'}($changed === [] ? 'Nothing to change.' : count($changed).' '.Str::plural('file', count($changed)).' would change.');
 
             return $changed === [] ? self::SUCCESS : self::FAILURE;
         }
@@ -258,39 +259,49 @@ class ApplyCommand extends Command
         $this->line('');
 
         if ($before === null) {
-            $this->line("  <fg=gray>Standard version {$after}. Your previous copy was not stamped, so this is the first comparable one.</>");
+            // An unstamped copy predates stamping, so there is no before to
+            // compare and no way to say how far it had drifted.
+            $this->line("  <fg=gray>Standard version {$after}. The previous copy was unstamped, so this is the first one to compare against.</>");
 
             return;
         }
 
         $this->components->warn("The standard moved since you last applied: {$before} is now {$after}.");
         $this->line('  <fg=gray>design/CHANGELOG.md says what changed and whether anything needs fixing.</>');
-        $this->line('  <fg=gray>Run `php artisan design:audit` afterwards: a rule the audit can check will find the screens.</>');
+        // A tightening only reaches existing screens through the audit; a
+        // relaxation needs nothing. The changelog marks which is which.
+        $this->line('  <fg=gray>Then run `php artisan design:audit` to find the screens it affects.</>');
     }
 
     /**
-     * Say which Flux the app has. Section 06 of the standard names 19 Pro
-     * components and gives a free stand-in for eleven of them, so an app
-     * without Pro is still on the standard. It is worth saying out loud all the
-     * same, because the alternative is finding out later, when a screen wants
-     * a component that is not installed.
+     * Say which Flux the app has.
+     *
+     * Section 06 names 19 Pro components and a free stand-in for eleven of
+     * them, so an app without Pro is still on the standard. Worth saying out
+     * loud all the same: the alternative is finding out later, when a screen
+     * wants a component that is not installed.
+     *
+     * The repository line comes first because Flux Pro is not on Packagist, and
+     * the Dashcore licence covers every site. Both belong here rather than in
+     * the output, where they would be two sentences between somebody and the
+     * command they came for. The ordering against `npm run build` does reach
+     * the screen, because getting it wrong ships a build with no Pro classes in
+     * the stylesheet and nothing says so.
      */
     private function reportFluxTier(): void
     {
         $this->line('');
 
         if (File::isDirectory(base_path('vendor/livewire/flux-pro'))) {
-            $this->line('  <fg=gray>Flux Pro is installed, so every component in standard section 06 is available.</>');
+            $this->line('  <fg=gray>Flux Pro installed. Every component in standard section 06 is available.</>');
 
             return;
         }
 
-        $this->components->warn('Flux Pro is not installed, so 19 components in standard section 06 are unavailable.');
-        $this->line('  <fg=gray>The Dashcore licence covers every site. Section 06 names a free stand-in for eleven of them,</>');
-        $this->line('  <fg=gray>and screens built on those are on the standard. To install it, and note it is not on Packagist:</>');
+        $this->components->warn('Flux Pro is not installed. 19 components in standard section 06 are unavailable, 11 of them with a free stand-in.');
+        $this->line('  <fg=gray>To install it, before `npm run build`:</>');
         $this->line('  <fg=gray>  composer config repositories.flux-pro composer https://composer.fluxui.dev</>');
         $this->line('  <fg=gray>  composer require livewire/flux-pro</>');
-        $this->line('  <fg=gray>Do that before `npm run build`, or Tailwind never sees the Pro views.</>');
     }
 
     private function write(string $path, string $contents): void

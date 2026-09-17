@@ -32,8 +32,10 @@ class UpdateCommand extends Command
         $file = base_path('design/design.json');
 
         if (! File::exists($file)) {
-            $this->components->error('This app has no design/design.json, so it is not on the standard yet.');
-            $this->line('  <fg=gray>Use the Use this design panel on design.dashcore.com to set it up first.</>');
+            // Setting an app up is a different job with its own prompt. This
+            // says where that is rather than explaining the difference.
+            $this->components->error('No design/design.json here. Apply a design first.');
+            $this->line('  <fg=gray>https://design.dashcore.com/designs</>');
 
             return self::FAILURE;
         }
@@ -47,18 +49,23 @@ class UpdateCommand extends Command
             $source = is_array($design) ? Source::designSlug($design) : null;
 
             if ($source === null) {
-                $this->components->error('Give the design slug or its pack URL, the same one you applied with.');
-                $this->line('  <fg=gray>This app\'s design/design.json does not name one, which means it was applied</>');
-                $this->line('  <fg=gray>before design files carried their slug. Passing it once writes it in.</>');
-                $this->line('  <fg=gray>Example: php artisan design:update harbor-point</fg=gray>');
+                // design/design.json here predates designs carrying their own
+                // slug. Passing it once writes it in, and no later run asks.
+                $this->components->error('Give the design slug once, the same one you applied with.');
+                $this->line('  <fg=gray>php artisan design:update harbor-point</>');
 
                 return self::FAILURE;
             }
 
-            $this->line("  <fg=gray>Using {$source}, which is the design this app already has.</>");
+            $this->line("  <fg=gray>Using {$source}, the design this app already has.</>");
         }
 
-        $this->components->info('Run `composer update dashcore/design-kit` before this if you have not. New audit rules arrive with the package.');
+        // The components and the audit rules ship in the package, so an update
+        // that skips Composer re-applies the design and then audits it against
+        // the rules the app already had. Plain `composer update` is not enough
+        // either: it stays inside the major the app is pinned to. The site
+        // names the current major, which this package cannot see from here.
+        $this->components->info('Update dashcore/design-kit before this, if you have not.');
 
         $applied = $this->call('design:apply', array_filter([
             'source' => $source,
@@ -66,20 +73,20 @@ class UpdateCommand extends Command
         ]));
 
         if ($applied !== self::SUCCESS) {
-            $this->components->error('The design did not apply, so nothing was audited. Fix that first.');
+            $this->components->error('The design did not apply. Nothing was audited.');
 
             return self::FAILURE;
         }
 
         $this->line('');
-        $this->components->info('Now what in this app is off the standard as it reads today.');
+        $this->components->info('Auditing against the standard as it reads today.');
 
         // The audit exits non-zero while anything is off, which is right for the
         // audit and wrong here. An update that reports work to do has worked.
         $this->call('design:audit');
 
         $this->line('');
-        $this->components->info('Updated. Read design/CHANGELOG.md for what moved, then work the findings one screen per commit, as design/MIGRATION.md says.');
+        $this->components->info('Updated. design/CHANGELOG.md says what moved, design/MIGRATION.md says how to work the findings.');
 
         return self::SUCCESS;
     }

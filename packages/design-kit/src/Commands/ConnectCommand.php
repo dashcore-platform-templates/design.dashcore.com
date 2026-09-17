@@ -50,7 +50,7 @@ class ConnectCommand extends Command
             // Not fatal. A repository can be on the board with nothing applied
             // yet, and the board says so rather than going quiet.
             $this->line('');
-            $this->components->warn('No design applied yet, so the board will list this repository with nothing against it.');
+            $this->components->warn('No design applied. The board will show this row as Not applied.');
         }
 
         $ready = $this->reportsToTheBoard($source) && $ready;
@@ -75,8 +75,11 @@ class ConnectCommand extends Command
         if ($state['file'] === null) {
             $this->line('');
             $this->components->error('No workflow reports to the board.');
-            $this->block('Add this to the workflow that already installs the app, after composer install:', Workflow::STEP);
-            $this->block('And on that job, so it can prove which repository it is:', Workflow::PERMISSIONS);
+            // The same two labels /connect uses. "After composer install" was
+            // true and useless: it names a place somebody has to work out,
+            // where runs-on and steps are lines already in their file.
+            $this->block('Last in steps, on the job that runs your tests:', Workflow::STEP);
+            $this->block('And beside runs-on, on that job:', Workflow::PERMISSIONS);
 
             return false;
         }
@@ -87,8 +90,10 @@ class ConnectCommand extends Command
             // The one mistake worth naming outright: everything else looks
             // right, and the job runs and sends nothing.
             $this->components->twoColumnDetail('<fg=cyan>Can prove itself</>', '<fg=red>no</>');
-            $this->block('Add to the job that runs that step:', Workflow::PERMISSIONS);
-            $this->line('  <fg=gray>Naming any permission turns the defaults off, so keep contents: read.</>');
+            $this->block('Add beside runs-on, on the job that runs that step:', Workflow::PERMISSIONS);
+            // Naming any permission turns GitHub's defaults off, so a job
+            // asking for id-token alone cannot check itself out.
+            $this->line('  <fg=gray>Keep contents: read, or the job cannot check itself out.</>');
 
             return false;
         }
@@ -97,14 +102,14 @@ class ConnectCommand extends Command
 
         if (! $state['guarded']) {
             $this->line('');
-            $this->components->warn('That step has no default-branch guard, so a pull request build will overwrite the row.');
+            $this->components->warn('That step has no default-branch guard. Pull request builds will overwrite the row.');
         }
 
         if (ActionsToken::inActions() && ! ActionsToken::hasPermission()) {
             // Running inside Actions is the one place this can be checked for
             // real rather than read off a file.
             $this->line('');
-            $this->components->error('This job has no id-token permission, so it cannot report.');
+            $this->components->error('This job has no id-token permission. It cannot report.');
 
             return false;
         }
