@@ -6,6 +6,7 @@ use App\Models\Site;
 use App\Models\SiteReport;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -125,5 +126,46 @@ class FleetPageTest extends TestCase
             ->get('/fleet')
             ->assertOk()
             ->assertSee('deadbeef');
+    }
+
+    #[Test]
+    public function forgetting_a_repository_takes_its_reports_with_it(): void
+    {
+        $site = Site::factory()->create();
+        SiteReport::factory()->for($site)->count(2)->create();
+
+        Livewire::actingAs(User::factory()->create())
+            ->test('pages::fleet')
+            ->call('forget', $site->id);
+
+        $this->assertSame(0, Site::query()->count());
+        $this->assertSame(0, SiteReport::query()->count());
+    }
+
+    #[Test]
+    public function a_new_token_retires_the_old_one(): void
+    {
+        // Only for apps not yet proving themselves to GitHub. One on the
+        // current kit carries no token at all.
+        $site = Site::factory()->create();
+        $old = $site->issueToken();
+
+        Livewire::actingAs(User::factory()->create())
+            ->test('pages::fleet')
+            ->call('rotate', $site->id)
+            ->assertSee('An app on the current kit needs none of this');
+
+        $this->assertNull(Site::byToken($old));
+    }
+
+    #[Test]
+    public function a_stranger_can_do_neither(): void
+    {
+        $site = Site::factory()->create();
+
+        Livewire::test('pages::fleet')->call('forget', $site->id)->assertForbidden();
+        Livewire::test('pages::fleet')->call('rotate', $site->id)->assertForbidden();
+
+        $this->assertSame(1, Site::query()->count());
     }
 }

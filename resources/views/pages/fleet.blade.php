@@ -2,6 +2,8 @@
 
 use App\Design\Standard;
 use App\Models\Site;
+use Flux\Flux;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -15,12 +17,48 @@ use Livewire\Component;
  * two questions worth asking, which are how far off a site is and whether it
  * is getting better.
  *
- * Read-only. A repository joins this board by being connected on /connect,
- * which is where its token is issued and where it is taken away again. This
- * page says what the fleet looks like; it is not where the fleet is edited.
+ * Nothing is added here, because nothing is added anywhere: a repository puts
+ * itself on this board the first time it reports, proving which one it is with
+ * a token GitHub mints for the job. /connect is the guide for getting to that
+ * point. Taking a row off is the one thing done to a row, so it is here.
  */
 new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
 {
+    /**
+     * Forget a repository and everything it has told us.
+     *
+     * It comes back on its next report, because nothing stops a repository
+     * that can prove itself. This is for one that has gone away, or a row that
+     * should not have been made.
+     */
+    public function forget(int $siteId): void
+    {
+        abort_unless(Auth::check(), 403);
+
+        $site = Site::findOrFail($siteId);
+        $repository = $site->repository;
+        $site->delete();
+
+        Flux::toast("{$repository} is off the board.", variant: 'success');
+    }
+
+    /**
+     * A fresh token for a repository still reporting with one.
+     *
+     * Only for apps that have not moved to proving themselves yet. Once a
+     * repository is on the current kit it carries no token at all and this is
+     * not a thing it needs.
+     */
+    public function rotate(int $siteId): void
+    {
+        abort_unless(Auth::check(), 403);
+
+        $this->issued = Site::findOrFail($siteId)->issueToken();
+    }
+
+    /** Shown once, straight after issuing. Never read back from anywhere. */
+    public ?string $issued = null;
+
     public function with(): array
     {
         return [
@@ -34,10 +72,20 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
     <x-ds::page-header title="Fleet" class="mb-(--ds-section)">
         <x-slot:description>Each app's default branch, as its CI last saw it. The standard reads <code class="font-mono text-xs">{{ $current }}</code> today.</x-slot:description>
 
-        {{-- The board is read-only. Connecting is where a repository joins
-             it, and where its token is issued. --}}
         <flux:button :href="route('connect')" wire:navigate icon="link" variant="ghost">Connect a repository</flux:button>
     </x-ds::page-header>
+
+    @if ($issued)
+        {{-- The legacy path. A repository on the current kit proves itself and
+             holds nothing, so this only exists for the ones not there yet. --}}
+        <div class="mb-(--ds-section) rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-accent-soft) p-(--ds-card)">
+            <x-ds::section-heading level="2">A new token</x-ds::section-heading>
+            <flux:text class="mt-1">Shown once. It goes in that repository's Actions secrets as <code class="font-mono text-xs">DESIGN_TOKEN</code>. An app on the current kit needs none of this.</flux:text>
+            <div class="mt-3">
+                <x-copy-block label="DESIGN_TOKEN" :text="$issued" />
+            </div>
+        </div>
+    @endif
 
     <div class="overflow-x-auto rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface)">
         <table class="w-full min-w-[54rem] text-sm">
@@ -49,6 +97,7 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                     <th class="ds-label px-(--ds-cell-x) py-2.5 text-start font-normal">Package</th>
                     <th class="ds-label px-(--ds-cell-x) py-2.5 text-end font-normal">Findings</th>
                     <th class="ds-label px-(--ds-cell-x) py-2.5 text-start font-normal">Last reported</th>
+                    <th class="ds-label px-(--ds-cell-x) py-2.5 text-end font-normal"></th>
                 </tr>
             </thead>
             <tbody>
@@ -112,10 +161,20 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                             @endif
                         </td>
                         <td class="px-(--ds-cell-x) py-3 text-(--ds-text-muted)">{{ $site->last_reported_at?->diffForHumans() ?? 'never' }}</td>
+                        <td class="px-(--ds-cell-x) py-3 text-end">
+                            <flux:dropdown position="bottom" align="end">
+                                <flux:button variant="ghost" icon="ellipsis-horizontal" aria-label="Actions for {{ $site->repository }}" />
+                                <flux:menu>
+                                    <flux:menu.item wire:click="rotate({{ $site->id }})" icon="key">New token (older kits)</flux:menu.item>
+                                    <flux:menu.separator />
+                                    <flux:menu.item wire:click="forget({{ $site->id }})" wire:confirm="Forget {{ $site->repository }} and every report it has sent? It returns on its next report." icon="trash" variant="danger">Forget</flux:menu.item>
+                                </flux:menu>
+                            </flux:dropdown>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-(--ds-cell-x) py-16">
+                        <td colspan="7" class="px-(--ds-cell-x) py-16">
                             {{-- Names the page that fixes it rather than a
                                  button that is no longer here. --}}
                             <x-ds::empty
