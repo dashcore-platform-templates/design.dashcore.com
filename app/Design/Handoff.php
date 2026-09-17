@@ -90,7 +90,11 @@ final class Handoff
             // on a kit still on ^3.0 it reports nothing to do and the app sits
             // there looking current.
             'composer require "dashcore/design-kit:'.self::MAJOR.'"',
-            'php artisan design:update '.($design === null ? '<slug>' : $design->slug),
+            // No argument. The app's design/design.json names its own slug, so
+            // asking somebody to fill in a placeholder is asking them for
+            // something the app already knows. A file written before designs
+            // carried a slug says so and asks for it once.
+            'php artisan design:update'.($design === null ? '' : ' '.$design->slug),
         ];
     }
 

@@ -147,7 +147,10 @@ class HandoffTest extends TestCase
             ->assertSee('What changed in the standard')
             ->assertSee('Picking a change up')
             ->assertSee('composer require "dashcore/design-kit:5.*"')
-            ->assertSee('php artisan design:update &lt;slug&gt;', false);
+            // No placeholder. The app reads its own slug out of design.json,
+            // so asking for one is asking for something it already knows.
+            ->assertSee('php artisan design:update')
+            ->assertDontSee('design:update &lt;slug&gt;', false);
     }
 
     #[Test]
@@ -167,7 +170,7 @@ class HandoffTest extends TestCase
     {
         $this->assertSame([
             'composer require "dashcore/design-kit:5.*"',
-            'php artisan design:update <slug>',
+            'php artisan design:update',
         ], Handoff::updateCommands());
 
         $this->assertStringContainsString('already on the Dashcore standard', Handoff::updatePrompt());
