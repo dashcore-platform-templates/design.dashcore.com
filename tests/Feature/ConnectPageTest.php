@@ -115,4 +115,35 @@ class ConnectPageTest extends TestCase
             }
         }
     }
+
+    #[Test]
+    public function the_two_halves_are_told_apart_and_ordered(): void
+    {
+        // One is done once on a laptop, the other once per repository, and a
+        // flat list of steps hid that. Somebody on their third repo should be
+        // able to see the first half is already done.
+        $this->actingAs(User::factory()->create())
+            ->get('/connect')
+            ->assertOk()
+            ->assertSee('Your machine')
+            ->assertSee('Once, ever')
+            ->assertSee('Each repository')
+            ->assertSee('Needs the token above')
+            ->assertSee('lg:grid-cols-3', false);
+    }
+
+    #[Test]
+    public function the_spine_is_drawn_with_a_rail_between_its_nodes(): void
+    {
+        // Three numbered steps and the outcome, joined. The first version built
+        // the rail from before: utilities held in a PHP variable and Tailwind
+        // never saw them, so it rendered as four unconnected circles and every
+        // test still passed.
+        $html = $this->actingAs(User::factory()->create())->get('/connect')->assertOk()->getContent();
+
+        $this->assertSame(3, substr_count($html, 'bg-(--ds-accent-soft) text-(--ds-accent-content)'), 'three numbered nodes');
+        $this->assertStringContainsString('bg-(--ds-success-soft)', $html, 'the outcome node');
+        // One rail per node except the last.
+        $this->assertSame(3, substr_count($html, 'absolute start-4 top-8 bottom-0 w-px bg-(--ds-border)'));
+    }
 }

@@ -8,21 +8,25 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 /**
- * How a repository reaches the fleet board.
+ * Both halves of setting up, and which one has to happen first.
  *
- * A guide and nothing else. There is no form because there is nothing to
- * register: a repository joins the board the first time it reports, and it
- * reports by proving which one it is with a token GitHub mints for the job.
- * Nothing is stored in the repository, so nothing is issued here.
+ * They are separate things and a flat list of steps hid that. The token is a
+ * fact about a laptop, done once ever, and it is what lets any design be
+ * pulled at all. The workflow is a fact about a repository, done once per
+ * repository, and it is what puts that repository on the board. Side by side,
+ * somebody on their third repo can see the left column is already done.
  *
- * Kept to four steps, each one a title, a snippet and at most one line. An
- * earlier version explained the mechanism at every step, which made a page
- * somebody follows into a page somebody reads. The reasoning lives in these
- * comments and in GitHubIdentity; the page says what to do.
+ * The right column is a spine rather than a list, because the steps are in an
+ * order and the last one produces something. A list says "here are three
+ * things"; a spine says "then, then, and now this is true".
  *
- * The snippets are the package's own constants, which are the same ones
- * `design:connect` checks for. A guide telling somebody to write something the
- * checker does not recognise is worse than no guide.
+ * No form anywhere. A repository joins the board the first time it reports,
+ * proving which one it is with a token GitHub mints for the job, so nothing is
+ * registered here and nothing is stored in the repository.
+ *
+ * The snippets are the package's own constants, the same ones `design:connect`
+ * checks for. A guide telling somebody to write something the checker does not
+ * recognise is worse than no guide.
  */
 new #[Layout('layouts::tool')] #[Title('Connect')] class extends Component
 {
@@ -38,12 +42,12 @@ new #[Layout('layouts::tool')] #[Title('Connect')] class extends Component
     }
 
     /**
-     * The same two blocks, in a job, so somebody can see where they land.
+     * The two blocks in a job, so somebody can see where they land.
      *
      * Composed from the constants rather than written out, because an example
-     * that drifts from the snippets above it is worse than no example. The
-     * surrounding lines are the ordinary shape of a Laravel CI job; nobody is
-     * meant to copy this one, which is why it is not a copy block.
+     * that drifts from the snippets beside it is worse than no example. The
+     * lines around them are the ordinary shape of a Laravel CI job; this one is
+     * not meant to be copied, which is why it is not a copy block.
      */
     private function example(): string
     {
@@ -65,73 +69,100 @@ new #[Layout('layouts::tool')] #[Title('Connect')] class extends Component
     }
 }; ?>
 
+
 <div class="px-(--ds-gutter) py-(--ds-section)">
-    <x-ds::page-header title="Connect a repository" class="mb-(--ds-section)">
-        <x-slot:description>Four steps in the repo. Nothing to fill in here.</x-slot:description>
+    <x-ds::page-header title="Setting up" class="mb-(--ds-section)">
+        <x-slot:description>Your machine once, then a few lines in each repo. Nothing to fill in here.</x-slot:description>
 
         <flux:button :href="route('fleet')" wire:navigate icon="server-stack" variant="ghost">
             Fleet{{ $connected > 0 ? ' ('.$connected.')' : '' }}
         </flux:button>
     </x-ds::page-header>
 
-    <div class="max-w-2xl space-y-(--ds-section)">
-        <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">
-            <x-ds::section-heading level="2">1. Update the kit</x-ds::section-heading>
-            <div class="mt-3">
-                <x-copy-block :text="$upgrade" />
-            </div>
-            {{-- `composer update` stays inside the pinned major, so it will not
-                 get there. Said as an instruction rather than as the reason. --}}
-            <p class="mt-2 text-sm text-(--ds-text-muted)">Skip if already on {{ Handoff::MAJOR }}. Plain <code class="font-mono text-xs">composer update</code> will not get there.</p>
-        </section>
+    {{-- One column below lg, two from lg, per standard 12. The prerequisite
+         reads first in both, because on a phone the columns stack in order. --}}
+    <div class="grid gap-(--ds-section) lg:grid-cols-3">
+        <div class="lg:col-span-1">
+            <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">
+                <p class="ds-eyebrow">First</p>
+                <x-ds::section-heading level="2" class="mt-1">Your machine</x-ds::section-heading>
+                {{-- Scope, not reason. Somebody on their third repo needs to
+                     know they can skip this, and that is all this line is. --}}
+                <flux:text class="mt-1">Once, ever. Without it no design can be pulled.</flux:text>
 
-        <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">
-            <x-ds::section-heading level="2">2. Add two blocks to the CI workflow</x-ds::section-heading>
-            <p class="mt-1 text-sm text-(--ds-text-muted)">In <code class="font-mono text-xs">.github/workflows</code>, on the job that runs your tests.</p>
+                <div class="mt-4">
+                    <x-copy-block label="In the app's .env" text="DESIGN_TOKEN=dsn_…" />
+                </div>
+                <p class="mt-2 text-sm text-(--ds-text-muted)">
+                    Make one on <flux:link :href="route('account')" wire:navigate>your account</flux:link>, named after this machine. Your machine only, never in CI.
+                </p>
+            </section>
+        </div>
 
-            {{-- The labels name a line somebody can find in their own file.
-                 "On the job" and "after composer install" were true and
-                 useless: both describe a place you have to work out. --}}
-            <div class="mt-3 space-y-4">
-                <x-copy-block label="Beside runs-on" :text="$permissions" />
-                <x-copy-block label="Last in steps" :text="$step" />
-            </div>
+        <div class="lg:col-span-2">
+            <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">
+                <p class="ds-eyebrow">Then, per repository</p>
+                <x-ds::section-heading level="2" class="mt-1">Each repository</x-ds::section-heading>
+                <flux:text class="mt-1">Needs the token above. This is what puts the repo on the fleet.</flux:text>
 
-            {{-- Naming any permission turns GitHub's defaults off, so a job
-                 asking for id-token alone cannot check itself out. It still
-                 runs, which is what makes it expensive to find. --}}
-            <p class="mt-2 text-sm text-(--ds-text-muted)">Keep <code class="font-mono text-xs">contents: read</code>, or the job cannot check itself out.</p>
+                <ol class="mt-6">
+                    <x-step number="1">
+                        <p class="text-sm font-medium text-(--ds-text-strong)">Update the kit</p>
+                        <div class="mt-3">
+                            <x-copy-block :text="$upgrade" />
+                        </div>
+                        {{-- `composer update` stays inside the pinned major, so
+                             it will not get there. Said as an instruction. --}}
+                        <p class="mt-2 text-sm text-(--ds-text-muted)">Skip if already on {{ Handoff::MAJOR }}. Plain <code class="font-mono text-xs">composer update</code> will not get there.</p>
+                    </x-step>
 
-            <flux:accordion class="mt-4">
-                <flux:accordion.item>
-                    <flux:accordion.heading>What it looks like when done</flux:accordion.heading>
-                    <flux:accordion.content>
-                        <pre class="overflow-x-auto rounded-(--radius-md) bg-(--ds-sunken) p-4 font-mono text-xs leading-relaxed text-(--ds-text)">{{ $example }}</pre>
-                    </flux:accordion.content>
-                </flux:accordion.item>
-            </flux:accordion>
-        </section>
+                    <x-step number="2">
+                        <p class="text-sm font-medium text-(--ds-text-strong)">Add two blocks to the CI workflow</p>
+                        <p class="mt-1 text-sm text-(--ds-text-muted)">In <code class="font-mono text-xs">.github/workflows</code>, on the job that runs your tests.</p>
 
-        <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">
-            <x-ds::section-heading level="2">3. Add your token</x-ds::section-heading>
-            <div class="mt-3">
-                <x-copy-block label="In the app's .env" text="DESIGN_TOKEN=dsn_…" />
-            </div>
-            {{-- A person's credential, for the commands a person runs. CI needs
-                 none of it: GitHub vouches for the job. --}}
-            <p class="mt-2 text-sm text-(--ds-text-muted)">
-                Make one on <flux:link :href="route('account')" wire:navigate>your account</flux:link>. Your machine only, never in CI.
-            </p>
-        </section>
+                        {{-- The labels name a line somebody can find in their
+                             own file. "On the job" and "after composer install"
+                             were true and useless: both describe a place you
+                             have to work out. --}}
+                        <div class="mt-3 space-y-4">
+                            <x-copy-block label="Beside runs-on" :text="$permissions" />
+                            <x-copy-block label="Last in steps" :text="$step" />
+                        </div>
 
-        <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">
-            <x-ds::section-heading level="2">4. Check, then push</x-ds::section-heading>
-            <div class="mt-3">
-                <x-copy-block text="php artisan design:connect" />
-            </div>
-            <p class="mt-2 text-sm text-(--ds-text-muted)">
-                It says what is still missing. Push to the default branch and the row shows up on the <flux:link :href="route('fleet')" wire:navigate>fleet</flux:link>.
-            </p>
-        </section>
+                        {{-- Naming any permission turns GitHub's defaults off,
+                             so a job asking for id-token alone cannot check
+                             itself out. It still runs, which is the expensive
+                             part. --}}
+                        <p class="mt-2 text-sm text-(--ds-text-muted)">Keep <code class="font-mono text-xs">contents: read</code>, or the job cannot check itself out.</p>
+
+                        <flux:accordion class="mt-4">
+                            <flux:accordion.item>
+                                <flux:accordion.heading>What it looks like when done</flux:accordion.heading>
+                                <flux:accordion.content>
+                                    <pre class="overflow-x-auto rounded-(--radius-md) bg-(--ds-sunken) p-4 font-mono text-xs leading-relaxed text-(--ds-text)">{{ $example }}</pre>
+                                </flux:accordion.content>
+                            </flux:accordion.item>
+                        </flux:accordion>
+                    </x-step>
+
+                    <x-step number="3">
+                        <p class="text-sm font-medium text-(--ds-text-strong)">Check, then push</p>
+                        <div class="mt-3">
+                            <x-copy-block text="php artisan design:connect" />
+                        </div>
+                        <p class="mt-2 text-sm text-(--ds-text-muted)">It says what is still missing, then push to the default branch.</p>
+                    </x-step>
+
+                    {{-- The end of the spine is what the three steps were for,
+                         not a fourth thing to do. No number, no rail after it. --}}
+                    <x-step last>
+                        <p class="text-sm font-medium text-(--ds-text-strong)">The row appears on the fleet</p>
+                        <p class="mt-1 text-sm text-(--ds-text-muted)">
+                            After the next run on the default branch. Nothing to confirm here. <flux:link :href="route('fleet')" wire:navigate>Open the fleet</flux:link>.
+                        </p>
+                    </x-step>
+                </ol>
+            </section>
+        </div>
     </div>
 </div>
