@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use Dashcore\DesignKit\Commands\AuditCommand;
+use Dashcore\DesignKit\Workflow;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -41,8 +43,8 @@ class ProductionAutoloadTest extends TestCase
         // app actually depends on, and a new one should be a deliberate
         // addition here.
         foreach ([
-            \Dashcore\DesignKit\Workflow::class,
-            \Dashcore\DesignKit\Commands\AuditCommand::class,
+            Workflow::class,
+            AuditCommand::class,
         ] as $class) {
             $this->assertTrue(class_exists($class), "{$class} is missing");
         }
