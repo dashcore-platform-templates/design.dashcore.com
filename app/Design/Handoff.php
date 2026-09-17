@@ -22,22 +22,6 @@ final class Handoff
     /** Flux Pro is not on Packagist, so a kit has to be told where it lives. */
     public const FLUX_REPO = 'https://composer.fluxui.dev';
 
-    /**
-     * The package major the fleet is being moved onto.
-     *
-     * A major does not arrive on its own, which is the point of one: an app
-     * pinned to 3 never sees 4 and says nothing about it. So the constraint has
-     * to be named somewhere a person reads, and it changes here when a major
-     * ships, beside the release note in the package README.
-     *
-     * Written 5.* rather than ^5.0 because this ends up in a command somebody
-     * pastes into a shell. On Windows, composer is a .bat, so cmd.exe sees the
-     * arguments and eats the caret as its own escape character: ^5.0 arrives as
-     * 5.0 and Composer resolves an exact version that does not exist. 5.* means
-     * the same thing and has no character any shell argues about.
-     */
-    public const MAJOR = '5.*';
-
     /** Once per machine: the package is private, and Composer runs git non-interactively. */
     public static function tokenCommand(): string
     {
@@ -100,20 +84,6 @@ final class Handoff
     }
 
     /**
-     * The one command that needs a version, for an app still on an older major.
-     *
-     * `composer update` will not cross a major, on purpose: a release that can
-     * fail a passing build stops and waits for a person. This is a person
-     * deciding. A bare `composer require dashcore/design-kit` would cross every
-     * major at once and rewrite the constraint to match, which is the same
-     * decision made by accident.
-     */
-    public static function crossMajorCommand(): string
-    {
-        return 'composer require "dashcore/design-kit:'.self::MAJOR.'"';
-    }
-
-    /**
      * What to paste into Claude Code to pick up a change to the standard.
      * Without a design it reads generically, for the changelog page, where the
      * reader has not said which app they are updating.
@@ -122,12 +92,11 @@ final class Handoff
     {
         $on = $design === null ? 'already on the Dashcore standard' : 'already on the '.$design->name().' design';
         [$composer, $update] = self::updateCommands($design);
-        $crossMajor = self::crossMajorCommand();
 
         return <<<TXT
         The Dashcore design standard has changed. Pick the change up in this app, which is {$on}.
 
-        1. Run `{$composer}` first. The components and the audit rules arrive with the package. If it reports nothing to do, this app is on an older major and needs `{$crossMajor}` once instead.
+        1. Run `{$composer}` first. The components and the audit rules arrive with the package.
         2. Run `{$update}`. It re-applies the design, says whether the standard moved, and audits this app against the rules as they now read.
         3. Read design/CHANGELOG.md. Each entry says whether it is a relaxation, which needs nothing, or a tightening, which means screens have drifted. It also says whether the audit can check it. Where the audit cannot, look for those screens yourself, because nothing will report them.
         4. Work the audit findings the way design/MIGRATION.md says: one screen per commit, most-used first, checking each with `php artisan design:audit <file>` before committing. Do not invent a component or a colour the standard lacks; leave it and say so.

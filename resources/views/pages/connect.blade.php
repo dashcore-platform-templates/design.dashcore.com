@@ -38,7 +38,6 @@ new #[Layout('layouts::tool')] #[Title('Connect')] class extends Component
             'step' => Workflow::STEP,
             'example' => $this->example(),
             'upgrade' => implode(PHP_EOL, Handoff::updateCommands()),
-            'crossMajor' => Handoff::crossMajorCommand(),
         ];
     }
 
@@ -112,18 +111,11 @@ new #[Layout('layouts::tool')] #[Title('Connect')] class extends Component
                         <div class="mt-3">
                             <x-copy-block :text="$upgrade" />
                         </div>
-                        {{-- The line this replaced said plain composer update
-                             would not get there, while the snippet above it was
-                             plain composer update. Worse, it left an app on an
-                             older major with no next step: you run the command,
-                             Composer says nothing to modify, and the page has
-                             nothing more to say. This names that message,
-                             because it is the one somebody is looking at. --}}
-                        <p class="mt-2 text-sm text-(--ds-text-muted)">Says <code class="font-mono text-xs">Nothing to modify in lock file</code>? This app is on an older major. Run this once instead, then carry on.</p>
-                        <div class="mt-3">
-                            <x-copy-block :text="$crossMajor" />
-                        </div>
-                        <p class="mt-2 text-sm text-(--ds-text-muted)">A major brings audit rules that did not exist before, so expect findings. Nothing here fails a build.</p>
+                        {{-- Nothing about versions any more. New rules arrive on
+                             an ordinary update and show up as findings, which is
+                             information rather than damage: reporting cannot
+                             fail a build. --}}
+                        <p class="mt-2 text-sm text-(--ds-text-muted)">New rules arrive this way and show up as findings on the fleet. Work them when you choose to.</p>
                     </x-step>
 
                     <x-step number="2">

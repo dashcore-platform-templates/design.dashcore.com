@@ -167,9 +167,15 @@ The Flux table also picks up the styling 06 always specified, and the empty stat
 
 ## Versions
 
-A kit on an older major does not get the next one, on purpose: a release that can fail a passing build stops and waits for a person. Move it with `composer require "dashcore/design-kit:5.*"`, which changes the constraint and updates in one step. Plain `composer update` stays inside the major it is already pinned to and reports nothing to do.
+`composer update dashcore/design-kit`. That is the whole thing, and it stays true at 6 and at 10, because nothing here names a version.
 
-Releases are tagged, and `composer require` writes `^1.0` for you. Every later 1.x release then reaches every kit on the next `composer update`, which is the whole point: a rule added to the standard should not need fifteen repos edited by hand to arrive. A change that would break an app already on the standard goes to 2.0 instead, so it stops and waits for a person rather than arriving quietly.
+A new audit rule is a minor. It used to be a major, on the grounds that a rule could fail a build that passed, and that was true for one reason: `design:audit --report` exited non-zero when it found something, so the one step every app is told to add turned red the moment a rule landed. Reporting is telling the board what is true, which succeeds whatever it found, and it does that now. A new rule shows up as findings on the fleet and nothing goes red, so there is nothing left for a major to protect and rules arrive on an ordinary update.
+
+That also ends the thing that made it worse: an app could not take a new command without taking every rule that shipped alongside it. ExecutiveOS sat on 4.0 unable to get `design:connect` without accepting sixty-eight findings of unrelated work.
+
+An app that does want findings to fail its build runs `php artisan design:audit` without `--report`, as its own check. That is opt-in, and an app that opts in has accepted that a new rule can stop it.
+
+A major is now what it is everywhere else: the package's own interface breaking. Rare, and nothing to do with the standard moving.
 
 Before 1.0 this was a 0.x package, where Composer reads each minor as breaking. A kit that had required `^0.2.0` never saw v0.3.0 at all, and said so as "Nothing to modify in lock file" rather than as an error. If you have one of those, change the constraint to `^1.0` once and it will keep up from then on.
 

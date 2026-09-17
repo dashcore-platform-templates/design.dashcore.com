@@ -173,10 +173,9 @@ class HandoffTest extends TestCase
             'php artisan design:update',
         ], Handoff::updateCommands());
 
-        // The exception, kept apart from the ordinary case. composer update
-        // will not cross a major on purpose, so crossing one is a person
-        // deciding rather than a command they run every week.
-        $this->assertSame('composer require "dashcore/design-kit:5.*"', Handoff::crossMajorCommand());
+        // No version anywhere. Naming one was for crossing a major, and a new
+        // rule is not a major any more.
+        $this->assertStringNotContainsString('design-kit:', implode(' ', Handoff::updateCommands()));
 
         $this->assertStringContainsString('already on the Dashcore standard', Handoff::updatePrompt());
         $this->assertStringContainsString('already on the Harbor Point', Handoff::updatePrompt(Design::load('harbor-point')));

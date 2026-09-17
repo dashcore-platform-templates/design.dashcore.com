@@ -144,7 +144,17 @@ class AuditCommand extends Command
         // None of these are mechanical, or --fix would have taken them.
         $this->components->warn('Work through these with design/MIGRATION.md: one screen per commit, most-used first.');
 
-        return self::FAILURE;
+        // Reporting is telling the board what is true, which succeeds whatever
+        // it found. Exiting non-zero here turned the one step every app is told
+        // to add into a red build, and both the guide and the prompt promised
+        // it could not: the snippet has no continue-on-error because it was
+        // never supposed to need one.
+        //
+        // It also decided policy nobody chose. A new rule could turn fifteen
+        // builds red, which is the only reason adding a rule was ever a major.
+        // An app that does want findings to fail its build runs the audit
+        // without --report, deliberately, as its own check.
+        return $this->option('report') ? self::SUCCESS : self::FAILURE;
     }
 
     /**

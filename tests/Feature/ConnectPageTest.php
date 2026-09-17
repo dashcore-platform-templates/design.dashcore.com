@@ -148,15 +148,15 @@ class ConnectPageTest extends TestCase
     }
 
     #[Test]
-    public function it_answers_the_message_an_older_major_actually_prints(): void
+    public function the_guide_names_no_version_at_all(): void
     {
-        // ExecutiveOS ran composer update, got "Nothing to modify in lock file"
-        // because it requires ^4.0, and the page had nothing more to say. The
-        // symptom is what somebody is looking at, so it is what the page names.
+        // Naming one was for crossing a major, and a new rule is not a major
+        // any more. A guide that carried a version number would also have to be
+        // edited every time one shipped.
         $this->actingAs(User::factory()->create())
             ->get('/connect')
             ->assertOk()
-            ->assertSee('Nothing to modify in lock file')
-            ->assertSee('composer require &quot;dashcore/design-kit:5.*&quot;', false);
+            ->assertSee('composer update dashcore/design-kit')
+            ->assertDontSee('design-kit:');
     }
 }
