@@ -146,4 +146,17 @@ class ConnectPageTest extends TestCase
         // One rail per node except the last.
         $this->assertSame(3, substr_count($html, 'absolute start-4 top-8 bottom-0 w-px bg-(--ds-border)'));
     }
+
+    #[Test]
+    public function it_answers_the_message_an_older_major_actually_prints(): void
+    {
+        // ExecutiveOS ran composer update, got "Nothing to modify in lock file"
+        // because it requires ^4.0, and the page had nothing more to say. The
+        // symptom is what somebody is looking at, so it is what the page names.
+        $this->actingAs(User::factory()->create())
+            ->get('/connect')
+            ->assertOk()
+            ->assertSee('Nothing to modify in lock file')
+            ->assertSee('composer require &quot;dashcore/design-kit:5.*&quot;', false);
+    }
 }
