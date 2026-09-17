@@ -1,5 +1,7 @@
 # design.dashcore.com
 
+**New here? Read [docs/start-here.md](docs/start-here.md).** It gets you from nothing to having tested it, in about ten minutes. This file is for running it locally and changing it.
+
 Every new Dashcore project should get a designed, on-standard look on day one, from a short brief, without building it by hand and without it reading as a template. This is the tool for that.
 
 Three parts, and the order matters.
@@ -12,7 +14,7 @@ Three parts, and the order matters.
 
 It is written here, in `packages/design-kit`, because it changes with the standard and the two should move in one commit. Composer cannot install from a subdirectory, so it is published to `dashcoretech/design-kit`, and that is what kits install. The published repo is a mirror: edit it there and the change is lost on the next publish.
 
-Publishing is automatic. A push to master updates the mirror, and a `design-kit/vX.Y.Z` tag releases that version. Kits are on `^1.0`, so a release reaches them on the next `composer update`; anything that would break an app already on the standard goes to 2.0 and stops for a person.
+Publishing is automatic. A push to master updates the mirror, and a `design-kit/vX.Y.Z` tag releases that version. A release reaches every kit on the next `composer update`, including a new audit rule: rules show up as findings on the fleet board and reporting never fails a build, so there is nothing to stop and wait for. A major is the package's own interface breaking, which is rare.
 
 ## The seven decisions
 

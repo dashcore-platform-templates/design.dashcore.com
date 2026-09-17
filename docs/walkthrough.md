@@ -1,5 +1,9 @@
 # From a brief to a migrated app
 
+> **Read [start-here.md](start-here.md) first** if you have not used this before. It is shorter and covers signing in, the token you need, and the three secrets a repo needs.
+>
+> Two things on this page changed after it was written: the pages need a sign-in now, and pulling a design needs your own token in `DESIGN_TOKEN`. Everything else still holds.
+
 The whole path, in order, with what to look for at each step. A new project stops after step 6. An app that already exists carries on to step 7.
 
 Two things worth knowing before you start. The viewer works in full without an API key, so generating is a suggest button and never a dependency. And nothing here is one-way: a design is a file you can edit by hand at any point, and applying it twice changes nothing.
