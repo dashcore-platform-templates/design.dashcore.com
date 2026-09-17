@@ -93,7 +93,7 @@ class CheckCommand extends Command
         // Every branch below leads with what happened, because the outcome is
         // the same in four of them and only the cause differs.
         try {
-            $response = Http::timeout(15)->acceptJson()->get($url);
+            $response = Http::timeout(15)->withToken((string) config('design-kit.token'))->acceptJson()->get($url);
         } catch (ConnectionException $e) {
             $this->line("  <fg=gray>Standard not compared: could not reach {$url}. ({$e->getMessage()})</>");
 

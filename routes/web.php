@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Design\ExportController;
+use App\Http\Middleware\CanPullADesign;
 use Illuminate\Support\Facades\Route;
 
 // Designs are rows in `designs`; the standard is markdown in standard/. See
@@ -43,20 +44,19 @@ Route::middleware('auth')->group(function () {
 });
 
 /*
-| The exports, and only the exports, stay open.
+| The exports. Not open, and not behind the login either.
 |
-| A kit's CI has no session. `design:apply` and `design:update` fetch
-| /designs/{slug}/pack.json over plain HTTP, so putting this behind the login
-| would stop every app in the fleet from updating. The other two serve the same
-| bytes by other routes, so closing them alone would buy nothing.
+| A pack carries the brief, which names the client and says what their product
+| does, so a slug should not be enough to read one. But these are fetched by
+| `design:apply` from a terminal, which has no session, so the page gate cannot
+| serve here.
 |
-| This is the half that is still open, and it is open on purpose rather than by
-| oversight: anyone who knows a slug can read a pack, including the brief, which
-| names the client. Closing it needs a credential a kit can carry, which is a
-| decision of its own rather than a side effect of locking the pages. Until then
-| the pages no longer list the slugs, so reading a pack means guessing a name
-| rather than picking one off a page.
+| CanPullADesign takes either: a signed-in person clicking Download pack, or the
+| token from that person's account in DESIGN_TOKEN. Not a repository's
+| credential, because a repository never pulls: a workflow reports and stops.
 */
-Route::get('designs/{slug}/design.json', [ExportController::class, 'json'])->name('designs.json');
-Route::get('designs/{slug}/pack.zip', [ExportController::class, 'pack'])->name('designs.pack');
-Route::get('designs/{slug}/pack.json', [ExportController::class, 'manifest'])->name('designs.manifest');
+Route::middleware(CanPullADesign::class)->group(function () {
+    Route::get('designs/{slug}/design.json', [ExportController::class, 'json'])->name('designs.json');
+    Route::get('designs/{slug}/pack.zip', [ExportController::class, 'pack'])->name('designs.pack');
+    Route::get('designs/{slug}/pack.json', [ExportController::class, 'manifest'])->name('designs.manifest');
+});

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\PersonalToken;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Route as RoutingRoute;
@@ -62,13 +63,15 @@ class DashboardIsPrivateTest extends TestCase
     }
 
     #[Test]
-    public function the_exports_stay_open(): void
+    public function the_exports_take_a_token_rather_than_a_session(): void
     {
-        // Close these and every app in the fleet stops being able to update.
-        // design:apply and design:update fetch pack.json with no session.
-        $this->get('/designs/dashcore/pack.json')->assertOk();
-        $this->get('/designs/dashcore/design.json')->assertOk();
-        $this->get('/designs/dashcore/pack.zip')->assertOk();
+        // They cannot sit behind the page gate: design:apply fetches them from
+        // a terminal, which has no session. They are not open either, because a
+        // pack carries the brief. PullingADesignTest holds the rest.
+        $this->getJson('/designs/dashcore/pack.json')->assertUnauthorized();
+
+        $token = PersonalToken::issueFor(User::factory()->create(), 'Laptop');
+        $this->withToken($token)->get('/designs/dashcore/pack.json')->assertOk();
     }
 
     #[Test]

@@ -210,7 +210,15 @@ permissions:
 
 GitHub then hands the job a short signed document naming the repository, and `design:audit --report` sends that. Nothing is stored in the repository and there is nothing to rotate. Naming any permission turns GitHub's defaults off, so `contents: read` is not padding: without it the job cannot check itself out.
 
-`DESIGN_TOKEN` is still accepted, for apps that have not added the permission yet. On a laptop there is no such document, so the commands a person runs carry their own token from their account page instead.
+`DESIGN_TOKEN` is still accepted for reporting, for apps that have not added the permission yet.
+
+Pulling a design is the other half and needs a token of yours. `design:apply`, `design:update` and `design:check --against` fetch a pack, a pack carries the brief, and the brief names the client. Make one at `/account`, name it after the machine, and put it in that app's `.env`:
+
+```
+DESIGN_TOKEN=dsn_…
+```
+
+One token covers every app you work on, because it is yours rather than any repository's. It never goes in CI: a workflow reports and never pulls.
 
 ## Apply a design
 

@@ -46,6 +46,8 @@ class DesignViewerTest extends TestCase
     #[Test]
     public function the_json_export_carries_both_layers(): void
     {
+        $this->actingAs(User::factory()->create());
+
         $response = $this->get('/designs/harbor-point/design.json')->assertOk();
         $json = $response->json();
 
@@ -59,6 +61,8 @@ class DesignViewerTest extends TestCase
     #[Test]
     public function the_pack_manifest_is_what_a_kit_pulls(): void
     {
+        $this->actingAs(User::factory()->create());
+
         $response = $this->get('/designs/harbor-point/pack.json')->assertOk();
         $manifest = $response->json();
 
@@ -85,6 +89,10 @@ class DesignViewerTest extends TestCase
     #[Test]
     public function the_pack_holds_its_five_files(): void
     {
+        // Signed in rather than with a token: what these check is what comes
+        // back, and who may ask is PullingADesignTest's job.
+        $this->actingAs(User::factory()->create());
+
         $response = $this->get('/designs/harbor-point/pack.zip')->assertOk();
         $path = $response->baseResponse->getFile()->getPathname();
 

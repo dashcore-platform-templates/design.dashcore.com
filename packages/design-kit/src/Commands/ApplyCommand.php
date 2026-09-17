@@ -59,7 +59,7 @@ class ApplyCommand extends Command
                 $this->file = $source;
             } else {
                 $url = Source::kind($source) === 'url' ? $source : Source::url($source, (string) config('design-kit.source'));
-                $response = Http::timeout(30)->acceptJson()->get($url);
+                $response = Http::timeout(30)->withToken((string) config('design-kit.token'))->acceptJson()->get($url);
                 if ($response->failed()) {
                     $this->reportFetchFailure($url, $response->status(), $source);
 
@@ -337,6 +337,23 @@ class ApplyCommand extends Command
      */
     private function reportFetchFailure(string $url, int $status, string $source): void
     {
+        $site = rtrim((string) config('design-kit.source'), '/');
+
+        if ($status === 401) {
+            // The one failure with a fix that is not in this repo at all.
+            $this->components->error('This needs your token.');
+            $this->line('');
+            $this->line("  <fg=gray>Make one at {$site}/account, named after this machine, then put it in</>");
+            $this->line("  <fg=gray>this app's .env:</>");
+            $this->line('');
+            $this->line('    <fg=cyan>DESIGN_TOKEN=dsn_…</>');
+            $this->line('');
+            $this->line("  <fg=gray>It is yours rather than this repository's, so one token covers every app</>");
+            $this->line('  <fg=gray>you work on. It never goes in CI: a workflow reports and never pulls.</>');
+
+            return;
+        }
+
         if ($status !== 404) {
             $this->components->error("{$url} answered HTTP {$status}.");
             $this->line('');
@@ -346,7 +363,6 @@ class ApplyCommand extends Command
             return;
         }
 
-        $site = rtrim((string) config('design-kit.source'), '/');
         $named = Source::kind($source) === 'slug' ? $source : null;
 
         $this->components->error($named === null
