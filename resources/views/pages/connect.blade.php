@@ -32,8 +32,36 @@ new #[Layout('layouts::tool')] #[Title('Connect')] class extends Component
             'connected' => Site::query()->count(),
             'permissions' => Workflow::PERMISSIONS,
             'step' => Workflow::STEP,
+            'example' => $this->example(),
             'upgrade' => implode(PHP_EOL, Handoff::updateCommands()),
         ];
+    }
+
+    /**
+     * The same two blocks, in a job, so somebody can see where they land.
+     *
+     * Composed from the constants rather than written out, because an example
+     * that drifts from the snippets above it is worse than no example. The
+     * surrounding lines are the ordinary shape of a Laravel CI job; nobody is
+     * meant to copy this one, which is why it is not a copy block.
+     */
+    private function example(): string
+    {
+        $indent = fn (string $yaml, int $spaces) => collect(explode("\n", $yaml))
+            ->map(fn (string $line) => $line === '' ? '' : str_repeat(' ', $spaces).$line)
+            ->implode("\n");
+
+        return implode("\n", [
+            'jobs:',
+            '  ci:',
+            '    runs-on: ubuntu-latest',
+            $indent(Workflow::PERMISSIONS, 4),
+            '    steps:',
+            '      - uses: actions/checkout@v5',
+            '      - run: composer install --no-interaction',
+            '      - run: php artisan test',
+            $indent(Workflow::STEP, 6),
+        ]);
     }
 }; ?>
 
@@ -59,17 +87,29 @@ new #[Layout('layouts::tool')] #[Title('Connect')] class extends Component
 
         <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">
             <x-ds::section-heading level="2">2. Add two blocks to the CI workflow</x-ds::section-heading>
-            <p class="mt-1 text-sm text-(--ds-text-muted)">On the job that already installs the app.</p>
+            <p class="mt-1 text-sm text-(--ds-text-muted)">In <code class="font-mono text-xs">.github/workflows</code>, on the job that runs your tests.</p>
 
+            {{-- The labels name a line somebody can find in their own file.
+                 "On the job" and "after composer install" were true and
+                 useless: both describe a place you have to work out. --}}
             <div class="mt-3 space-y-4">
-                <x-copy-block label="On the job" :text="$permissions" />
-                <x-copy-block label="After composer install" :text="$step" />
+                <x-copy-block label="Beside runs-on" :text="$permissions" />
+                <x-copy-block label="Last in steps" :text="$step" />
             </div>
 
             {{-- Naming any permission turns GitHub's defaults off, so a job
                  asking for id-token alone cannot check itself out. It still
                  runs, which is what makes it expensive to find. --}}
             <p class="mt-2 text-sm text-(--ds-text-muted)">Keep <code class="font-mono text-xs">contents: read</code>, or the job cannot check itself out.</p>
+
+            <flux:accordion class="mt-4">
+                <flux:accordion.item>
+                    <flux:accordion.heading>What it looks like when done</flux:accordion.heading>
+                    <flux:accordion.content>
+                        <pre class="overflow-x-auto rounded-(--radius-md) bg-(--ds-sunken) p-4 font-mono text-xs leading-relaxed text-(--ds-text)">{{ $example }}</pre>
+                    </flux:accordion.content>
+                </flux:accordion.item>
+            </flux:accordion>
         </section>
 
         <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card)">

@@ -84,4 +84,35 @@ class ConnectPageTest extends TestCase
             ->assertSee('php artisan design:connect')
             ->assertSee(route('fleet'));
     }
+
+    #[Test]
+    public function the_snippets_say_where_they_go(): void
+    {
+        // "On the job" and "after composer install" were true and useless:
+        // both name a place somebody has to work out. These name a line that
+        // is already in their file.
+        $this->actingAs(User::factory()->create())
+            ->get('/connect')
+            ->assertOk()
+            ->assertSee('Beside runs-on')
+            ->assertSee('Last in steps')
+            ->assertSee('.github/workflows');
+    }
+
+    #[Test]
+    public function the_finished_example_contains_both_snippets(): void
+    {
+        // Composed from the same constants, so it cannot start showing a job
+        // that does not match what the page told somebody to paste.
+        $html = $this->actingAs(User::factory()->create())->get('/connect')->assertOk()->getContent();
+
+        $this->assertStringContainsString('runs-on: ubuntu-latest', $html);
+
+        foreach ([Workflow::PERMISSIONS, Workflow::STEP] as $block) {
+            foreach (explode('
+', trim($block)) as $line) {
+                $this->assertStringContainsString(trim($line), $html);
+            }
+        }
+    }
 }

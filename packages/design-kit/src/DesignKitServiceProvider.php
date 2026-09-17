@@ -5,6 +5,7 @@ namespace Dashcore\DesignKit;
 use Dashcore\DesignKit\Commands\ApplyCommand;
 use Dashcore\DesignKit\Commands\AuditCommand;
 use Dashcore\DesignKit\Commands\CheckCommand;
+use Dashcore\DesignKit\Commands\ConnectCommand;
 use Dashcore\DesignKit\Commands\UpdateCommand;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
