@@ -186,6 +186,26 @@ On Windows that copies rather than symlinks, so edits to the package do not appe
 rm -rf vendor/dashcore/design-kit && composer install
 ```
 
+## Connect to the fleet board
+
+```bash
+php artisan design:connect
+```
+
+Says whether this repository can reach the board, and what is missing if it cannot. It registers nothing: a repository appears on the board the first time it reports.
+
+Reporting needs one block on the job that runs the audit:
+
+```yaml
+permissions:
+  id-token: write
+  contents: read
+```
+
+GitHub then hands the job a short signed document naming the repository, and `design:audit --report` sends that. Nothing is stored in the repository and there is nothing to rotate. Naming any permission turns GitHub's defaults off, so `contents: read` is not padding: without it the job cannot check itself out.
+
+`DESIGN_TOKEN` is still accepted, for apps that have not added the permission yet. On a laptop there is no such document, so the commands a person runs carry their own token from their account page instead.
+
 ## Apply a design
 
 Give it the design's slug, its pack URL from design.dashcore.com, or a local design file:
