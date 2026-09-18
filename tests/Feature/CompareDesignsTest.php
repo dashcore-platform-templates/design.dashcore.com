@@ -40,13 +40,13 @@ class CompareDesignsTest extends TestCase
     }
 
     #[Test]
-    public function it_opens_on_the_house_design_and_something_to_hold_against_it(): void
+    public function it_opens_on_the_house_design_and_the_other_direction_for_it(): void
     {
-        $page = $this->page();
-
-        $page->assertSet('a', 'dashcore');
-        $this->assertNotSame('dashcore', $page->get('b'));
-        $this->assertNotSame('', $page->get('b'));
+        // Not the next slug in the list, which happens to be a client's design.
+        // Two designs sharing a client are two answers to one question.
+        $this->page()
+            ->assertSet('a', 'dashcore')
+            ->assertSet('b', 'dashcore-marketing');
     }
 
     #[Test]

@@ -94,16 +94,33 @@ new #[Layout('layouts::tool')] #[Title('Compare')] class extends Component
         return in_array(Design::OWN, $slugs, true) ? Design::OWN : ($slugs[0] ?? null);
     }
 
-    /** @param  list<string>  $slugs */
+    /**
+     * What to hold against the first one.
+     *
+     * A second direction for the same client, when there is one. Two designs
+     * sharing a client are two answers to one question, which is the pair
+     * somebody opening this page came to look at; the next slug in the list is
+     * only the next slug in the list.
+     *
+     * @param  list<string>  $slugs
+     */
     private function secondChoice(array $slugs, string $taken): ?string
     {
-        foreach ($slugs as $slug) {
-            if ($slug !== $taken) {
+        $others = array_values(array_filter($slugs, fn (string $slug) => $slug !== $taken));
+
+        if ($others === []) {
+            return null;
+        }
+
+        $client = Design::exists($taken) ? Design::load($taken)->name() : null;
+
+        foreach ($others as $slug) {
+            if ($client !== null && Design::load($slug)->name() === $client) {
                 return $slug;
             }
         }
 
-        return null;
+        return $others[0];
     }
 
     public function with(): array
