@@ -1,0 +1,45 @@
+{
+    "schema": "dashcore-design/1",
+    "generated_at": null,
+    "brief": {
+        "client": "Dashcore",
+        "product": "The house look in the brown direction: terracotta, warm greys and a serif for titles. One of the two directions being chosen between, and the one to hold against the marketing blue.",
+        "shell": "sidebar",
+        "brand_colour": "#b5542d",
+        "logo": null,
+        "notes": "Nothing here was invented. Every decision is Northline's except the shell, the name and the sign-in copy, which are Dashcore's so the comparison is between two looks rather than between two companies. Sidebar because the blue direction is sidebar, and a shell difference would read as a design difference."
+    },
+    "decisions": {
+        "accent": {
+            "value": "#b5542d",
+            "why": "Northline's terracotta, brought over as it stands. Its hue is 20 degrees, inside the zone 04 reserves for danger and warning, which a brand colour in the brief is allowed to override. That override is cheap for one client and dear for a fleet: this would be the primary button in fifteen apps, sitting beside real warning states in the same warm register. Look at the Components screen before choosing it."
+        },
+        "temperature": {
+            "value": "warm",
+            "why": "Warm greys sit beside terracotta without either of them looking dirty. It is also the clearest difference from the blue direction, which is cool."
+        },
+        "pairing": {
+            "value": 7,
+            "why": "Hanken Grotesk with Newsreader, as Northline has it. The serif shows on page titles, sign-in headlines and stat values, which is where this direction reads as considered rather than as an admin tool."
+        },
+        "radius": {
+            "value": "round",
+            "why": "The same step as the blue direction, so radius is not one of the things telling them apart."
+        },
+        "density": {
+            "value": "comfortable",
+            "why": "The same as the blue direction, for the same reason."
+        },
+        "motif": {
+            "value": "filled-stat",
+            "why": "Also the same as the blue direction. Two directions that differ in colour and type are a comparison; two that differ in everything are two screenshots."
+        },
+        "copy": {
+            "eyebrow": "Dashcore",
+            "headline": "One standard, every Dashcore app.",
+            "tagline": "Sign in to see how close each one is.",
+            "footer": null,
+            "why": "Word for word the blue direction's copy. It is the same product, and copy that moved between the two would be a difference nobody is choosing."
+        }
+    }
+}

@@ -44,8 +44,38 @@ class CompareDesignsTest extends TestCase
     public function it_opens_on_the_two_directions_on_the_table(): void
     {
         $this->page()
-            ->assertSet('a', 'northline')
+            ->assertSet('a', 'dashcore-brown')
             ->assertSet('b', 'dashcore-marketing');
+    }
+
+    #[Test]
+    public function both_directions_wear_the_dashcore_name(): void
+    {
+        // The reason dashcore-brown exists. Northline's decisions were standing
+        // in for the brown, which put a client's wordmark in half of every
+        // comparison and invited the wrong question.
+        foreach (['dashcore-brown', 'dashcore-marketing'] as $slug) {
+            $this->assertSame('Dashcore', Design::load($slug)->name(), "{$slug} is not wearing the Dashcore name");
+        }
+
+        // And the same shell, so a shell difference cannot read as a design one.
+        $this->assertSame(
+            Design::load('dashcore-brown')->brief['shell'],
+            Design::load('dashcore-marketing')->brief['shell'],
+        );
+    }
+
+    #[Test]
+    public function the_brown_direction_keeps_northlines_decisions(): void
+    {
+        // Nothing was invented for it: it is that palette and type under a
+        // different name, so a change to one is a deliberate change.
+        $brown = Design::load('dashcore-brown');
+        $northline = Design::load('northline');
+
+        foreach (['accent', 'temperature', 'pairing', 'radius', 'density', 'motif'] as $key) {
+            $this->assertSame($northline->decision($key), $brown->decision($key), "{$key} drifted from northline");
+        }
     }
 
     #[Test]
@@ -53,7 +83,7 @@ class CompareDesignsTest extends TestCase
     {
         // The opening pair is an editorial choice about a question being asked
         // this week, so the page has to survive the answer.
-        Design::load('northline')->archive();
+        Design::load('dashcore-brown')->archive();
 
         $page = $this->page();
 
@@ -69,7 +99,7 @@ class CompareDesignsTest extends TestCase
         // link to one of them lands on the pair rather than on the default.
         $this->page(['a' => 'dashcore'])
             ->assertSet('a', 'dashcore')
-            ->assertSet('b', 'dashcore-marketing');
+            ->assertSet('b', 'dashcore-brown');
     }
 
     #[Test]
@@ -121,7 +151,7 @@ class CompareDesignsTest extends TestCase
             'register' => 'sepia',
             'viewport' => 'billboard',
         ])
-            ->assertSet('a', 'northline')
+            ->assertSet('a', 'dashcore-brown')
             ->assertSet('screen', 'dashboard')
             ->assertSet('register', 'light')
             ->assertSet('viewport', 'desktop')

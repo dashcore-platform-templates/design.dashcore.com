@@ -27,14 +27,12 @@ new #[Layout('layouts::tool')] #[Title('Compare')] class extends Component
      * The pair this opens on: the two directions on the table right now.
      *
      * An editorial choice rather than a rule, and meant to be edited when the
-     * question changes. Northline is a client's design standing in as the
-     * brown direction, which is why its frames carry a client's name; the
-     * decisions are what is being looked at, not the wordmark.
+     * question changes.
      *
      * Falls back to the house design and its sibling when either is gone, so
      * archiving one does not leave the page opening on nothing.
      */
-    private const OPENS_ON = ['northline', 'dashcore-marketing'];
+    private const OPENS_ON = ['dashcore-brown', 'dashcore-marketing'];
 
     #[Url]
     public string $a = '';

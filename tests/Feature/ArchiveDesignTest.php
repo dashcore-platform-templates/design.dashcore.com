@@ -36,8 +36,10 @@ class ArchiveDesignTest extends TestCase
         $this->get('/designs/northline/pack.json')->assertOk();
         $this->get('/designs/northline/design.json')->assertOk();
 
-        // Off the board and out of the nav, for everybody.
-        $this->get('/designs')->assertOk()->assertDontSee('Northline');
+        // Off the board and out of the nav, for everybody. Asserted on the
+        // card's own link rather than on the client's name, which any other
+        // design is free to mention in its brief.
+        $this->get('/designs')->assertOk()->assertDontSee('designs/northline"', escape: false);
     }
 
     #[Test]
@@ -47,7 +49,7 @@ class ArchiveDesignTest extends TestCase
             ->test('pages::designs.index')
             ->call('archive', 'northline');
 
-        $page->set('showArchived', true)->assertSee('Northline');
+        $page->set('showArchived', true)->assertSee('designs/northline"', escape: false);
 
         $page->call('restore', 'northline');
 
