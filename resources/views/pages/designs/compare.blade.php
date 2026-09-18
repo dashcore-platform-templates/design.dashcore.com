@@ -23,6 +23,19 @@ use Livewire\Component;
  */
 new #[Layout('layouts::tool')] #[Title('Compare')] class extends Component
 {
+    /**
+     * The pair this opens on: the two directions on the table right now.
+     *
+     * An editorial choice rather than a rule, and meant to be edited when the
+     * question changes. Northline is a client's design standing in as the
+     * brown direction, which is why its frames carry a client's name; the
+     * decisions are what is being looked at, not the wordmark.
+     *
+     * Falls back to the house design and its sibling when either is gone, so
+     * archiving one does not leave the page opening on nothing.
+     */
+    private const OPENS_ON = ['northline', 'dashcore-marketing'];
+
     #[Url]
     public string $a = '';
 
@@ -41,14 +54,19 @@ new #[Layout('layouts::tool')] #[Title('Compare')] class extends Component
     public function mount(): void
     {
         $slugs = $this->slugs();
+        [$opensA, $opensB] = $this->opening($slugs);
 
         // Everything here arrives from the URL, and two of them reach a Blade
         // include or a database read, so each is checked against its list
         // rather than trusted.
-        $this->a = in_array($this->a, $slugs, true) ? $this->a : ($this->firstChoice($slugs) ?? '');
-        $this->b = in_array($this->b, $slugs, true) && $this->b !== $this->a
-            ? $this->b
-            : ($this->secondChoice($slugs, $this->a) ?? '');
+        $this->a = in_array($this->a, $slugs, true) ? $this->a : $opensA;
+
+        if (! in_array($this->b, $slugs, true) || $this->b === $this->a) {
+            // Only re-derived when the URL did not give a usable second side.
+            // A link naming one design should open it beside its sibling, not
+            // beside whatever this page opens on cold.
+            $this->b = $this->a === $opensA ? $opensB : ($this->secondChoice($slugs, $this->a) ?? '');
+        }
 
         $this->screen = Screens::resolve($this->screen);
         $this->register = $this->register === 'dark' ? 'dark' : 'light';
@@ -86,6 +104,29 @@ new #[Layout('layouts::tool')] #[Title('Compare')] class extends Component
     private function slugs(): array
     {
         return Design::all()->pluck('slug')->all();
+    }
+
+    /**
+     * The pair to open on, with the fallback when the named two are not both
+     * on the board.
+     *
+     * @param  list<string>  $slugs
+     * @return array{0:string,1:string}
+     */
+    private function opening(array $slugs): array
+    {
+        $named = array_values(array_filter(
+            self::OPENS_ON,
+            fn (string $slug) => in_array($slug, $slugs, true),
+        ));
+
+        if (count($named) === 2) {
+            return [$named[0], $named[1]];
+        }
+
+        $first = $this->firstChoice($slugs) ?? '';
+
+        return [$first, $this->secondChoice($slugs, $first) ?? ''];
     }
 
     /** @param  list<string>  $slugs */

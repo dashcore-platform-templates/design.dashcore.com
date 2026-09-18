@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Design\Design;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -40,11 +41,33 @@ class CompareDesignsTest extends TestCase
     }
 
     #[Test]
-    public function it_opens_on_the_house_design_and_the_other_direction_for_it(): void
+    public function it_opens_on_the_two_directions_on_the_table(): void
     {
-        // Not the next slug in the list, which happens to be a client's design.
-        // Two designs sharing a client are two answers to one question.
         $this->page()
+            ->assertSet('a', 'northline')
+            ->assertSet('b', 'dashcore-marketing');
+    }
+
+    #[Test]
+    public function archiving_one_of_those_leaves_it_opening_on_something(): void
+    {
+        // The opening pair is an editorial choice about a question being asked
+        // this week, so the page has to survive the answer.
+        Design::load('northline')->archive();
+
+        $page = $this->page();
+
+        $page->assertSet('a', 'dashcore');
+        $this->assertNotSame('dashcore', $page->get('b'));
+        $this->assertNotSame('', $page->get('b'));
+    }
+
+    #[Test]
+    public function a_link_naming_one_design_opens_it_beside_its_sibling(): void
+    {
+        // Two designs sharing a client are two answers to one question, so a
+        // link to one of them lands on the pair rather than on the default.
+        $this->page(['a' => 'dashcore'])
             ->assertSet('a', 'dashcore')
             ->assertSet('b', 'dashcore-marketing');
     }
@@ -98,7 +121,7 @@ class CompareDesignsTest extends TestCase
             'register' => 'sepia',
             'viewport' => 'billboard',
         ])
-            ->assertSet('a', 'dashcore')
+            ->assertSet('a', 'northline')
             ->assertSet('screen', 'dashboard')
             ->assertSet('register', 'light')
             ->assertSet('viewport', 'desktop')
