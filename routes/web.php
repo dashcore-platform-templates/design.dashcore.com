@@ -23,6 +23,10 @@ Route::middleware('auth')->group(function () {
     // Step one, and soon a prerequisite: a repository is connected here, gets
     // its token, and only then has anything to report or anything to pull.
     Route::livewire('connect', 'pages::connect')->name('connect');
+
+    // Who can get in. There is no sign-up form, so somebody already in has to
+    // do it, and until now that meant a terminal on the production host.
+    Route::livewire('people', 'pages::people')->name('people');
     Route::livewire('fleet', 'pages::fleet')->name('fleet');
 
     Route::livewire('account', 'pages::account.index')->name('account');

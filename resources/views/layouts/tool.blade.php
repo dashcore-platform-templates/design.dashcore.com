@@ -81,6 +81,7 @@
                     <div>
                         <x-tool-nav-item :href="route('connect')" :active="request()->routeIs('connect')" icon="link">Connect</x-tool-nav-item>
                         <x-tool-nav-item :href="route('fleet')" :active="request()->routeIs('fleet')" icon="server-stack">Fleet</x-tool-nav-item>
+                        <x-tool-nav-item :href="route('people')" :active="request()->routeIs('people')" icon="users">People</x-tool-nav-item>
                         <x-tool-nav-item :href="route('account')" :active="request()->routeIs('account*')" icon="user-circle">Account</x-tool-nav-item>
                     </div>
                     <div>

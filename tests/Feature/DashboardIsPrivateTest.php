@@ -30,6 +30,7 @@ class DashboardIsPrivateTest extends TestCase
         '/standard',
         '/changelog',
         '/connect',
+        '/people',
         '/fleet',
         '/account',
         '/account/security',

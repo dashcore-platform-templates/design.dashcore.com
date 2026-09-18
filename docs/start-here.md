@@ -12,7 +12,7 @@
 
 | Thing | Who gives it |
 |---|---|
-| An account | Someone who already has one, with `php artisan fleet:invite` |
+| An account | Someone who already has one, from `/people` |
 | A token, only if you run commands | You, at `/account` |
 
 No sign-up form.
@@ -29,6 +29,7 @@ No sign-up form.
 | `/changelog` | What moved, and whether you have to act |
 | `/fleet` | Every app, and how far off it is |
 | `/connect` | How a repo joins that board |
+| `/people` | Who can sign in, and inviting someone |
 
 On a design page: change the accent, watch the mockups move. Nothing saves until you press Save.
 

@@ -103,7 +103,7 @@ php artisan design:generate "Client" "What it does and who uses it"
 
 **Reporting needs neither.** A workflow proves which repository it is to GitHub, so nothing is stored in any repo.
 
-Accounts are made with `php artisan fleet:invite`. There is no sign-up form.
+Accounts are made at `/people`, which hands you a link to send. The person sets their own password, so nobody passes one around. `php artisan fleet:invite` still works for a first account on an empty database. There is no sign-up form.
 
 ---
 
