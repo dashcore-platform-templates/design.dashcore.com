@@ -166,6 +166,10 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
             </flux:button>
         @endif
 
+        @if ($designs->count() > 1)
+            <flux:button :href="route('designs.compare')" wire:navigate icon="rectangle-group">Compare</flux:button>
+        @endif
+
         <flux:modal.trigger name="import-design">
             <flux:button icon="arrow-down-tray">Import</flux:button>
         </flux:modal.trigger>

@@ -84,6 +84,9 @@ class ImportDesignTest extends TestCase
     public function rubbish_is_refused_with_a_reason(): void
     {
         $page = Livewire::actingAs(User::factory()->create())->test('pages::designs.index');
+        // Counted rather than fixed at the number that ships today, which is a
+        // number that moves every time a design is added.
+        $before = Design::all()->count();
 
         foreach ([
             'not json at all',
@@ -95,7 +98,7 @@ class ImportDesignTest extends TestCase
             $page->set('importing', $bad)->call('import')->assertHasErrors('importing');
         }
 
-        $this->assertCount(5, Design::all(), 'nothing was written');
+        $this->assertCount($before, Design::all(), 'nothing was written');
     }
 
     #[Test]

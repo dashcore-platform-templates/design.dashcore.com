@@ -1,0 +1,45 @@
+{
+    "schema": "dashcore-design/1",
+    "generated_at": null,
+    "brief": {
+        "client": "Dashcore",
+        "product": "The same tool, wearing the look of the Dashcore website instead of its own. A second direction to hold against the house design, not a client's design.",
+        "shell": "sidebar",
+        "brand_colour": "#2f81ff",
+        "logo": null,
+        "notes": "Read off dashcore.com on 19 September 2026: accent #2f81ff, blue-leaning neutrals, 12px cards, dark by default. The site has no light mode, so the light register here is this direction extended rather than matched."
+    },
+    "decisions": {
+        "accent": {
+            "value": "#2f81ff",
+            "why": "The website's own blue, read off the live site rather than chosen. It sits at full saturation, which 04 caps at 85 for an accent the generator picks; a brand colour in the brief is the exception the standard already allows, and this is the brand. It costs something visible: white on this blue measures 3.68:1, under the 4.5 floor, so a primary button here carries near-black text where the website carries white. Darkening the blue to #136ef6 would buy white text back and would no longer be the website's blue."
+        },
+        "temperature": {
+            "value": "cool",
+            "why": "The site's surfaces are blue-leaning rather than grey, down to a near-black that still reads navy."
+        },
+        "pairing": {
+            "value": 3,
+            "why": "The site is set in Inter, which is not on the approved list. Manrope is the nearest grotesk on it, and a mono second face keeps titles unadorned; a serif would announce itself on every page title and the website has none."
+        },
+        "radius": {
+            "value": "round",
+            "why": "Cards on the site are 12px, which is what the round step gives at lg."
+        },
+        "density": {
+            "value": "comfortable",
+            "why": "The website is airy, and this direction is being judged on whether it looks like the website."
+        },
+        "motif": {
+            "value": "filled-stat",
+            "why": "The site leans on soft blue regions behind its numbers. It also parts company with the house design's eyebrow, so the two are telling apart at a glance rather than only by hue."
+        },
+        "copy": {
+            "eyebrow": "Dashcore",
+            "headline": "One standard, every Dashcore app.",
+            "tagline": "Sign in to see how close each one is.",
+            "footer": null,
+            "why": "Says what somebody signing in is here to do. The website's own headline is written to sell and would read oddly above a password field."
+        }
+    }
+}

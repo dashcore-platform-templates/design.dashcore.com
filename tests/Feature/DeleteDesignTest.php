@@ -49,11 +49,15 @@ class DeleteDesignTest extends TestCase
     {
         // forget() is a public Livewire method, so it can be called straight at
         // without ask() ever running.
+        $before = Design::all()->count();
+
         Livewire::actingAs(User::factory()->create())
             ->test('pages::designs.index')
             ->call('forget');
 
-        $this->assertCount(5, Design::all());
+        // Counted rather than fixed at the number that ships today, which is a
+        // number that moves every time a design is added.
+        $this->assertCount($before, Design::all());
     }
 
     #[Test]

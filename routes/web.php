@@ -42,8 +42,10 @@ Route::middleware('auth')->group(function () {
     Route::livewire('changelog', 'pages::changelog')->name('changelog');
 
     Route::livewire('designs', 'pages::designs.index')->name('designs.index');
-    // Above the {slug} route, or 'new' is read as a slug and 404s.
+    // Both above the {slug} route, or 'new' and 'compare' are read as slugs
+    // and 404.
     Route::livewire('designs/new', 'pages::designs.create')->name('designs.create');
+    Route::livewire('designs/compare', 'pages::designs.compare')->name('designs.compare');
     Route::livewire('designs/{slug}', 'pages::designs.show')->name('designs.show');
 });
 

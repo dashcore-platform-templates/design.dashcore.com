@@ -26,6 +26,7 @@ class DashboardIsPrivateTest extends TestCase
     public const PAGES = [
         '/designs',
         '/designs/new',
+        '/designs/compare',
         '/designs/dashcore',
         '/standard',
         '/changelog',

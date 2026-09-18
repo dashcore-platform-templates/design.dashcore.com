@@ -34,6 +34,9 @@
             <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
                     <h2 class="truncate text-lg font-semibold leading-tight text-(--ds-text-strong)">{{ $design->name() }}</h2>
+                    {{-- Two designs for one client share a name, and this is
+                         also the word typed into design:apply. --}}
+                    <p class="truncate font-second text-xs text-(--ds-text-muted)">{{ $design->slug }}</p>
                     <p class="mt-1 line-clamp-2 text-sm text-(--ds-text-muted)">{{ $design->brief['product'] ?? '' }}</p>
                 </div>
                 <div class="flex shrink-0 flex-col items-end gap-1">
