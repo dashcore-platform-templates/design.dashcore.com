@@ -30,6 +30,7 @@ class DashboardIsPrivateTest extends TestCase
         '/designs/dashcore',
         '/standard',
         '/blocks',
+        '/blocks/errors',
         '/changelog',
         '/connect',
         '/people',

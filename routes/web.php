@@ -39,8 +39,11 @@ Route::middleware('auth')->group(function () {
         ->name('account.security');
 
     Route::livewire('standard', 'pages::standard')->name('standard');
-    // The screens a design does not decide, one pasted prompt each.
-    Route::livewire('blocks', 'pages::blocks')->name('blocks');
+    // The screens a design does not decide. An index of categories, then every
+    // block in the one you open: the index costs the same however many blocks
+    // there are, and only the category you asked for draws them.
+    Route::livewire('blocks', 'pages::blocks.index')->name('blocks.index');
+    Route::livewire('blocks/{category}', 'pages::blocks.show')->name('blocks.show');
     Route::livewire('changelog', 'pages::changelog')->name('changelog');
 
     Route::livewire('designs', 'pages::designs.index')->name('designs.index');

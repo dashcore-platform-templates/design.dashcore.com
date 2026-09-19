@@ -39,6 +39,56 @@ final class Blocks
     public const DEFAULT = 'dashboard';
 
     /**
+     * What a person is building, which is how they look for a block.
+     *
+     * Two levels rather than one long list, and the reason is arithmetic. A
+     * block draws as a whole document in a frame of its own, about 31KB of it,
+     * so a flat page of every block costs more the more there are: fine at
+     * eight, three megabytes at a hundred, and long dead before a thousand.
+     * An index of categories costs the same whether a category holds one block
+     * or forty, because only the one you open draws its blocks.
+     *
+     * Most hold one today. The shape is here so the second and the fortieth
+     * cost nothing to add.
+     *
+     * @var array<string,array<string,string>>
+     */
+    public const CATEGORIES = [
+        'shells' => [
+            'label' => 'App shells',
+            'what' => 'The frame every signed-in screen sits in.',
+        ],
+        'auth' => [
+            'label' => 'Sign-in',
+            'what' => 'Everything somebody sees before they are in.',
+        ],
+        'dashboards' => [
+            'label' => 'Dashboards',
+            'what' => 'The screen an app opens on.',
+        ],
+        'settings' => [
+            'label' => 'Settings',
+            'what' => 'Where somebody changes their account and the workspace.',
+        ],
+        'errors' => [
+            'label' => 'Error pages',
+            'what' => 'The rare screens that give an app away.',
+        ],
+        'public' => [
+            'label' => 'Public pages',
+            'what' => 'Anything a signed-out visitor reaches.',
+        ],
+        'email' => [
+            'label' => 'Email',
+            'what' => 'The one surface the stylesheet cannot reach.',
+        ],
+        'reference' => [
+            'label' => 'Reference',
+            'what' => 'Not screens to install. Drawings for judging a design.',
+        ],
+    ];
+
+    /**
      * Every block, in the order they are shown.
      *
      * One list, not two. A block used to be a row here and a screen in a
@@ -57,6 +107,7 @@ final class Blocks
      */
     public const ALL = [
         'sign-in' => [
+            'category' => 'auth',
             'label' => 'Sign-in',
             'what' => 'The two-panel sign-in, carrying the copy that is one of the seven decisions.',
             'rules' => '02 for the two panels, 09 for the copy.',
@@ -66,6 +117,7 @@ final class Blocks
             'gap' => null,
         ],
         'shell' => [
+            'category' => 'shells',
             'label' => 'App shell',
             'what' => 'The frame every signed-in screen sits in: navigation, brand block, and the account menu.',
             'rules' => '02 for both shells and every region in them, 06 for navlist, navmenu and profile, 08 for icons.',
@@ -75,6 +127,7 @@ final class Blocks
             'gap' => null,
         ],
         'dashboard' => [
+            'category' => 'dashboards',
             'label' => 'Dashboard',
             'what' => 'The shell with a real screen in it: stat row, table, the lot.',
             'rules' => '02 for the content grid, 05 for the spacing, 06 for every component on it.',
@@ -84,6 +137,7 @@ final class Blocks
             'gap' => null,
         ],
         'settings' => [
+            'category' => 'settings',
             'label' => 'Settings',
             'what' => 'Where somebody changes their name, their password and anything else about their account.',
             'rules' => '06 for the navlist beside the panel it switches, 02 for the page header, 05 for spacing.',
@@ -97,6 +151,7 @@ final class Blocks
             'gap' => 'The standard has no section for settings. 06 and 02 decide how it is built, and nothing decides what it contains or in what order.',
         ],
         'errors' => [
+            'category' => 'errors',
             'label' => 'Error pages',
             'what' => '404, 403, 419, 500 and 503, plus the first run of an app with nothing in it yet.',
             'rules' => '11, in full.',
@@ -106,6 +161,7 @@ final class Blocks
             'gap' => null,
         ],
         'landing' => [
+            'category' => 'public',
             'label' => 'Landing page',
             'what' => 'Anything a signed-out visitor sees that is not the sign-in form.',
             'rules' => '13, and 03 and 04 for type and colour like any other screen.',
@@ -115,6 +171,7 @@ final class Blocks
             'gap' => null,
         ],
         'email' => [
+            'category' => 'email',
             'label' => 'Email',
             'what' => 'The one surface the stylesheet cannot reach, so every rule has to arrive inline.',
             'rules' => '10, which is the only section that applies.',
@@ -124,6 +181,7 @@ final class Blocks
             'gap' => null,
         ],
         'components' => [
+            'category' => 'reference',
             'label' => 'Components',
             'what' => 'Every component the standard names, drawn once, on this design.',
             'rules' => '06 for the mapping onto Flux, 03 and 04 for type and colour.',
@@ -155,6 +213,54 @@ final class Blocks
     public static function resolve(?string $key): string
     {
         return $key !== null && self::has($key) ? $key : self::DEFAULT;
+    }
+
+    public static function hasCategory(string $key): bool
+    {
+        return array_key_exists($key, self::CATEGORIES);
+    }
+
+    /**
+     * The blocks in one category, in list order.
+     *
+     * @return array<string,array<string,string|bool|null>>
+     */
+    public static function inCategory(string $category): array
+    {
+        return array_filter(self::ALL, fn (array $b) => $b['category'] === $category);
+    }
+
+    /**
+     * The block a category's card shows, which is its first.
+     *
+     * A category with nothing in it is a card that draws an empty frame and
+     * teaches somebody the tool is broken, so it is not listed at all.
+     */
+    public static function faceOf(string $category): ?string
+    {
+        return array_key_first(self::inCategory($category));
+    }
+
+    /**
+     * Categories with at least one block, each carrying its blocks.
+     *
+     * @return array<string,array<string,mixed>>
+     */
+    public static function categories(): array
+    {
+        $out = [];
+
+        foreach (self::CATEGORIES as $key => $category) {
+            $blocks = self::inCategory($key);
+
+            if ($blocks === []) {
+                continue;
+            }
+
+            $out[$key] = $category + ['blocks' => $blocks, 'face' => array_key_first($blocks)];
+        }
+
+        return $out;
     }
 
     /**

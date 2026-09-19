@@ -13,27 +13,92 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * The blocks: the screens a design does not decide.
+ * The block library: the screens a design does not decide.
  *
- * A block owns its markup, in a component of its own, and both this page and a
- * design page draw the same one. What is worth holding is that the list, the
- * components and the prompts cannot come apart: a block with no component, a
- * prompt pointing at a standard section that is not there, or a prompt naming
- * a design would each be wrong in a way nothing else would report.
+ * Two levels, and the split is the point. The index draws one face per
+ * category and costs the same however many blocks there are; a category page
+ * draws every block in the one you asked for. A flat page of everything is
+ * what this replaced, and what it would quietly become again if the index
+ * started drawing blocks instead of faces.
  */
 class BlocksPageTest extends TestCase
 {
     use RefreshDatabase;
 
-    #[Test]
-    public function the_page_lists_every_block(): void
+    private function signIn(): self
     {
-        $page = $this->actingAs(User::factory()->create())->get('/blocks');
+        $this->actingAs(User::factory()->create());
 
-        $page->assertOk();
+        return $this;
+    }
 
-        foreach (Blocks::ALL as $block) {
-            $page->assertSee($block['label']);
+    #[Test]
+    public function the_index_lists_every_category(): void
+    {
+        $page = $this->signIn()->get('/blocks')->assertOk();
+
+        foreach (Blocks::categories() as $category) {
+            $page->assertSee($category['label']);
+        }
+    }
+
+    #[Test]
+    public function the_index_draws_one_face_per_category_and_not_one_per_block(): void
+    {
+        // The whole reason for two levels. An index that drew every block
+        // would cost three megabytes at a hundred blocks and be dead long
+        // before a thousand.
+        $html = $this->signIn()->get('/blocks')->getContent();
+
+        // One per category, whatever the blocks add up to. Every category
+        // holds one today, so the two numbers happen to match; this starts
+        // biting the first time a category holds two.
+        $this->assertSame(count(Blocks::categories()), substr_count($html, '<iframe'));
+    }
+
+    #[Test]
+    public function a_category_page_draws_every_block_in_it(): void
+    {
+        foreach (Blocks::categories() as $key => $category) {
+            $html = $this->signIn()->get("/blocks/{$key}")->assertOk()->getContent();
+
+            $this->assertSame(
+                count($category['blocks']),
+                substr_count($html, '<iframe'),
+                "{$key} did not draw every block in it",
+            );
+
+            foreach ($category['blocks'] as $block) {
+                $this->assertStringContainsString(e($block['label']), $html);
+            }
+        }
+    }
+
+    #[Test]
+    public function a_category_nobody_has_is_a_404(): void
+    {
+        $this->signIn()->get('/blocks/not-a-category')->assertNotFound();
+        $this->signIn()->get('/blocks/errors')->assertOk();
+    }
+
+    #[Test]
+    public function every_block_sits_in_a_category_that_exists(): void
+    {
+        // The list of categories and the category on a block are two halves of
+        // one thing. A block in a category nobody offers is a block nothing
+        // links to and nobody would notice missing.
+        foreach (Blocks::ALL as $key => $block) {
+            $this->assertTrue(
+                Blocks::hasCategory((string) $block['category']),
+                "{$key} is in category {$block['category']}, which does not exist",
+            );
+        }
+
+        foreach (array_keys(Blocks::CATEGORIES) as $category) {
+            $this->assertNotEmpty(
+                Blocks::inCategory($category),
+                "{$category} is offered with nothing in it",
+            );
         }
     }
 
@@ -53,14 +118,12 @@ class BlocksPageTest extends TestCase
     #[Test]
     public function a_block_draws_the_same_way_wherever_it_is_drawn(): void
     {
-        // The blocks page and a design page render one component, so the
-        // picture on a card and the picture on a design page cannot drift.
+        // The library and a design page render one component, so a picture in
+        // one place and a picture in the other cannot drift.
         $design = Design::load(Design::OWN);
 
         foreach (array_keys(Blocks::ALL) as $key) {
-            $markup = Blocks::draw($key, $design);
-
-            $this->assertNotSame('', trim($markup), "{$key} drew nothing");
+            $this->assertNotSame('', trim(Blocks::draw($key, $design)), "{$key} drew nothing");
         }
     }
 
@@ -75,20 +138,31 @@ class BlocksPageTest extends TestCase
         $this->assertSame(Blocks::DEFAULT, Blocks::resolve(null));
         $this->assertSame('email', Blocks::resolve('email'));
 
-        $this->actingAs(User::factory()->create())
+        $this->signIn()
             ->get('/designs/calder-street-veterinary?screen=pages.designs.show')
             ->assertOk()
             ->assertSee('Recent activity');
     }
 
     #[Test]
-    public function every_block_is_drawn_and_not_only_described(): void
+    public function a_width_is_per_block_and_checked_against_the_list(): void
     {
-        // Nobody chooses what to build next off a paragraph. One frame per
-        // block, each a whole document, the same way the design page draws.
-        $html = $this->actingAs(User::factory()->create())->get('/blocks')->getContent();
+        // A landing page and an email are judged at different widths, so one
+        // switch for the whole page would make one of them wrong.
+        $page = Livewire::actingAs(User::factory()->create())
+            ->test('pages::blocks.show', ['category' => 'errors'])
+            ->call('setWidth', 'errors', 'mobile');
 
-        $this->assertSame(count(Blocks::ALL), substr_count($html, '<iframe'));
+        $this->assertSame('mobile', $page->instance()->widthFor('errors'));
+        $this->assertStringContainsString('width: 390px', $page->html());
+
+        // Neither half is taken at its word: the width reaches a style
+        // attribute and the block reaches a component name.
+        $page->call('setWidth', 'errors', 'billboard');
+        $this->assertSame('mobile', $page->instance()->widthFor('errors'));
+
+        $page->call('setWidth', 'not-a-block', 'desktop');
+        $this->assertSame('laptop', $page->instance()->widthFor('not-a-block'));
     }
 
     #[Test]
@@ -97,12 +171,12 @@ class BlocksPageTest extends TestCase
         // A dark preview of one block beside a light preview of another would
         // be comparing two things nobody chose to compare.
         $html = Livewire::actingAs(User::factory()->create())
-            ->test('pages::blocks')
+            ->test('pages::blocks.index')
             ->set('register', 'dark')
             ->html();
 
         $this->assertSame(
-            count(Blocks::ALL),
+            count(Blocks::categories()),
             substr_count($html, 'lang=&quot;en&quot; class=&quot;dark&quot;'),
         );
     }
@@ -110,27 +184,30 @@ class BlocksPageTest extends TestCase
     #[Test]
     public function the_register_off_the_url_is_checked(): void
     {
-        Livewire::actingAs(User::factory()->create())
-            ->withQueryParams(['register' => 'sepia'])
-            ->test('pages::blocks')
-            ->assertSet('register', 'light')
-            ->assertOk();
+        foreach ([['pages::blocks.index', []], ['pages::blocks.show', ['category' => 'errors']]] as [$component, $params]) {
+            Livewire::actingAs(User::factory()->create())
+                ->withQueryParams(['register' => 'sepia'])
+                ->test($component, $params)
+                ->assertSet('register', 'light')
+                ->assertOk();
+        }
     }
 
     #[Test]
     public function the_three_nobody_builds_say_why_rather_than_going_quiet(): void
     {
-        // A card with no button reads as something forgotten, and asking for a
-        // prompt for one of these is a mistake worth an exception.
+        // A block with no Copy prompt reads as something forgotten, and asking
+        // for a prompt for one of these is a mistake worth an exception.
         $drawnOnly = array_diff_key(Blocks::ALL, Blocks::buildable());
 
         $this->assertSame(['sign-in', 'dashboard', 'components'], array_keys($drawnOnly));
 
-        $page = $this->actingAs(User::factory()->create())->get('/blocks');
-
         foreach ($drawnOnly as $key => $block) {
             $this->assertNotNull($block['note'], "{$key} is built by nobody and does not say why");
-            $page->assertSee($block['note']);
+
+            $this->signIn()
+                ->get('/blocks/'.$block['category'])
+                ->assertSee($block['note']);
 
             try {
                 Blocks::prompt($key);
@@ -209,7 +286,7 @@ class BlocksPageTest extends TestCase
     #[Test]
     public function the_copy_button_carries_the_whole_prompt(): void
     {
-        $html = $this->actingAs(User::factory()->create())->get('/blocks')->getContent();
+        $html = $this->signIn()->get('/blocks/settings')->getContent();
 
         $this->assertStringContainsString('Copy prompt', $html);
         $this->assertStringContainsString(e('do not quietly pick and move on'), $html);
