@@ -90,7 +90,7 @@ final class Handoff
      */
     public static function updatePrompt(?Design $design = null): string
     {
-        $on = $design === null ? 'already on the Dashcore standard' : 'already on the '.$design->name().' design';
+        $on = $design === null ? 'already on the Dashcore standard' : 'already on the '.$design->label().' design';
         [$composer, $update] = self::updateCommands($design);
 
         return <<<TXT

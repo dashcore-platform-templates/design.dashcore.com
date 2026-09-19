@@ -309,9 +309,27 @@ final class Design
         self::table()->where('slug', $this->slug)->delete();
     }
 
+    /**
+     * Who the design is for. This is the brand the mockups wear and the
+     * BRAND_NAME an applied app starts with, so it is the client's name and
+     * nothing else. Five house directions all answer "Dashcore" here, which
+     * is right for the brand and useless on a board; that is what label() is for.
+     */
     public function name(): string
     {
         return $this->brief['client'] ?? Str::headline($this->slug);
+    }
+
+    /**
+     * What the board, the nav and a toast call this design. Falls back to the
+     * client, so a design for one client with one look needs nothing extra,
+     * but two designs for the same client must each say which one they are.
+     */
+    public function label(): string
+    {
+        $name = trim((string) ($this->brief['name'] ?? ''));
+
+        return $name !== '' ? $name : $this->name();
     }
 
     /** @return array<string,mixed> */

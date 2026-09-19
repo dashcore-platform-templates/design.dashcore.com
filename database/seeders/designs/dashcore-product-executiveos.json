@@ -14,6 +14,7 @@
     },
     "brief": {
         "client": "Dashcore, product ExecutiveOS",
+        "name": "ExecutiveOS",
         "product": "An AI executive assistant for one person. It reads their mail and calendar, writes a morning briefing, drafts replies, remembers people and commitments, and asks for approval before anything leaves with their name on it. Used all day by a busy executive or founder, in short glances between meetings rather than long sessions, plus an admin view for the person running the platform.",
         "shell": "sidebar",
         "brand_colour": null,

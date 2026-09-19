@@ -179,7 +179,7 @@ new #[Layout('layouts::tool')] class extends Component
 
 <div class="flex min-h-screen" x-data>
     @php
-        $title = $design->name();
+        $title = $design->label();
     @endphp
     @push('fonts')
         <link rel="stylesheet" href="{{ $tokens['fonts']['stylesheet'] }}">
@@ -194,6 +194,15 @@ new #[Layout('layouts::tool')] class extends Component
         </div>
 
         <div class="flex-1 space-y-6 overflow-y-auto px-(--ds-card) py-4">
+            {{-- Name: what the board and the nav call this design. The brand
+                 the mockups wear stays the client, because five house
+                 directions are all Dashcore to the app and five cards all
+                 headed Dashcore are useless to a person. --}}
+            <flux:field>
+                <flux:label>Name <span class="ds-label ms-1.5 font-normal">on the board</span></flux:label>
+                <flux:input wire:model.live.debounce.400ms="brief.name" size="sm" placeholder="{{ $design->name() }}" />
+            </flux:field>
+
             {{-- Shell: a person's choice, in the brief --}}
             <flux:field>
                 <flux:label>Shell <span class="ds-label ms-1.5 font-normal">not generated</span></flux:label>

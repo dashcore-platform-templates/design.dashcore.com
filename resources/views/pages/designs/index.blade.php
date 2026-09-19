@@ -35,7 +35,7 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
 
         $this->pending = null;
         Flux::modal('forget-design')->close();
-        Flux::toast("{$design->name()} is archived. Its pack still serves.", variant: 'success');
+        Flux::toast("{$design->label()} is archived. Its pack still serves.", variant: 'success');
     }
 
     public function restore(string $slug): void
@@ -45,7 +45,7 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
         $design = Design::load($slug);
         $design->restore();
 
-        Flux::toast("{$design->name()} is back on the board.", variant: 'success');
+        Flux::toast("{$design->label()} is back on the board.", variant: 'success');
     }
 
     public string $importing = '';
@@ -98,7 +98,7 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
 
         $this->reset('importing');
         Flux::modal('import-design')->close();
-        Flux::toast("{$design->name()} is here.", variant: 'success');
+        Flux::toast("{$design->label()} is here.", variant: 'success');
     }
 
     /**
@@ -133,7 +133,7 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
             return;
         }
 
-        $name = $design->name();
+        $name = $design->label();
         $design->delete();
 
         $this->pending = null;
@@ -225,7 +225,7 @@ new #[Layout('layouts::tool')] #[Title('Designs')] class extends Component
     <flux:modal name="forget-design" class="md:w-[30rem]" wire:close="$set('pending', null)">
         <div class="space-y-6">
             <div>
-                <x-ds::section-heading level="2">Delete {{ $going?->name() }}?</x-ds::section-heading>
+                <x-ds::section-heading level="2">Delete {{ $going?->label() }}?</x-ds::section-heading>
                 <flux:text class="mt-1">The brief, the seven decisions and the reasons behind them all go, and there is no undo.</flux:text>
             </div>
 
