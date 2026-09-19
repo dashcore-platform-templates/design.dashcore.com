@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function () {
         ->name('account.security');
 
     Route::livewire('standard', 'pages::standard')->name('standard');
+    // The screens a design does not decide, one pasted prompt each.
+    Route::livewire('blocks', 'pages::blocks')->name('blocks');
     Route::livewire('changelog', 'pages::changelog')->name('changelog');
 
     Route::livewire('designs', 'pages::designs.index')->name('designs.index');

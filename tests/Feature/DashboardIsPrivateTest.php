@@ -29,6 +29,7 @@ class DashboardIsPrivateTest extends TestCase
         '/designs/compare',
         '/designs/dashcore',
         '/standard',
+        '/blocks',
         '/changelog',
         '/connect',
         '/people',

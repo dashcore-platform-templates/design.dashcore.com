@@ -117,7 +117,7 @@ The viewer exports a zip, not a bare JSON, because two different things consume 
 | File | For | Contents |
 |---|---|---|
 | `design/design.json` | The command and the agent | The file above. |
-| `design/STANDARD.md` | The agent | Files 01 to 09 of this standard concatenated, the same text the generator was given. |
+| `design/STANDARD.md` | The agent | Every section of this standard but the audit, 01 to 13, concatenated and whole. |
 | `design/CLAUDE.snippet.md` | The target repo's CLAUDE.md | A short block to paste in: before building or changing any screen, read `design/design.json` and `design/STANDARD.md`, use only the roles, components and motif they name, and run the contrast check. |
 | `design/MIGRATION.md` | Existing apps only | The rejected-by-name list from the audit as a checklist: replace placeholder layouts, swap Lucide names, lift hardcoded colours onto roles, adopt the three custom components, fix dark muted text. |
 

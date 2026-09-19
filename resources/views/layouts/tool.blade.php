@@ -29,6 +29,7 @@
                     <div>
                         <p class="ds-eyebrow px-2 pb-1.5">Reference</p>
                         <x-tool-nav-item :href="route('standard')" :active="request()->routeIs('standard')" icon="book-open">Standard</x-tool-nav-item>
+                        <x-tool-nav-item :href="route('blocks')" :active="request()->routeIs('blocks')" icon="square-3-stack-3d">Blocks</x-tool-nav-item>
                         {{--
                             How many changes this browser has not looked at. There
                             is no login here, so the count is per browser and lives

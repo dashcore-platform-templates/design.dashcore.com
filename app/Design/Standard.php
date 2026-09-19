@@ -63,9 +63,11 @@ final class Standard
     }
 
     /**
-     * Files 01 to 09 whole, markers and all. This is what ships in the export
-     * pack, because an agent building a screen needs the rules the generator
-     * does not: component behaviour, shell geometry, motion, the Flux mapping.
+     * Every section but the audit, whole, markers and all. This is what ships
+     * in the export pack, because an agent building a screen needs the rules
+     * the generator does not: component behaviour, shell geometry, motion, the
+     * Flux mapping, and 10 to 13 for email, error pages, widths and public
+     * pages.
      */
     public static function full(): string
     {

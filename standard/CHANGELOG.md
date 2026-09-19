@@ -10,6 +10,12 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ---
 
+## 18 September 2026
+
+**The pack was under-selling itself, and 09 said so.** Correction, no rule changed, and nothing an app has to do beyond noticing. 09's table described `design/STANDARD.md` as sections 01 to 09, and it has carried every section but the audit for as long as 10 to 13 have existed. An agent that read the header and believed it had no reason to look for the rules on email, error pages, widths or public pages, all of which were sitting in the same file. The header and the table now say what the file contains. Your version stamp moves because the text moved; no screen that passed stops passing.
+
+---
+
 ## 17 September 2026
 
 **A design pack needs your token to read.** Tightening, and every app has one thing to do. A pack carries the brief, which names the client and says what their product does, and until now a slug was enough to read one. `design:apply`, `design:update` and `design:check --against` now send a token, and without it they stop with the address of the page that issues one. It is a person's token rather than a repository's: make it on your account, name it after the machine, put it in that app's `.env` as `DESIGN_TOKEN`. One covers every app you work on, and it never goes in CI, because a workflow reports and never pulls. Clicking Download pack in a browser still works on the session you already have. This is the change that makes the tool actually private rather than only looking it: the pages went behind the login this morning, which stopped the slugs being listed but left anyone who guessed one able to read the pack.
