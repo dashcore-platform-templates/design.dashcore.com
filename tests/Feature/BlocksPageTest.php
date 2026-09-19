@@ -7,6 +7,7 @@ use App\Design\Screens;
 use App\Design\Standard;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -34,6 +35,53 @@ class BlocksPageTest extends TestCase
         // Sign-in has no prompt, and its absence has to read as a decision
         // rather than as something forgotten.
         $page->assertSee('Sign-in is already built');
+    }
+
+    #[Test]
+    public function every_block_is_drawn_and_not_only_described(): void
+    {
+        // Nobody chooses what to build next off a paragraph. One frame per
+        // block, each a whole document, the same way the design page draws.
+        $html = $this->actingAs(User::factory()->create())->get('/blocks')->getContent();
+
+        $this->assertSame(count(Blocks::ALL), substr_count($html, '<iframe'));
+    }
+
+    #[Test]
+    public function the_register_reaches_every_frame_at_once(): void
+    {
+        // A dark preview of one block beside a light preview of another would
+        // be comparing two things nobody chose to compare.
+        $html = Livewire::actingAs(User::factory()->create())
+            ->test('pages::blocks')
+            ->set('register', 'dark')
+            ->html();
+
+        $this->assertSame(
+            count(Blocks::ALL),
+            substr_count($html, 'lang=&quot;en&quot; class=&quot;dark&quot;'),
+        );
+    }
+
+    #[Test]
+    public function the_register_off_the_url_is_checked(): void
+    {
+        Livewire::actingAs(User::factory()->create())
+            ->withQueryParams(['register' => 'sepia'])
+            ->test('pages::blocks')
+            ->assertSet('register', 'light')
+            ->assertOk();
+    }
+
+    #[Test]
+    public function the_copy_button_carries_the_whole_prompt(): void
+    {
+        // The button is the point of the page, so what it holds is worth an
+        // assertion rather than a look.
+        $html = $this->actingAs(User::factory()->create())->get('/blocks')->getContent();
+
+        $this->assertStringContainsString('Copy prompt', $html);
+        $this->assertStringContainsString(e('do not quietly pick and move on'), $html);
     }
 
     #[Test]
