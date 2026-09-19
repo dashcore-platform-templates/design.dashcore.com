@@ -1,0 +1,46 @@
+{
+    "schema": "dashcore-design/1",
+    "generated_at": null,
+    "brief": {
+        "client": "Dashcore",
+        "name": "Dashcore CEO",
+        "product": "The house look as ceo.dashcore.com wears it today: warm parchment, an espresso accent, a serif for titles, hairlines instead of cards, and uppercase eyebrow labels. Read in glances between meetings by one business owner, so most screens are reading surfaces: a stat strip, lists with counts, a page of prose.",
+        "shell": "sidebar",
+        "brand_colour": "#4a4438",
+        "logo": null,
+        "notes": "Transcribed from ceo.dashcore.com rather than generated, so it can be held against the blue and brown directions and carried to the rest of the fleet. The app itself uses Fraunces with Inter, a 4px radius ceiling, no shadows, and a parchment page with white surfaces. Where the standard has no room for one of those, the nearest approved value is taken and the reason says which. Amber and red are reserved for rows that want you, so the accent must never read as either."
+    },
+    "decisions": {
+        "accent": {
+            "value": "#4a4438",
+            "why": "The espresso the app already wears on every primary button and active nav row. It is under the 45 percent saturation floor on purpose: the brief reserves colour for status, so the one accent is a dark neutral that reads as ink with weight rather than as a brand."
+        },
+        "temperature": {
+            "value": "warm",
+            "why": "The app's page is warm parchment and its ink is a warm near-black; the brown-leaning scale is the only one of the three that sits beside them without turning grey."
+        },
+        "pairing": {
+            "value": 7,
+            "why": "Fraunces with Inter is not on the approved list, and Inter is excluded by name. Hanken Grotesk with Newsreader is the nearest: a quiet grotesk for the UI and an optical-size serif that gives page titles the same authored feel."
+        },
+        "radius": {
+            "value": "sharp",
+            "why": "The app clamps every radius to 4px and forbids pills. Sharp is the only value whose card corner lands there."
+        },
+        "density": {
+            "value": "comfortable",
+            "why": "One owner reading in short glances, not trained staff working rows all day. The app's own floor is a 44px table row and 24px card padding."
+        },
+        "motif": {
+            "value": "hairline",
+            "why": "The app draws almost nothing in a box: stat tiles are a divided strip, sections end in a rule, and the tab strip is a rule with one segment thickened. Eyebrow was the other candidate, since uppercase labels are everywhere in it, but the standard keeps that motif for a pairing with a mono face."
+        },
+        "copy": {
+            "eyebrow": "Dashcore",
+            "headline": "Here is the day. Work down it.",
+            "tagline": "Sign in to see what came in overnight and what is waiting on you.",
+            "footer": null,
+            "why": "The headline is the line the dashboard already greets the owner with, so the sign-in page and the first screen say the same thing."
+        }
+    }
+}
