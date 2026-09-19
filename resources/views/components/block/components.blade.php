@@ -1,3 +1,7 @@
+@props(['design', 'register' => 'light'])
+{{-- Everything a block draws from, derived in one place. Three callers used to
+     build this by hand and one of them read the motif off a different object. --}}
+@php ['t' => $t, 'motif' => $motif, 'shell' => $shell] = \App\Design\Blocks::context($design); @endphp
 {{-- @ds-audit-ignore-file the component gallery. It shows flux:badge beside x-ds::badge and an xs button beside a full one, so the standard can be seen being broken next to being kept. Auditing it reports the demonstration. --}}
 {{--
     The Components screen: every Flux component that renders without a user

@@ -46,6 +46,11 @@ final class Design
         public ?string $archivedAt = null,
     ) {}
 
+    /** @var array<string,mixed>|null The last resolve, and the decisions it was for. */
+    private ?array $resolved = null;
+
+    private ?string $resolvedFor = null;
+
     /**
      * A slug is checked before it reaches a query, because it arrives from a
      * URL and is also a file name inside an exported pack.
@@ -162,10 +167,28 @@ final class Design
         return $design;
     }
 
-    /** @return array<string,mixed> */
+    /**
+     * The resolved design: colour roles for both registers, fonts, radius,
+     * density, and the contrast measurement.
+     *
+     * Held on to between calls, because a page now asks several times: once
+     * for its own chrome and once per block it draws, and resolving means
+     * building three colour ramps and measuring forty-six pairs. Keyed on the
+     * decisions rather than a plain flag, since `decisions` is public and a
+     * page edits it between renders; a changed decision resolves again.
+     *
+     * @return array<string,mixed>
+     */
     public function tokens(): array
     {
-        return Resolver::resolve($this->decisions);
+        $key = serialize($this->decisions);
+
+        if ($this->resolvedFor !== $key) {
+            $this->resolved = Resolver::resolve($this->decisions);
+            $this->resolvedFor = $key;
+        }
+
+        return $this->resolved;
     }
 
     /**

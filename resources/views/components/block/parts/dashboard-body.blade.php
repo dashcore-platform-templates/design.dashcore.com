@@ -21,7 +21,7 @@
     $cardClass = $motif === 'hairline' ? 'bg-(--ds-surface)' : 'rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface)';
 @endphp
 
-@include('mockups.partials.page-header', ['title' => 'Today', 'description' => 'Tuesday 15 September. Everything since yesterday.', 'eyebrow' => null, 'motif' => $motif, 'eyebrowClass' => $eyebrowClass, 'design' => $design, 'slot' => new \Illuminate\Support\HtmlString('
+@include('components.block.parts.page-header', ['title' => 'Today', 'description' => 'Tuesday 15 September. Everything since yesterday.', 'eyebrow' => null, 'motif' => $motif, 'eyebrowClass' => $eyebrowClass, 'design' => $design, 'slot' => new \Illuminate\Support\HtmlString('
     <button class="inline-flex h-(--ds-control) items-center gap-2 rounded-(--radius-lg) border border-(--ds-border-strong) bg-(--ds-surface) px-3 text-sm font-medium text-(--ds-text)">Export</button>
     <button class="inline-flex h-(--ds-control) items-center gap-2 rounded-(--radius-lg) bg-(--ds-accent) px-3 text-sm font-medium text-(--ds-on-accent)">New item</button>
 ')])

@@ -3,7 +3,7 @@
     $input = 'block h-(--ds-control) w-full rounded-(--radius-lg) border border-(--ds-border-strong) bg-(--ds-surface) px-3 text-(--ds-text) text-[length:var(--ds-prose)] placeholder:text-(--ds-text-muted)';
 @endphp
 
-@include('mockups.partials.page-header', ['title' => 'Workspace settings', 'description' => 'Names, hours and who gets notified.', 'eyebrow' => null, 'motif' => $motif, 'eyebrowClass' => $eyebrowClass, 'design' => $design, 'slot' => new \Illuminate\Support\HtmlString('
+@include('components.block.parts.page-header', ['title' => 'Workspace settings', 'description' => 'Names, hours and who gets notified.', 'eyebrow' => null, 'motif' => $motif, 'eyebrowClass' => $eyebrowClass, 'design' => $design, 'slot' => new \Illuminate\Support\HtmlString('
     <button class="inline-flex h-(--ds-control) items-center gap-2 rounded-(--radius-lg) bg-(--ds-accent) px-3 text-sm font-medium text-(--ds-on-accent)">Save changes</button>
 ')])
 

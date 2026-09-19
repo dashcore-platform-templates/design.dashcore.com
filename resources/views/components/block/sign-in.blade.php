@@ -1,3 +1,7 @@
+@props(['design', 'register' => 'light'])
+{{-- Everything a block draws from, derived in one place. Three callers used to
+     build this by hand and one of them read the motif off a different object. --}}
+@php ['t' => $t, 'motif' => $motif, 'shell' => $shell] = \App\Design\Blocks::context($design); @endphp
 {{-- Two-panel sign-in from 02. Left, the brand and the generated copy. Right, the form. --}}
 @php
     $copy = $design->decisions['copy'] ?? [];

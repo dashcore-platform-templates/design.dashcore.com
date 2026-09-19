@@ -9,7 +9,7 @@ use App\Design\Neutrals;
 use App\Design\Pack;
 use App\Design\Pairings;
 use App\Design\Resolver;
-use App\Design\Screens;
+use App\Design\Blocks;
 use App\Design\Standard;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -31,7 +31,7 @@ new #[Layout('layouts::tool')] class extends Component
     public array $decisions = [];
 
     #[Url]
-    public string $screen = Screens::DEFAULT;
+    public string $screen = Blocks::DEFAULT;
 
     #[Url]
     public string $register = 'light';
@@ -53,7 +53,7 @@ new #[Layout('layouts::tool')] class extends Component
         abort_unless(Design::exists($slug), 404);
         // The screen comes off the URL and ends up in a Blade include, so it is
         // checked against the list rather than trusted.
-        $this->screen = Screens::resolve($this->screen);
+        $this->screen = Blocks::resolve($this->screen);
 
         // Read straight from the query rather than off the property. Livewire
         // merges a URL array into the property's default by position, so with a
@@ -74,7 +74,7 @@ new #[Layout('layouts::tool')] class extends Component
 
     public function updatedScreen(string $value): void
     {
-        $this->screen = Screens::resolve($value);
+        $this->screen = Blocks::resolve($value);
     }
 
     public function updated(string $property): void
@@ -364,8 +364,8 @@ new #[Layout('layouts::tool')] class extends Component
     <section class="flex min-w-0 flex-1 flex-col bg-(--ds-sunken)">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-(--ds-border) bg-(--ds-surface) px-(--ds-gutter) py-3">
             <flux:radio.group wire:model.live="screen" variant="segmented" size="sm">
-                @foreach (Screens::ALL as $value => $label)
-                    <flux:radio :value="$value" :label="$label" />
+                @foreach (Blocks::ALL as $value => $block)
+                    <flux:radio :value="$value" :label="$block['label']" />
                 @endforeach
             </flux:radio.group>
             <div class="flex items-center gap-3">
@@ -424,8 +424,9 @@ new #[Layout('layouts::tool')] class extends Component
                 when it is not.
             --}}
             @php
-                $markup = view('mockups.'.$screen, ['t' => $tokens, 'design' => $design, 'motif' => $decisions['motif']['value'], 'shell' => $brief['shell'] ?? 'sidebar', 'register' => $register])->render();
-                $doc = Artboard::document($markup, $tokens, $register);
+                // The design here is built from the live controls, so an
+                // unsaved change is in it and reaches the block unsaved.
+                $doc = Artboard::document(Blocks::draw($screen, $design, $register), $tokens, $register);
                 $gap = 32;
                 $shown = Artboard::shown($viewports);
                 $total = Artboard::gridWidth($shown, $gap);

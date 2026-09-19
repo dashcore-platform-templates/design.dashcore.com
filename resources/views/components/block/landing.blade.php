@@ -1,3 +1,7 @@
+@props(['design', 'register' => 'light'])
+{{-- Everything a block draws from, derived in one place. Three callers used to
+     build this by hand and one of them read the motif off a different object. --}}
+@php ['t' => $t, 'motif' => $motif, 'shell' => $shell] = \App\Design\Blocks::context($design); @endphp
 {{--
     The pages from standard/13: the landing page and the legal page. The
     standard used to exempt these rather than govern them, so this screen is

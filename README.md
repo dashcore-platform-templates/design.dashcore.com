@@ -60,10 +60,10 @@ Everything else is fixed. The shell is a human choice in the brief, never genera
 Longer version with what to look for at each stage: [docs/walkthrough.md](docs/walkthrough.md).
 
 1. `/designs/new` — describe the client in two sentences, pick a shell, Generate.
-2. Look at the five mockups. Change any decision, they update live.
+2. Look at the blocks drawn in it. Change any decision, they update live.
 3. **Use this design** → paste the prompt into Claude Code in the target repo. The agent installs, applies, builds, commits, and migrates screens one commit at a time.
 4. `design/` is committed in that repo. Every later agent session reads it first.
-5. Existing app: review the migration commits, one per screen, against the mockups here.
+5. Existing app: review the migration commits, one per screen, against the blocks drawn here.
 
 ---
 
@@ -119,12 +119,13 @@ They were JSON files in the repo until 17 September 2026, which did not survive 
 
 | Path | What |
 |---|---|
-| `standard/` | The rules. `00` is the audit, `01`–`09` are what the generator reads |
+| `standard/` | The rules. `00` is the audit, `01` onward are the sections |
 | `app/Design/` | Resolver, colour maths, temperature and pairing lists, CSS emitter, the pack |
 | `app/Design/Generation/` | Schema, rules pass, the SDK call behind a `DecisionSource` interface |
 | `app/Fleet/` | Verifying a GitHub Actions token, so a repo can prove which one it is |
 | `resources/prompts/generator.md` | How the model is told to answer |
-| `resources/views/mockups/` | The five screens |
+| `resources/views/components/block/` | The blocks, one component each. A design page draws them; `/blocks` hands them over |
+| `app/Design/Blocks.php` | The list, and the prompt that builds each one in a target repo |
 | `packages/design-kit/` | The adapter package |
 | `docs/` | Start here, the walkthrough, the cut sheet, the discovery note |
 

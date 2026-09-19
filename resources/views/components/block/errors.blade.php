@@ -1,3 +1,7 @@
+@props(['design', 'register' => 'light'])
+{{-- Everything a block draws from, derived in one place. Three callers used to
+     build this by hand and one of them read the motif off a different object. --}}
+@php ['t' => $t, 'motif' => $motif, 'shell' => $shell] = \App\Design\Blocks::context($design); @endphp
 {{--
     The pages from standard/11: the error pages and first run. Rare screens,
     which is why they are the last thing anybody styles and the first thing

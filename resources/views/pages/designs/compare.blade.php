@@ -1,8 +1,8 @@
 <?php
 
 use App\Design\Artboard;
+use App\Design\Blocks;
 use App\Design\Design;
-use App\Design\Screens;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -41,7 +41,7 @@ new #[Layout('layouts::tool')] #[Title('Compare')] class extends Component
     public string $b = '';
 
     #[Url]
-    public string $screen = Screens::DEFAULT;
+    public string $screen = Blocks::DEFAULT;
 
     #[Url]
     public string $register = 'light';
@@ -66,7 +66,7 @@ new #[Layout('layouts::tool')] #[Title('Compare')] class extends Component
             $this->b = $this->a === $opensA ? $opensB : ($this->secondChoice($slugs, $this->a) ?? '');
         }
 
-        $this->screen = Screens::resolve($this->screen);
+        $this->screen = Blocks::resolve($this->screen);
         $this->register = $this->register === 'dark' ? 'dark' : 'light';
         $this->viewport = array_key_exists($this->viewport, Artboard::VIEWPORTS) ? $this->viewport : 'desktop';
     }
@@ -204,8 +204,8 @@ new #[Layout('layouts::tool')] #[Title('Compare')] class extends Component
 
         <div class="flex flex-wrap items-center gap-3">
             <flux:select wire:model.live="screen" size="sm" class="max-w-40">
-                @foreach (Screens::ALL as $value => $label)
-                    <flux:select.option :value="$value">{{ $label }}</flux:select.option>
+                @foreach (Blocks::ALL as $value => $block)
+                    <flux:select.option :value="$value">{{ $block['label'] }}</flux:select.option>
                 @endforeach
             </flux:select>
 
@@ -262,13 +262,7 @@ new #[Layout('layouts::tool')] #[Title('Compare')] class extends Component
                     @foreach ($sides as $side)
                         @php
                             $tokens = $side->tokens();
-                            $markup = view('mockups.'.$screen, [
-                                't' => $tokens,
-                                'design' => $side,
-                                'motif' => $side->decision('motif'),
-                                'shell' => $side->brief['shell'] ?? 'sidebar',
-                                'register' => $register,
-                            ])->render();
+                            $markup = Blocks::draw($screen, $side, $register);
                         @endphp
                         <div class="shrink-0" style="width: {{ $frame['width'] }}px">
                             <div class="mb-2 flex items-center justify-between gap-4">

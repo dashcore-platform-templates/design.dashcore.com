@@ -1,3 +1,7 @@
+@props(['design', 'register' => 'light'])
+{{-- Everything a block draws from, derived in one place. Three callers used to
+     build this by hand and one of them read the motif off a different object. --}}
+@php ['t' => $t, 'motif' => $motif, 'shell' => $shell] = \App\Design\Blocks::context($design); @endphp
 {{-- @ds-audit-ignore-file a drawing of section 10, where none of the rest of the standard applies: no utility classes, no custom properties, pixel values inline, because that is all an email client honours. --}}
 {{--
     Email, from standard/10. The one surface where the rest of the standard

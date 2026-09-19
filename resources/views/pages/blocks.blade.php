@@ -9,21 +9,19 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 
 /**
- * The foundation screens, each one drawn and each one a pasted prompt.
+ * The blocks, each one drawn and most of them a pasted prompt.
  *
  * A design decides how an app feels. These are the screens it does not decide:
  * the shell, the error pages, settings, the landing page, email. Every app
  * built its own from the standard's prose, which is how the account menu ended
  * up in three different corners of the fleet.
  *
- * Drawn rather than described, because nobody chooses what to build next off a
- * paragraph. Each card renders the same mockup the design page renders, in the
- * tool's own design, so the picture and the prompt cannot describe two
- * different screens.
+ * The page owns none of this. A block is a component of its own under
+ * resources/views/components/block, and a design page draws the same one; this
+ * is the page that hands it over.
  *
- * The prompts are not tied to a design: the repo already holds one in design/,
- * and a prompt naming a slug would be wrong the moment that app's design
- * changed.
+ * The prompts name no design, because the repo already holds one in design/ and
+ * a prompt naming a slug would be wrong the moment that app's design changed.
  */
 new #[Layout('layouts::tool')] #[Title('Blocks')] class extends Component
 {
@@ -43,9 +41,10 @@ new #[Layout('layouts::tool')] #[Title('Blocks')] class extends Component
 
         return [
             'design' => $design,
-            'tokens' => $design->tokens(),
             'blocks' => Blocks::ALL,
-            'prompts' => collect(Blocks::ALL)->map(fn (array $b, string $key) => Blocks::prompt($key))->all(),
+            // Only the ones somebody builds. Asking for a prompt for the other
+            // three throws, which is the right answer and the wrong place for it.
+            'prompts' => collect(Blocks::buildable())->map(fn (array $b, string $key) => Blocks::prompt($key))->all(),
         ];
     }
 }; ?>
@@ -69,15 +68,10 @@ new #[Layout('layouts::tool')] #[Title('Blocks')] class extends Component
     <div class="grid gap-(--ds-section) xl:grid-cols-2">
         @foreach ($blocks as $key => $block)
             @php
-                // The same view the design page draws, so the picture and the
-                // prompt cannot end up describing two different screens.
-                $markup = view('mockups.'.$block['screen'], [
-                    't' => $tokens,
-                    'design' => $design,
-                    'motif' => $design->decision('motif'),
-                    'shell' => $design->brief['shell'] ?? 'sidebar',
-                    'register' => $register,
-                ])->render();
+                // The block's own component, which is the same one a design
+                // page draws. The picture and the prompt cannot end up
+                // describing two different screens.
+                $markup = Blocks::draw($key, $design, $register);
                 $frame = Artboard::VIEWPORTS['laptop'];
             @endphp
 
@@ -103,9 +97,13 @@ new #[Layout('layouts::tool')] #[Title('Blocks')] class extends Component
                      style="height: {{ (int) round($frame['height'] * 0.3) }}px">
                     <iframe wire:key="draw-{{ $key }}-{{ $register }}"
                             title="{{ $block['label'] }}, drawn in this tool's design"
-                            srcdoc="{{ Artboard::document($markup, $tokens, $register) }}"
+                            srcdoc="{{ Artboard::document($markup, $design->tokens(), $register) }}"
                             tabindex="-1"
                             aria-hidden="true"
+                            {{-- Eight whole documents is eight parses on load,
+                                 and only two are on screen. The bytes still
+                                 ship in srcdoc; this only defers the work. --}}
+                            loading="lazy"
                             class="pointer-events-none absolute start-0 top-0 origin-top-left border-0"
                             style="width: {{ $frame['width'] }}px; height: {{ $frame['height'] }}px"
                             x-bind:style="`transform: scale(${scale})`"></iframe>
@@ -130,39 +128,42 @@ new #[Layout('layouts::tool')] #[Title('Blocks')] class extends Component
                         </p>
                     @endif
 
+                    {{-- Three of these are drawn here and built by nobody. The
+                         reason is on the card, because a missing button reads
+                         as something forgotten. --}}
+                    @unless ($block['prompt'])
+                        <p class="mt-3 text-sm text-(--ds-text-muted)">{{ $block['note'] }}</p>
+                    @endunless
+
                     <div class="mt-auto flex flex-wrap items-center gap-2 pt-4">
-                        <x-copy-button :text="$prompts[$key]" label="Copy prompt" done="Copied" variant="primary" />
+                        @if ($block['prompt'])
+                            <x-copy-button :text="$prompts[$key]" label="Copy prompt" done="Copied" variant="primary" />
 
-                        {{-- The prompt is readable before it is pasted. Pasting
-                             one into a repo unread is the thing that goes
-                             wrong, so it is a click away rather than hidden. --}}
-                        <flux:modal.trigger name="read-{{ $key }}">
-                            <flux:button variant="ghost">Read it</flux:button>
-                        </flux:modal.trigger>
+                            {{-- The prompt is readable before it is pasted.
+                                 Pasting one into a repo unread is the thing
+                                 that goes wrong, so it is a click away rather
+                                 than hidden. --}}
+                            <flux:modal.trigger name="read-{{ $key }}">
+                                <flux:button variant="ghost">Read it</flux:button>
+                            </flux:modal.trigger>
+                        @endif
 
-                        <flux:button :href="route('designs.show', ['slug' => $design->slug, 'screen' => $block['screen'], 'register' => $register])" wire:navigate variant="ghost" icon="arrows-pointing-out">Full size</flux:button>
+                        <flux:button :href="route('designs.show', ['slug' => $design->slug, 'screen' => $key, 'register' => $register])" wire:navigate variant="ghost" icon="arrows-pointing-out">Full size</flux:button>
                     </div>
                 </div>
             </div>
 
-            <flux:modal name="read-{{ $key }}" class="md:w-[44rem]" wire:key="read-modal-{{ $key }}">
-                <div class="space-y-4">
-                    <div>
-                        <x-ds::section-heading level="2">{{ $block['label'] }}</x-ds::section-heading>
-                        <flux:text class="mt-1">Paste this into Claude Code in the repo you are building.</flux:text>
+            @if ($block['prompt'])
+                <flux:modal name="read-{{ $key }}" class="md:w-[44rem]" wire:key="read-modal-{{ $key }}">
+                    <div class="space-y-4">
+                        <div>
+                            <x-ds::section-heading level="2">{{ $block['label'] }}</x-ds::section-heading>
+                            <flux:text class="mt-1">Paste this into Claude Code in the repo you are building.</flux:text>
+                        </div>
+                        <x-copy-block :text="$prompts[$key]" />
                     </div>
-                    <x-copy-block :text="$prompts[$key]" />
-                </div>
-            </flux:modal>
+                </flux:modal>
+            @endif
         @endforeach
-    </div>
-
-    {{-- Its absence would otherwise read as something forgotten. --}}
-    <div class="mt-(--ds-section) rounded-(--radius-lg) border border-dashed border-(--ds-border-strong) p-(--ds-card)">
-        <x-ds::section-heading level="2">Sign-in is already built</x-ds::section-heading>
-        <flux:text class="mt-1 max-w-prose">
-            It has no prompt because it needs none. Its copy is one of the seven decisions, and <code>design:apply</code> points this app's auth layout at the one in the package, so it arrives with the setup.
-        </flux:text>
-        <flux:button :href="route('designs.show', ['slug' => $design->slug, 'screen' => Blocks::SHIPPED_ALREADY, 'register' => $register])" wire:navigate size="sm" variant="ghost" icon="arrows-pointing-out" class="mt-3">Full size</flux:button>
     </div>
 </div>

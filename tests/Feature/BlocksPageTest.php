@@ -3,26 +3,30 @@
 namespace Tests\Feature;
 
 use App\Design\Blocks;
-use App\Design\Screens;
+use App\Design\Design;
 use App\Design\Standard;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use InvalidArgumentException;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * The screens a design does not decide, one pasted prompt each.
+ * The blocks: the screens a design does not decide.
  *
- * What is worth holding is that a prompt cannot go stale in the two ways it
- * could: naming a standard section that is not there, or naming a design.
+ * A block owns its markup, in a component of its own, and both this page and a
+ * design page draw the same one. What is worth holding is that the list, the
+ * components and the prompts cannot come apart: a block with no component, a
+ * prompt pointing at a standard section that is not there, or a prompt naming
+ * a design would each be wrong in a way nothing else would report.
  */
 class BlocksPageTest extends TestCase
 {
     use RefreshDatabase;
 
     #[Test]
-    public function the_page_lists_every_block_with_its_prompt(): void
+    public function the_page_lists_every_block(): void
     {
         $page = $this->actingAs(User::factory()->create())->get('/blocks');
 
@@ -31,10 +35,50 @@ class BlocksPageTest extends TestCase
         foreach (Blocks::ALL as $block) {
             $page->assertSee($block['label']);
         }
+    }
 
-        // Sign-in has no prompt, and its absence has to read as a decision
-        // rather than as something forgotten.
-        $page->assertSee('Sign-in is already built');
+    #[Test]
+    public function every_block_has_a_component_of_its_own(): void
+    {
+        // The list and the components are two halves of one thing. A row here
+        // with no file behind it is a switcher offering a screen that 500s.
+        foreach (array_keys(Blocks::ALL) as $key) {
+            $this->assertFileExists(
+                resource_path("views/components/block/{$key}.blade.php"),
+                "{$key} is on the list with no component behind it",
+            );
+        }
+    }
+
+    #[Test]
+    public function a_block_draws_the_same_way_wherever_it_is_drawn(): void
+    {
+        // The blocks page and a design page render one component, so the
+        // picture on a card and the picture on a design page cannot drift.
+        $design = Design::load(Design::OWN);
+
+        foreach (array_keys(Blocks::ALL) as $key) {
+            $markup = Blocks::draw($key, $design);
+
+            $this->assertNotSame('', trim($markup), "{$key} drew nothing");
+        }
+    }
+
+    #[Test]
+    public function a_key_off_the_url_cannot_reach_a_component_that_is_not_a_block(): void
+    {
+        // It ends up in a component name, so it is resolved against the list
+        // rather than trusted.
+        $this->assertSame(Blocks::DEFAULT, Blocks::resolve('pages.designs.show'));
+        $this->assertSame(Blocks::DEFAULT, Blocks::resolve('block.parts.shell'));
+        $this->assertSame(Blocks::DEFAULT, Blocks::resolve(''));
+        $this->assertSame(Blocks::DEFAULT, Blocks::resolve(null));
+        $this->assertSame('email', Blocks::resolve('email'));
+
+        $this->actingAs(User::factory()->create())
+            ->get('/designs/calder-street-veterinary?screen=pages.designs.show')
+            ->assertOk()
+            ->assertSee('Recent activity');
     }
 
     #[Test]
@@ -74,14 +118,27 @@ class BlocksPageTest extends TestCase
     }
 
     #[Test]
-    public function the_copy_button_carries_the_whole_prompt(): void
+    public function the_three_nobody_builds_say_why_rather_than_going_quiet(): void
     {
-        // The button is the point of the page, so what it holds is worth an
-        // assertion rather than a look.
-        $html = $this->actingAs(User::factory()->create())->get('/blocks')->getContent();
+        // A card with no button reads as something forgotten, and asking for a
+        // prompt for one of these is a mistake worth an exception.
+        $drawnOnly = array_diff_key(Blocks::ALL, Blocks::buildable());
 
-        $this->assertStringContainsString('Copy prompt', $html);
-        $this->assertStringContainsString(e('do not quietly pick and move on'), $html);
+        $this->assertSame(['sign-in', 'dashboard', 'components'], array_keys($drawnOnly));
+
+        $page = $this->actingAs(User::factory()->create())->get('/blocks');
+
+        foreach ($drawnOnly as $key => $block) {
+            $this->assertNotNull($block['note'], "{$key} is built by nobody and does not say why");
+            $page->assertSee($block['note']);
+
+            try {
+                Blocks::prompt($key);
+                $this->fail("{$key} handed back a prompt for a screen nobody builds");
+            } catch (InvalidArgumentException) {
+                // What should happen.
+            }
+        }
     }
 
     #[Test]
@@ -89,7 +146,7 @@ class BlocksPageTest extends TestCase
     {
         // The repo already holds one in design/. A prompt naming a slug would
         // be wrong the moment that app's design changed.
-        foreach (array_keys(Blocks::ALL) as $key) {
+        foreach (array_keys(Blocks::buildable()) as $key) {
             $prompt = Blocks::prompt($key);
 
             $this->assertStringContainsString('design/design.json', $prompt);
@@ -99,11 +156,11 @@ class BlocksPageTest extends TestCase
     }
 
     #[Test]
-    public function every_section_a_prompt_names_is_really_in_the_standard(): void
+    public function every_section_a_block_names_is_really_in_the_standard(): void
     {
-        // Nothing here restates a rule, so a prompt is only as good as the
-        // sections it points at. A renamed or renumbered file would leave the
-        // prompts pointing at nothing and nothing would say so.
+        // Nothing here restates a rule, so a block is only as good as the
+        // sections it points at. A renamed or renumbered file would leave them
+        // pointing at nothing and nothing would say so.
         $files = collect(Standard::sections())->pluck('file');
 
         foreach (Blocks::ALL as $key => $block) {
@@ -118,18 +175,6 @@ class BlocksPageTest extends TestCase
                 );
             }
         }
-    }
-
-    #[Test]
-    public function every_block_previews_on_a_screen_that_exists(): void
-    {
-        // The Preview button goes to a design page with ?screen=, which is
-        // checked against the list before it reaches a Blade include.
-        foreach (Blocks::ALL as $key => $block) {
-            $this->assertTrue(Screens::has((string) $block['screen']), "{$key} previews on a screen that is not drawn");
-        }
-
-        $this->assertTrue(Screens::has(Blocks::SHIPPED_ALREADY));
     }
 
     #[Test]
@@ -159,5 +204,14 @@ class BlocksPageTest extends TestCase
         foreach (['shell', 'errors', 'landing', 'email'] as $settled) {
             $this->assertNull(Blocks::ALL[$settled]['gap']);
         }
+    }
+
+    #[Test]
+    public function the_copy_button_carries_the_whole_prompt(): void
+    {
+        $html = $this->actingAs(User::factory()->create())->get('/blocks')->getContent();
+
+        $this->assertStringContainsString('Copy prompt', $html);
+        $this->assertStringContainsString(e('do not quietly pick and move on'), $html);
     }
 }
