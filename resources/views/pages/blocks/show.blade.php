@@ -167,15 +167,20 @@ new #[Layout('layouts::tool')] class extends Component
                             fit() { this.scale = Math.min(1, ($el.clientWidth || {{ $frame['width'] }}) / {{ $frame['width'] }}) },
                          }"
                          x-init="fit(); new ResizeObserver(() => fit()).observe($el)"
-                         x-bind:style="`height: ${Math.round({{ $frame['height'] }} * scale)}px`"
+                         x-bind:style="{ height: `${Math.round({{ $frame['height'] }} * scale)}px` }"
                          style="height: {{ $frame['height'] }}px">
                         <iframe wire:key="draw-{{ $key }}-{{ $width }}-{{ $register }}"
                                 title="{{ $block['label'] }} at {{ $frame['label'] }} width"
                                 srcdoc="{{ Artboard::document(Blocks::draw($key, $design, $register), $design->tokens(), $register) }}"
                                 loading="lazy"
                                 class="absolute start-0 top-0 origin-top-left rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-page)"
+                                {{-- An object rather than a string: a string
+                                     overwrites the whole style attribute and
+                                     would take the width and height below with
+                                     it. An object sets one property and leaves
+                                     the rest alone. --}}
                                 style="width: {{ $frame['width'] }}px; height: {{ $frame['height'] }}px"
-                                x-bind:style="`transform: scale(${scale})`"></iframe>
+                                x-bind:style="{ transform: `scale(${scale})` }"></iframe>
                     </div>
                 </div>
             </div>

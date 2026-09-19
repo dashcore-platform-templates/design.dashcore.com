@@ -75,6 +75,29 @@ class BlocksPageTest extends TestCase
     }
 
     #[Test]
+    public function a_frame_keeps_its_size_once_alpine_has_booted(): void
+    {
+        // Every thumbnail drew in the corner of an empty card, because
+        // x-bind:style given a string overwrites the whole style attribute
+        // rather than merging into it, and took the frame's width and height
+        // with it. Checked in a browser: the string form leaves the attribute
+        // reading "transform: scale(0.4)" alone and the frame falls back to
+        // the browser's 300 by 150 default. The object form keeps all three.
+        //
+        // Nothing else catches this. The page renders, the tests pass, and it
+        // is only wrong to look at.
+        foreach (['/blocks', '/blocks/errors'] as $url) {
+            $html = $this->signIn()->get($url)->getContent();
+
+            $this->assertStringNotContainsString(
+                'x-bind:style="`',
+                $html,
+                "{$url} binds a style as a string, which replaces the attribute instead of merging",
+            );
+        }
+    }
+
+    #[Test]
     public function a_category_nobody_has_is_a_404(): void
     {
         $this->signIn()->get('/blocks/not-a-category')->assertNotFound();

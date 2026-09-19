@@ -84,7 +84,7 @@ new #[Layout('layouts::tool')] #[Title('Blocks')] class extends Component
                         fit() { this.scale = ($el.clientWidth || {{ $frame['width'] }}) / {{ $frame['width'] }} },
                      }"
                      x-init="fit(); new ResizeObserver(() => fit()).observe($el)"
-                     x-bind:style="`height: ${Math.round({{ $frame['height'] }} * scale)}px`"
+                     x-bind:style="{ height: `${Math.round({{ $frame['height'] }} * scale)}px` }"
                      style="height: {{ (int) round($frame['height'] * 0.25) }}px">
                     <iframe wire:key="face-{{ $key }}-{{ $register }}"
                             title="{{ $category['label'] }}, drawn in this tool's design"
@@ -93,8 +93,17 @@ new #[Layout('layouts::tool')] #[Title('Blocks')] class extends Component
                             aria-hidden="true"
                             loading="lazy"
                             class="pointer-events-none absolute start-0 top-0 origin-top-left border-0"
+                            {{-- An object rather than a string, which is the
+                                 difference between merging and replacing.
+                                 x-bind:style given a string overwrites the
+                                 whole attribute, so the width and height below
+                                 vanished the moment Alpine booted and the
+                                 frame fell back to the browser's 300 by 150
+                                 default: a thumbnail in the corner of an empty
+                                 card. An object sets one property at a time
+                                 and leaves the rest alone. --}}
                             style="width: {{ $frame['width'] }}px; height: {{ $frame['height'] }}px"
-                            x-bind:style="`transform: scale(${scale})`"></iframe>
+                            x-bind:style="{ transform: `scale(${scale})` }"></iframe>
                 </div>
 
                 <div class="flex flex-1 items-start justify-between gap-3 p-(--ds-card)">
