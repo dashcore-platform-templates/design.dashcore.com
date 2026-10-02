@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3c00fbee509e1a878515838c9b84c4bf",
+    "content-hash": "7a700ea444cd08b9e1cbc6661e705b7f",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -8113,6 +8113,55 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "dashcore/testkit",
+            "version": "0.1.5",
+            "dist": {
+                "type": "path",
+                "url": "packages/dashcore/testkit",
+                "reference": "4544346e13a2fbb2c10a2fe72c926e6d55fc49a3"
+            },
+            "require": {
+                "laravel/framework": "^12.0|^13.0",
+                "nikic/php-parser": "^5.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0|^11.0",
+                "pestphp/pest": "^4.0|^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Dashcore\\Testkit\\TestkitServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dashcore\\Testkit\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Dashcore\\Testkit\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "pest"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "The DashCore fleet's baseline tests: route guards, the test database, migration round trips, debug and env() calls, and Livewire loading feedback — each a ratchet that fails only on what is new.",
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
+        },
         {
             "name": "fakerphp/faker",
             "version": "v1.24.1",
