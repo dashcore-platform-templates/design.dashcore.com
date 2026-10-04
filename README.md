@@ -1,5 +1,7 @@
 # design.dashcore.com
 
+> **What this app is for — and what it is not for — is in [`PURPOSE.md`](PURPOSE.md). Read it first.**
+
 **New here? Read [docs/start-here.md](docs/start-here.md).** Ten minutes from signing in to having tested it.
 
 This file is for running it locally and changing it.
