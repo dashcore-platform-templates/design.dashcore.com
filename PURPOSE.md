@@ -97,8 +97,9 @@ measured. It does not belong here if it is about what any one app does.
 - **Not a security or quality auditor.** Dependency findings belong to
   `security`, outside-in checks of a deployment to `standards`, test suites to
   `tests`. The audit here is visual conformance to the Dashcore Standard only.
-- **Not a peer on the bridge.** It does not publish fleet data, read other
-  apps' data, or write anything into another app.
+- **Not a data peer.** It is enrolled on the bridge so the fleet can see it,
+  but it publishes no fleet data, reads no other app's data, and writes
+  nothing into another app.
 
 ## Where it sits in the fleet
 
@@ -107,11 +108,17 @@ sense that nothing it does is a thinking app's job — generation is an
 optional suggestion, and a design page, an export and a report all work
 without the model.
 
-It is on the roster but is not a bridge peer: it carries no `dashcore/bridge`,
-holds no fleet credential and has no `services.fleet.*` peers. That is why the
-catalogue dropped it from the apps every install must have — an app that
-cannot enrol on deploy would be a planned peer that never answers. Nobody in
-the fleet reads from it over the bridge, and it calls no fleet app.
+It is an enrolled bridge peer for one reason: so the fleet's monitors can see
+it. It carries the vendored `dashcore/bridge` (`packages/dashcore/bridge`) and
+joins on deploy with `bridge:connect --if-needed` from `BRIDGE_FLEET_KEY`, so
+it answers the hub's hourly ping, serves `bridge.health`, ships its errors and
+route timings to `health` and its call log to the hub, and is in the set the
+security and standards auditors read. Until 5 October 2026 it carried no
+bridge, which is why the catalogue dropped it from the apps every install must
+have — a planned peer that could never answer reads as a quiet one.
+
+It still has no `services.fleet.*` peers: nobody in the fleet reads its data
+over the bridge, and it calls no fleet app.
 
 Its links to other apps run outside the bridge: a kit's CI posts a report to
 `POST /api/reports`, proving its repository with a GitHub Actions OIDC token
