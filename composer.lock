@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "979719a81ee9dc9be39f97b05a0f5be3",
+    "content-hash": "8ae57623f49c1181da27f4c8f234fe1d",
     "packages": [
         {
             "name": "anthropic-ai/sdk",
@@ -257,6 +257,58 @@
                 }
             ],
             "time": "2026-09-06T14:11:38+00:00"
+        },
+        {
+            "name": "dashcore/bridge",
+            "version": "0.11.24",
+            "dist": {
+                "type": "path",
+                "url": "packages/dashcore/bridge",
+                "reference": "16e442ca59944f9ad72f26d3e7e81b3907ebac4c"
+            },
+            "require": {
+                "ext-sodium": "*",
+                "laravel/framework": "^13.0",
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^11.0",
+                "pestphp/pest": "^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Dashcore\\Bridge\\BridgeServiceProvider"
+                    ],
+                    "aliases": {
+                        "Bridge": "Dashcore\\Bridge\\Facades\\Bridge"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dashcore\\Bridge\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Dashcore\\Bridge\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "pest"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Secure Laravel-to-Laravel API access for the Dashcore fleet: Ed25519 signed requests, replay protection, and audit logging. Fleet membership is the authorization.",
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
         },
         {
             "name": "dasprid/enum",
