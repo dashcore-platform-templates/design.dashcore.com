@@ -25,3 +25,4 @@ yarn-error.log
 
 # Personal project notes, kept on disk and out of this repo
 /docs/build-guide-nextjs-shadcn.md
+.vitest/
