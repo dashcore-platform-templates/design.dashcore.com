@@ -166,6 +166,23 @@ class AuditTest extends TestCase
     }
 
     #[Test]
+    public function a_flux_pro_component_is_reported_with_its_free_stand_in(): void
+    {
+        $this->assertSame(['Flux Pro component'], $this->rules('<flux:date-picker wire:model="due" />'));
+        $this->assertSame(['Flux Pro component'], $this->rules('<flux:accordion.item>'));
+        $this->assertSame(['Flux Pro component'], $this->rules('<flux:tabs variant="segmented">'));
+        $this->assertSame(['Flux Pro component'], $this->rules('<flux:select variant="listbox" wire:model="team">'));
+
+        $finding = Audit::file('<flux:chart :value="$rows">')[0];
+        $this->assertStringContainsString('06 has no chart', $finding['fix']);
+
+        // Free components that share a prefix with a Pro one.
+        $this->assertSame([], $this->rules('<flux:table><flux:table.column>Invoice</flux:table.column></flux:table>'));
+        $this->assertSame([], $this->rules('<flux:input type="date" wire:model="due" />'));
+        $this->assertSame([], $this->rules('<flux:select wire:model="team">'));
+    }
+
+    #[Test]
     public function the_prose_type_size_used_as_a_width_is_reported(): void
     {
         // Found by writing it. --ds-prose is 14px, so this is a column one word

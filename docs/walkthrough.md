@@ -55,7 +55,7 @@ Along the top: sign-in, shell, dashboard, settings, components.
 - **Shell** is the regions with an empty state in the middle.
 - **Dashboard** is the one to judge hardest: a stat row, a table, a callout, a side panel.
 - **Settings** is a form, a fieldset, switches and an error.
-- **Components** renders every Flux component in this design, free and Pro, with the overlays drawn open. If a design is going to break something, it breaks here.
+- **Components** renders every free Flux component in this design, with the overlays drawn open. If a design is going to break something, it breaks here.
 
 Look at both registers. The light and dark toggle is top right, and a design that is fine in one can be wrong in the other.
 
@@ -85,8 +85,6 @@ The same panel folds the manual path away. The design page serves the pack at `/
 In the target repo:
 
 ```bash
-composer config repositories.flux-pro composer https://composer.fluxui.dev
-composer require livewire/flux-pro
 composer config repositories.design-kit vcs https://github.com/dashcoretech/design-kit.git
 composer require dashcore/design-kit
 php artisan design:apply https://design.dashcore.com/designs/<slug>/pack.json
@@ -98,13 +96,7 @@ With `DESIGN_SOURCE` in the kit's `.env` pointing at the design.dashcore.com you
 
 `npm install` matters only on a fresh clone, and it is the step everyone forgets on one.
 
-The first two lines are Flux Pro, and they come first on purpose. It is not on Packagist, so the repository line is needed or Composer reports it as a package that does not exist. And Tailwind has to see the Pro views before `npm run build`, or their classes never reach the stylesheet. Skip both lines if the app already requires `livewire/flux-pro`. The licence is once per machine, and Composer stops and prompts without it:
-
-```bash
-composer config --global http-basic.composer.fluxui.dev <email> <licence key>
-```
-
-An app that stays on free Flux is still on the standard. Section 06 names a free stand-in for eleven of the nineteen Pro components, and `design:apply` says which Flux the app has.
+The fleet is on free Flux, and the standard is written for it. Do not install `livewire/flux-pro`: where section 06 mentions a Pro component, it names the free one to use instead.
 
 `design:apply` prints its plan before writing: the four pack files under `design/`, the theme block in `app.css`, the fonts, the brand keys in `.env`, the sign-in layout, the logo, and the Lucide icon names renamed to Heroicons. It also offers to delete the kit's three stock sign-in layouts under `layouts/auth/`, which nothing references once the sign-in layout is the two-panel one. Run it with `--check` first if you want to see the plan without writing. Running it twice changes nothing, and it refuses a design that fails contrast.
 
@@ -122,7 +114,7 @@ Applying a design rethemes an app. It does not restructure it. An older app stil
 php artisan design:audit
 ```
 
-Every finding, per file and by rule: colour utilities outside the roles, spacing off the eight-step scale, weights, text under 12px, hardcoded hex, Flux badges where the status roles belong, Lucide icon names, and page titles not going through the page header. `--full` lists them all rather than the first few per file. You are not fixing anything here, only seeing the shape of the work: which screens carry most of it, and whether anything in the list is deliberate.
+Every finding, per file and by rule: colour utilities outside the roles, spacing off the eight-step scale, weights, text under 12px, hardcoded hex, Flux badges where the status roles belong, Flux Pro components, Lucide icon names, and page titles not going through the page header. `--full` lists them all rather than the first few per file. You are not fixing anything here, only seeing the shape of the work: which screens carry most of it, and whether anything in the list is deliberate.
 
 Two kinds of file are not migration targets. A public page, a landing page or a legal document, sits outside the app standard. It still takes the fonts and the neutral scale from the theme, and if it should otherwise stay as it is, say so at the top of the file and the audit skips it:
 

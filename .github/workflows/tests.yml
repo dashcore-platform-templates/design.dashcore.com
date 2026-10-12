@@ -66,22 +66,6 @@ jobs:
         with:
           node-version: '22'
 
-      # Flux Pro is a paid package on its own Composer host, so an install here
-      # is a 401 without a licence. The message is what Composer prints when it
-      # wants to prompt and cannot, which reads as a hang rather than a secret.
-      - name: Authenticate Flux Pro
-        env:
-          FLUX_USERNAME: ${{ secrets.FLUX_USERNAME }}
-          FLUX_LICENSE_KEY: ${{ secrets.FLUX_LICENSE_KEY }}
-        run: |
-          set -euo pipefail
-          if [ -z "${FLUX_USERNAME}" ] || [ -z "${FLUX_LICENSE_KEY}" ]; then
-            echo 'FLUX_USERNAME and FLUX_LICENSE_KEY are not set.'
-            echo 'Add them as repository secrets; they are the Flux Pro licence this app installs with.'
-            exit 1
-          fi
-          composer config --global http-basic.composer.fluxui.dev "${FLUX_USERNAME}" "${FLUX_LICENSE_KEY}"
-
       - name: Setup Application
         run: composer setup
 

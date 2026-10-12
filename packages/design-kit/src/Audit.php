@@ -22,6 +22,35 @@ final class Audit
     private const OFF_PALETTE = ['red', 'amber', 'green', 'blue', 'sky', 'emerald', 'rose', 'orange', 'yellow', 'indigo', 'violet', 'purple', 'pink', 'teal', 'cyan', 'lime', 'stone', 'slate', 'gray', 'neutral'];
 
     /** A whole file that is deliberately outside the standard says so once, with a reason. */
+    /**
+     * Flux Pro components and the free one 06 names in each one's place. The
+     * fleet does not install Pro, so a screen using one of these renders
+     * nothing on a fresh clone and stops Composer at a licence prompt.
+     */
+    public const FLUX_PRO = [
+        'accordion' => 'Stacked <details> sections, each with a heading, one pixel border between them.',
+        'autocomplete' => 'flux:select.',
+        'calendar' => 'flux:input type="date".',
+        'carousel' => 'Nothing: 06 has no carousel.',
+        'chart' => 'Nothing yet: 06 has no chart. Show the numbers in a table or stat tiles, and ask for a rule.',
+        'color-picker' => 'flux:input type="color".',
+        'command' => 'Nothing: navigation is the sidebar\'s.',
+        'composer' => 'flux:textarea with a ghost attach button and a primary send.',
+        'context' => 'flux:dropdown on a ghost icon button.',
+        'date-picker' => 'flux:input type="date".',
+        'editor' => 'flux:textarea.',
+        'file-item' => 'A line of text under the file input.',
+        'file-upload' => 'flux:input type="file".',
+        'kanban' => 'Nothing: 06 has no kanban.',
+        'pillbox' => 'flux:checkbox.group for many-of-many, flux:select for one.',
+        'popover' => 'flux:dropdown, or flux:tooltip for one phrase.',
+        'slider' => 'flux:input type="number".',
+        'tab' => 'A navlist beside the panel, or a segmented flux:radio.group for two or three options.',
+        'tabs' => 'A navlist beside the panel, or a segmented flux:radio.group for two or three options.',
+        'time-picker' => 'flux:input type="time".',
+        'timeline' => 'A list: events in text, times in text-muted tabular, a border line.',
+    ];
+
     public const IGNORE_FILE = '@ds-audit-ignore-file';
 
     /** A page a signed-out person reaches, which 13 governs rather than exempts. */
@@ -108,6 +137,16 @@ final class Audit
             // whose own comment said it belonged in the adapter.
             foreach (self::matches($line, '/\[data-flux-(?:table|column|cell|row)\]/') as $m) {
                 $findings[] = self::finding('Flux table styled on the screen', $n, $m, "06's table styling is in the applied CSS block. Use a plain flux:table and let the adapter do it.");
+            }
+
+            // 06: the fleet is on free Flux. Matched on the tag name and what
+            // may follow it, so flux:table is not taken for flux:tab.
+            foreach (self::matches($line, '/<flux:(?:'.implode('|', array_map(fn (string $tag): string => preg_quote($tag, '/'), array_keys(self::FLUX_PRO))).')(?=[\s>.\/])/') as $m) {
+                $findings[] = self::finding('Flux Pro component', $n, $m, 'The fleet is on free Flux. Use: '.self::FLUX_PRO[explode('.', substr($m, 6))[0]]);
+            }
+
+            foreach (self::matches($line, '/<flux:select\b[^>]*variant="(?:listbox|combobox)"/') as $m) {
+                $findings[] = self::finding('Flux Pro component', $n, $m, 'The listbox and combobox variants are Pro. Use a plain flux:select.');
             }
 
             foreach (self::matches($line, '/<flux:badge\b/') as $m) {

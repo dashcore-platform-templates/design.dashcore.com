@@ -166,7 +166,6 @@ new #[Layout('layouts::tool')] class extends Component
             'handoff' => [
                 'prompt' => Handoff::prompt($design),
                 'token' => Handoff::tokenCommand(),
-                'flux' => Handoff::fluxCommand(),
                 'commands' => implode(PHP_EOL, Handoff::commands(Handoff::packUrl($design))),
                 'snippet' => Pack::claudeSnippet($design),
                 'updatePrompt' => Handoff::updatePrompt($design),
@@ -337,35 +336,32 @@ new #[Layout('layouts::tool')] class extends Component
                 <p class="mt-1.5 text-xs leading-snug text-(--ds-text-muted)">Once per machine. The agent stops and asks for this rather than running it.</p>
             </div>
 
-            <flux:accordion>
-                <flux:accordion.item>
-                    <flux:accordion.heading>Updating</flux:accordion.heading>
-                    <flux:accordion.content>
-                        <div class="space-y-4 pt-1">
-                            <p class="text-xs leading-snug text-(--ds-text-muted)">The standard is at <span class="font-mono text-(--ds-text-strong)">{{ $handoff['version'] }}</span>. An app whose <code>design/STANDARD.md</code> shows anything else is behind. <a href="{{ route('changelog') }}" wire:navigate class="text-(--ds-accent-content) hover:underline">What changed</a>.</p>
-                            <x-copy-block label="Agent prompt" :text="$handoff['updatePrompt']" />
-                            <x-copy-block label="Commands" :text="$handoff['updateCommands']" />
+            {{-- Folded with <details> rather than flux:accordion, which is Pro. --}}
+            <div class="divide-y divide-(--ds-border) border-y border-(--ds-border)">
+                <details class="group">
+                    <summary class="flex cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-medium text-(--ds-text-strong) [&::-webkit-details-marker]:hidden">Updating<flux:icon name="chevron-down" variant="micro" class="size-4 shrink-0 text-(--ds-text-muted) transition-transform group-open:rotate-180" /></summary>
+                    <div class="space-y-4 pt-1 pb-4">
+                        <p class="text-xs leading-snug text-(--ds-text-muted)">The standard is at <span class="font-mono text-(--ds-text-strong)">{{ $handoff['version'] }}</span>. An app whose <code>design/STANDARD.md</code> shows anything else is behind. <a href="{{ route('changelog') }}" wire:navigate class="text-(--ds-accent-content) hover:underline">What changed</a>.</p>
+                        <x-copy-block label="Agent prompt" :text="$handoff['updatePrompt']" />
+                        <x-copy-block label="Commands" :text="$handoff['updateCommands']" />
+                    </div>
+                </details>
+                <details class="group">
+                    <summary class="flex cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-medium text-(--ds-text-strong) [&::-webkit-details-marker]:hidden">By hand<flux:icon name="chevron-down" variant="micro" class="size-4 shrink-0 text-(--ds-text-muted) transition-transform group-open:rotate-180" /></summary>
+                    <div class="space-y-4 pt-1 pb-4">
+                        {{-- The label used to carry this. A label is the name
+                             of the thing, and where to run it is a sentence. --}}
+                        <p class="text-xs leading-snug text-(--ds-text-muted)">In the target repo, in this order.</p>
+                        <x-copy-block label="Commands" :text="$handoff['commands']" />
+                        <x-copy-block label="CLAUDE.md snippet" :text="$handoff['snippet']" />
+                        <div class="flex flex-wrap items-center gap-2">
+                            <flux:button :href="route('designs.pack', $slug)" size="sm" icon="arrow-down-tray">Download pack</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
+                            <flux:button :href="route('designs.json', $slug)" size="sm" variant="ghost">JSON</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
                         </div>
-                    </flux:accordion.content>
-                </flux:accordion.item>
-                <flux:accordion.item>
-                    <flux:accordion.heading>By hand</flux:accordion.heading>
-                    <flux:accordion.content>
-                        <div class="space-y-4 pt-1">
-                            {{-- The label used to carry this. A label is the name
-                                 of the thing, and where to run it is a sentence. --}}
-                            <p class="text-xs leading-snug text-(--ds-text-muted)">In the target repo, in this order.</p>
-                            <x-copy-block label="Commands" :text="$handoff['commands']" />
-                            <x-copy-block label="CLAUDE.md snippet" :text="$handoff['snippet']" />
-                            <div class="flex flex-wrap items-center gap-2">
-                                <flux:button :href="route('designs.pack', $slug)" size="sm" icon="arrow-down-tray">Download pack</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
-                                <flux:button :href="route('designs.json', $slug)" size="sm" variant="ghost">JSON</flux:button> {{-- @ds-audit-ignore a control in this tool's own chrome, on a two-pane desktop screen nobody reaches on a phone; 05's floor is about touch --}}
-                            </div>
-                            <p class="text-xs leading-snug text-(--ds-text-muted)">The same files, for anyone offline. Unzip into the repo root, then <code>php artisan design:apply design/design.json</code>.</p>
-                        </div>
-                    </flux:accordion.content>
-                </flux:accordion.item>
-            </flux:accordion>
+                        <p class="text-xs leading-snug text-(--ds-text-muted)">The same files, for anyone offline. Unzip into the repo root, then <code>php artisan design:apply design/design.json</code>.</p>
+                    </div>
+                </details>
+            </div>
         </div>
     </flux:modal>
 

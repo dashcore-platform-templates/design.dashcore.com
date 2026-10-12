@@ -10,6 +10,12 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ---
 
+## 12 October 2026
+
+**The fleet is on free Flux.** Tightening, and the audit checks it. Until today 06 treated Flux Pro as the end state and named a free stand-in for an app that had not installed it yet. Dashcore no longer keeps a Pro licence, so every install of `livewire/flux-pro` stopped at Composer's licence prompt, on a fresh clone and in CI alike. 06 now names free Flux as the inventory, and each Pro entry says what replaces it: the stand-ins from before, plus a colour input, a number input, a checkbox group for many-of-many, a list for a timeline and a textarea for the composer. Carousel, chart, command and kanban have no replacement and nothing in the fleet uses them. `design:audit` reports any Pro tag as `Flux Pro component`, with the replacement in the fix, and `design:apply` warns when it finds Pro installed. Measured before shipping: one app had Pro installed, this tool, and it is moved. An app on free Flux already, which was every other one, has nothing to do.
+
+---
+
 ## 18 September 2026
 
 **The pack was under-selling itself, and 09 said so.** Correction, no rule changed, and nothing an app has to do beyond noticing. 09's table described `design/STANDARD.md` as sections 01 to 09, and it has carried every section but the audit for as long as 10 to 13 have existed. An agent that read the header and believed it had no reason to look for the rules on email, error pages, widths or public pages, all of which were sitting in the same file. The header and the table now say what the file contains. Your version stamp moves because the text moved; no screen that passed stops passing.
