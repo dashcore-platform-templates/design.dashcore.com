@@ -68,13 +68,11 @@ git subtree push --prefix=packages/design-kit https://github.com/dashcoretech/de
 In a kit:
 
 ```bash
-composer config repositories.flux-pro composer https://composer.fluxui.dev
-composer require livewire/flux-pro
 composer config repositories.design-kit vcs https://github.com/dashcoretech/design-kit.git
 composer require dashcore/design-kit
 ```
 
-The first two lines are Flux Pro, skipped if the app already has it. It is not on Packagist, so without the repository line Composer says the package does not exist. Install it before `npm run build`, or Tailwind never sees the Pro views. An app on free Flux is still on the standard: section 06 names a free stand-in for eleven of the nineteen Pro components, and `design:apply` reports which Flux it found.
+The fleet is on free Flux. Do not install `livewire/flux-pro`: where section 06 mentions a Pro component, it names the free one to use instead, and `design:apply` warns if it finds Pro installed.
 
 The mirror is private, so Composer needs its own GitHub credentials once per machine. The GitHub CLI's git credential helper is not enough: Composer runs git non-interactively and will fail with "Repository not found". Add a token once, and every private Dashcore package works afterwards:
 

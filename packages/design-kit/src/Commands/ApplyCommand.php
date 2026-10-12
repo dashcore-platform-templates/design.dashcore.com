@@ -274,34 +274,20 @@ class ApplyCommand extends Command
     }
 
     /**
-     * Say which Flux the app has.
-     *
-     * Section 06 names 19 Pro components and a free stand-in for eleven of
-     * them, so an app without Pro is still on the standard. Worth saying out
-     * loud all the same: the alternative is finding out later, when a screen
-     * wants a component that is not installed.
-     *
-     * The repository line comes first because Flux Pro is not on Packagist, and
-     * the Dashcore licence covers every site. Both belong here rather than in
-     * the output, where they would be two sentences between somebody and the
-     * command they came for. The ordering against `npm run build` does reach
-     * the screen, because getting it wrong ships a build with no Pro classes in
-     * the stylesheet and nothing says so.
+     * The fleet is on free Flux, and section 06 is written for it. An app that
+     * still has Pro installed is told so once, because every install of it
+     * needs a licence Dashcore no longer keeps, and the next fresh clone or
+     * CI run stops at Composer's prompt for it.
      */
     private function reportFluxTier(): void
     {
-        $this->line('');
-
-        if (File::isDirectory(base_path('vendor/livewire/flux-pro'))) {
-            $this->line('  <fg=gray>Flux Pro installed. Every component in standard section 06 is available.</>');
-
+        if (! File::isDirectory(base_path('vendor/livewire/flux-pro'))) {
             return;
         }
 
-        $this->components->warn('Flux Pro is not installed. 19 components in standard section 06 are unavailable, 11 of them with a free stand-in.');
-        $this->line('  <fg=gray>To install it, before `npm run build`:</>');
-        $this->line('  <fg=gray>  composer config repositories.flux-pro composer https://composer.fluxui.dev</>');
-        $this->line('  <fg=gray>  composer require livewire/flux-pro</>');
+        $this->line('');
+        $this->components->warn('Flux Pro is installed. The fleet is on free Flux, and standard section 06 names the free component for each Pro one.');
+        $this->line('  <fg=gray>Move its screens to those, then: composer remove livewire/flux-pro</>');
     }
 
     private function write(string $path, string $contents): void

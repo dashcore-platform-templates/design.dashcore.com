@@ -137,14 +137,11 @@ new #[Layout('layouts::tool')] #[Title('Connect')] class extends Component
                              part. --}}
                         <p class="mt-2 text-sm text-(--ds-text-muted)">Keep <code class="font-mono text-xs">contents: read</code>, or the job cannot check itself out.</p>
 
-                        <flux:accordion class="mt-4">
-                            <flux:accordion.item>
-                                <flux:accordion.heading>What it looks like when done</flux:accordion.heading>
-                                <flux:accordion.content>
-                                    <pre class="overflow-x-auto rounded-(--radius-md) bg-(--ds-sunken) p-4 font-mono text-xs leading-relaxed text-(--ds-text)">{{ $example }}</pre>
-                                </flux:accordion.content>
-                            </flux:accordion.item>
-                        </flux:accordion>
+                        {{-- Folded with <details> rather than flux:accordion, which is Pro. --}}
+                        <details class="group mt-4 border-y border-(--ds-border)">
+                            <summary class="flex cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-medium text-(--ds-text-strong) [&::-webkit-details-marker]:hidden">What it looks like when done<flux:icon name="chevron-down" variant="micro" class="size-4 shrink-0 text-(--ds-text-muted) transition-transform group-open:rotate-180" /></summary>
+                            <pre class="mb-3 overflow-x-auto rounded-(--radius-md) bg-(--ds-sunken) p-4 font-mono text-xs leading-relaxed text-(--ds-text)">{{ $example }}</pre>
+                        </details>
                     </x-step>
 
                     <x-step number="3">

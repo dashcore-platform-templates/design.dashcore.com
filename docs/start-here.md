@@ -84,13 +84,11 @@ Reads the repo's files and says what is missing. Registers nothing.
 
 ## Putting a repo on the board
 
-**Three secrets, all repository level.** We are on the Free plan, so org-level secrets do not reach private repos. Do not try the org.
+**One secret, at repository level.** We are on the Free plan, so org-level secrets do not reach private repos. Do not try the org.
 
 | Secret | For |
 |---|---|
 | `COMPOSER_GITHUB_TOKEN` | Installing `dashcore/design-kit`, a private repo |
-| `FLUX_USERNAME` | Flux Pro licence |
-| `FLUX_LICENSE_KEY` | Flux Pro licence |
 
 The first is a fine-grained token with **read access to Contents** on `dashcoretech/design-kit`. Nothing else.
 

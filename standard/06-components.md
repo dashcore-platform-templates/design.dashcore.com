@@ -1,10 +1,10 @@
 # 06. Components
 
-The component inventory is fixed and is not something a project or a generator chooses. It is Flux's set, free and Pro, plus five custom components: page header, stat tile, stat row, empty state and badge. Page titles go through the page header component, because that is what applies the pairing's second face at title size.
+The component inventory is fixed and is not something a project or a generator chooses. It is Flux's free set plus five custom components: page header, stat tile, stat row, empty state and badge. Page titles go through the page header component, because that is what applies the pairing's second face at title size.
 
 <!-- prompt-end -->
 
-Each entry below is the Flux component and the rule the standard adds: what it is for, what the standard fixes about it, and what it is never used for. A project does not add components; it asks for a change to the standard. The coverage table at the end lists every component Flux ships so nothing is left to guesswork.
+Each entry below is the Flux component and the rule the standard adds: what it is for, what the standard fixes about it, and what it is never used for. A project does not add components; it asks for a change to the standard. The fleet does not install Flux Pro: where an entry below names a Pro component, it is there to say which free one takes its place, and `design:audit` reports a Pro tag on a screen. The coverage table at the end lists every component Flux ships so nothing is left to guesswork.
 
 ## Navigation
 
@@ -13,8 +13,8 @@ Each entry below is the Flux component and the rule the standard adds: what it i
 - **Navlist and navmenu** `flux:navlist`, `flux:navmenu`. Navlist is the vertical list inside the sidebar; navmenu is the dropdown form of a nav for the top nav shell on small screens. Navmenu never appears in content. Navlist appears in content in one case only: a section with its own destinations, such as settings, where it sits vertically beside the panel it switches and carries one level with no nesting. That is a sub-navigation and never a second main nav, so the sidebar or top nav still says which section you are in.
 - **Header** `flux:header` appears below `lg` in the sidebar shell, where it carries the drawer toggle, and always in the top nav shell.
 - **Breadcrumbs** `flux:breadcrumbs`. Only at three or more levels deep.
-- **Tabs** `flux:tabs`, `flux:tab`, `flux:tab.panel` (Pro). Selected tab is underlined in accent, two pixels, or takes the accent bar when that motif is chosen. Tabs never nest, never exceed six, and never hold a primary action. Segmented variant only for two to three options that behave like a toggle.
-- **Command palette** `flux:command` (Pro). One per app, opened by a shortcut and a search icon in the header. Results are grouped under labels in the label style. Never a substitute for navigation the sidebar should carry.
+- **Tabs** are Pro and not used. A section with its own destinations takes a navlist beside the panel, as above; two to three options that behave like a toggle take a segmented `flux:radio.group`. Either way the selected item is marked in accent, never more than six, never nested, and never holds a primary action.
+- **Command palette** `flux:command` is Pro and not used. Navigation is the sidebar's.
 
 ## Text
 
@@ -34,22 +34,22 @@ Each entry below is the Flux component and the rule the standard adds: what it i
 - **Button group** `flux:button.group`. Two to four default buttons that act on one thing. Never mixes variants.
 - **Link** `flux:link`. `accent-content` colour, underline on hover only. Links are for navigation. Actions are buttons.
 - **Dropdown and menu** `flux:dropdown`, `flux:menu`, `menu.item`, `menu.separator`, `menu.submenu`, `menu.radio`, `menu.checkbox`. Items are 14px, icon plus label. Destructive items last, separated, in danger text. One level of submenu at most.
-- **Context menu** `flux:context` (Pro). Right-click on a row or card, same rules as menu. Everything in it must also be reachable without a right-click.
-- **Popover** `flux:popover` (Pro). Small explanatory content anchored to a control. Never holds a form or a primary action; that is a modal.
+- **Context menu** `flux:context` is Pro and not used. A row's or card's actions go in a `flux:dropdown` on a ghost icon button, with the menu rules above.
+- **Popover** `flux:popover` is Pro and not used. One phrase is a tooltip; anything longer is a `flux:dropdown`, and a form or a primary action is a modal.
 - **Tooltip** `flux:tooltip`. Only for icon buttons without a visible label. One short phrase.
 
 ## Forms
 
 - **Field and fieldset** `flux:field`, `flux:fieldset`. Field wraps one control with its label, description and error. Fieldset groups related fields under a legend. A form of more than eight fields is split into fieldsets. Forms in the content grid span eight columns with four columns of notes or empty space, and go full width and one column below `lg`, as 12 says.
 - **Input, textarea, select** `flux:input`, `flux:textarea`, `flux:select`. `surface` fill, `border-strong` outline, radius from the step. Focus is a two pixel accent ring with a two pixel offset in `page`. Placeholder is `text-muted` and is never the only label. Input groups (`input.group`) for a prefix or suffix only, never to join two fields.
-- **Select variants** `flux:select` listbox and combobox (Pro), **autocomplete** `flux:autocomplete` (Pro), **pillbox** `flux:pillbox` (Pro). Listbox for up to twenty options, combobox or autocomplete above that, pillbox for many-of-many. The selected pill is `accent-soft` with `accent-content` text, never a filled accent.
+- **Select variants** The listbox and combobox variants, `flux:autocomplete` and `flux:pillbox` are Pro and not used. One of many is a plain `flux:select`; many of many is a `flux:checkbox.group`.
 - **Checkbox, radio, switch, toggle** `flux:checkbox`, `flux:radio`, `flux:switch`, `flux:toggle`. Checked state is an accent fill. Label to the right. Switch for a setting that takes effect at once; checkbox for a choice saved with the form; toggle for a pressed state in a toolbar. Card variant of checkbox and radio only when each option needs a description.
-- **Slider** `flux:slider` (Pro). Only for a value where the rough position matters more than the number, and always paired with the number shown. Track is `border-strong`, fill and thumb are accent.
-- **Date picker, time picker, calendar** `flux:date-picker`, `flux:time-picker` (Pro), `flux:calendar` (Pro). Selected day is an accent fill; today is an accent ring; ranges are `accent-soft`. Calendar inline only when the whole view is about a date; otherwise the picker.
-- **Colour picker** `flux:color-picker` (Pro). Only in settings that genuinely set a colour, such as a label colour. Never a way for a user to override the design.
-- **Editor** `flux:editor` (Pro). Rich text in `--ds-prose` size at the density's prose value. Toolbar is ghost buttons in one row; no font or colour controls, since the standard fixes both. Output renders in the same prose style.
-- **Composer** `flux:composer` (Pro). The chat or note input: textarea that grows, ghost attach button, primary send. One per view.
-- **File upload and file item** `flux:file-upload`, `flux:file-item` (Pro). Dropzone is `sunken` with a `border-strong` dashed outline, one line of instruction, one default button. Progress uses the accent. Errors in danger text under the item.
+- **Slider** `flux:slider` is Pro and not used. A number is a `flux:input type="number"`.
+- **Date and time** `flux:input` of type `date`, `time` or `datetime-local`. The Pro date picker, time picker and calendar are not used. A range is two inputs, from and to, in one field group.
+- **Colour** `flux:input type="color"`, not the Pro colour picker. Only in settings that genuinely set a colour, such as a label colour. Never a way for a user to override the design.
+- **Long text** `flux:textarea`, not the Pro editor, in `--ds-prose` size at the density's prose value. Where formatting matters it takes Markdown and renders it in the same prose style.
+- **Chat or note input** `flux:textarea` with a ghost attach button and a primary send, not the Pro composer. One per view.
+- **File upload** `flux:input type="file"`, not the Pro file upload. One line of instruction in the description; the chosen file named under it in `text-muted`; errors in danger text under the field.
 - **OTP** `flux:otp`. Six cells, tabular numerals, accent focus ring. Only on the two-factor page.
 
 ## Data
@@ -59,17 +59,17 @@ Each entry below is the Flux component and the rule the standard adds: what it i
 - **Badge** `x-ds::badge`, not `flux:badge`. With a `status` of success, warning, danger or info it takes that status's soft background and text. Without one it is neutral: sunken background, muted text at the step 04 measures against a quiet surface. Neutral carries categories, roles, plans, types, and any state the four colours do not cover, such as rejected, retired or not configured. Colour on a badge means status and nothing else, so a category never takes one and never the accent, and an unrecognised status renders neutral rather than being painted a colour that would say something untrue. A count is not a badge: a number beside a label is text. One badge per cell. Flux's badge paints from Tailwind's palette across six steps per colour, so it shows a different green from the standard's and matching it would mean repainting four colour families for the whole app. The custom badge reads the roles instead.
 - **Avatar** `flux:avatar`, `avatar.group`. Initials on `sunken` when there is no image. Never in accent. Groups overlap by a quarter and stop at four plus a count.
 - **Progress** `flux:progress`. Track is `sunken`, fill is accent. Determinate only; for unknown duration use a skeleton or a spinner in a button.
-- **Chart** `flux:chart` (Pro). Lines and bars only in the standard's palette: series one is accent, series two is `text-muted`, further series are status colours only when they mean that status. Axes and grid lines are `border`. No gradients under lines, no shadows, no animation beyond the 200ms reveal. Every chart has a title in the label style and a unit.
-- **Timeline** `flux:timeline` (Pro). Events in `text` with times in `text-muted` tabular; the line is `border`; the current event marker is accent. For history and audit, never for navigation.
-- **Kanban** `flux:kanban` (Pro). Columns on `sunken`, cards on `surface` with the card rules. Column counts in the label style. Drag handles are `text-muted`. Never more than six columns visible.
-- **Accordion** `flux:accordion` (Pro). Headings at the section heading size, chevron in `text-muted`, one pixel `border` between items. For reference content; never to hide a form's required fields.
-- **Carousel** `flux:carousel` (Pro). Only for a sequence of images or cards the user steps through by choice. Never auto-plays.
+- **Chart** `flux:chart` is Pro and not used, and the standard has no chart yet. Numbers go in a table or stat tiles. A screen that genuinely needs a chart asks for a rule, written against that screen.
+- **Timeline** `flux:timeline` is Pro and not used. History is a list: events in `text`, times in `text-muted` tabular, a one pixel `border` line, the current event marked in accent. For history and audit, never for navigation.
+- **Kanban** `flux:kanban` is Pro and not used.
+- **Folded sections** native `<details>` with a `<summary>`, not the Pro accordion. Heading in `text-strong`, chevron in `text-muted`, one pixel `border` between items. For reference content; never to hide a form's required fields.
+- **Carousel** `flux:carousel` is Pro and not used.
 - **Skeleton** `flux:skeleton` for loading states longer than 300ms. Shapes match the content they stand in for.
 
 ## Surfaces and feedback
 
 - **Card** `flux:card`. `surface`, one pixel `border`, radius from the step, padding from density. A card holds one thing. Cards are never nested.
-- **Callout** `flux:callout`, `callout.heading`, `callout.text`, `callout.link`. Status colours only, soft style, an icon, one heading line, one text line, at most one action. A neutral callout uses `sunken` and `text` for notes that are not a status. The action is `callout.link`, an inline underlined link; Flux has no `callout.button` and neither tier adds one.
+- **Callout** `flux:callout`, `callout.heading`, `callout.text`, `callout.link`. Status colours only, soft style, an icon, one heading line, one text line, at most one action. A neutral callout uses `sunken` and `text` for notes that are not a status. The action is `callout.link`, an inline underlined link; Flux has no `callout.button`.
 - **Modal** `flux:modal`, `modal.trigger`, `modal.close`. Max width 32rem for confirmations, 48rem for forms. Title, body, actions right-aligned with the primary last. Closes on escape and backdrop. Flyout variant slides from the end edge for detail views; never both on one screen.
 - **Toast** `flux:toast`. Bottom right, status coloured, dismisses itself after five seconds unless it has an action. Flux fixes the width at 384px, dropping to 320px below `sm` inside a group. That is Flux's number rather than ours and it is fine; it is written down here so nobody reopens it as a disagreement.
 - **Separator** `flux:separator`. One pixel `border`. Used between regions only when the hairline motif is chosen; otherwise regions are separated by the section gap. With text only to label a group of items.
@@ -97,44 +97,44 @@ The five components every fleet app needs that Flux does not ship, or does not s
 
 ## Coverage
 
-Every component Flux ships as of 2.19, with where its rule lives. Free unless marked Pro. Internal helpers Flux uses to build other components are listed so the table is complete, not because a project uses them.
+Every component Flux ships as of 2.19, with where its rule lives. Free unless marked Pro, and a Pro row is not used: the next section names what replaces it. Internal helpers Flux uses to build other components are listed so the table is complete, not because a project uses them.
 
 | Component | Tier | Rule |
 |---|---|---|
-| accordion | Pro | Data |
+| accordion | Pro, not used | Data |
 | accent | free | internal, the accent wrapper Flux uses |
 | aside | free | Surfaces |
-| autocomplete | Pro | Forms, select variants |
+| autocomplete | Pro, not used | Forms, select variants |
 | avatar | free | Data |
 | badge | free | Data |
 | brand | free | Surfaces |
 | breadcrumbs | free | Navigation |
 | button, button.group | free | Actions |
-| calendar | Pro | Forms, date and time |
+| calendar | Pro, not used | Forms, date and time |
 | callout | free | Surfaces |
 | card | free | Surfaces |
-| carousel | Pro | Data |
-| chart | Pro | Data |
+| carousel | Pro, not used | Data |
+| chart | Pro, not used | Data |
 | checkbox | free | Forms |
-| color-picker | Pro | Forms |
-| command | Pro | Navigation |
-| composer | Pro | Forms |
+| color-picker | Pro, not used | Forms |
+| command | Pro, not used | Navigation |
+| composer | Pro, not used | Forms |
 | container | free | Surfaces |
-| context | Pro | Actions |
-| date-picker | Pro | Forms |
+| context | Pro, not used | Actions |
+| date-picker | Pro, not used | Forms |
 | description | free | Text |
 | dropdown | free | Actions |
-| editor | Pro | Forms |
+| editor | Pro, not used | Forms |
 | error | free | Text |
 | field, fieldset | free | Forms |
-| file-upload, file-item | Pro | Forms |
+| file-upload, file-item | Pro, not used | Forms |
 | flag | free | internal, country flags for phone inputs; not used |
 | footer | free | Surfaces, not part of either shell |
 | header | free | Navigation |
 | heading | free | Text |
 | icon | free | 08 |
 | input | free | Forms |
-| kanban | Pro | Data |
+| kanban | Pro, not used | Data |
 | label, legend | free | Text |
 | link | free | Actions |
 | main | free | Surfaces |
@@ -144,48 +144,46 @@ Every component Flux ships as of 2.19, with where its rule lives. Free unless ma
 | navlist, navmenu | free | Navigation |
 | otp | free | Forms |
 | pagination | free | Data |
-| pillbox | Pro | Forms, select variants |
-| popover | Pro | Actions |
+| pillbox | Pro, not used | Forms, select variants |
+| popover | Pro, not used | Actions |
 | profile | free | Surfaces |
 | progress | free | Data |
 | radio | free | Forms |
-| select (listbox, combobox) | free, Pro variants | Forms |
+| select (listbox, combobox) | free; the Pro variants are not used | Forms |
 | separator | free | Surfaces |
 | sidebar | free | Navigation |
 | skeleton | free | Data |
-| slider | Pro | Forms |
+| slider | Pro, not used | Forms |
 | spacer | free | Surfaces |
 | subheading | free | Text |
 | switch | free | Forms |
-| tab, tabs | Pro | Navigation |
+| tab, tabs | Pro, not used | Navigation |
 | table | free | Data |
 | text | free | Text |
 | textarea | free | Forms |
-| time-picker | Pro | Forms |
-| timeline | Pro | Data |
+| time-picker | Pro, not used | Forms |
+| timeline | Pro, not used | Data |
 | toast | free | Surfaces |
 | toggle | free | Forms |
 | tooltip | free | Actions |
 | with-container, with-field, with-inline-field, with-reversed-inline-field, with-tooltip | free | internal wrappers |
 
-## An app that has not installed Flux Pro yet
+## Flux Pro
 
-Nineteen rows above are Pro. Dashcore's licence covers every site in the fleet, so Pro is the expected end state and a site should install it. Eleven projects have not yet, Executive OS among them, and a new site starts on the free package before anyone applies the licence.
+The fleet does not install Flux Pro. Every app is on free Flux, so a fresh clone and a CI run install without a licence, and no screen depends on a component one app has and the next does not. `design:audit` reports a Pro tag on a screen, with the replacement below, and `design:apply` warns when it finds Pro installed.
 
-Such an app is still on the standard. It is behind on an install, not outside the rules, and its screens are not exceptions.
-
-Eleven of the nineteen have a free stand-in, and the rule for each is the Pro one, unchanged. Only the component differs.
-
-| Pro | Without it |
+| Pro | Use instead |
 |---|---|
-| tab, tabs | a navlist beside the panel, as above |
+| tab, tabs | a navlist beside the panel, or a segmented `flux:radio.group` for two or three options |
 | calendar, date-picker, time-picker | `flux:input` of that type |
+| color-picker | `flux:input type="color"` |
 | file-upload, file-item | `flux:input type="file"` |
-| popover, context | `flux:dropdown` |
-| autocomplete, pillbox | `flux:select` |
-| accordion | stacked sections, each with a heading |
-| editor | `flux:textarea` |
+| popover, context | `flux:dropdown`, or `flux:tooltip` for one phrase |
+| autocomplete, select listbox and combobox | `flux:select` |
+| pillbox | `flux:checkbox.group` |
+| accordion | native `<details>` sections, each with a heading |
+| editor, composer | `flux:textarea` |
+| slider | `flux:input type="number"` |
+| timeline | a list, as in Data above |
 
-The other eight have no stand-in and need none: carousel, chart, color-picker, command, composer, kanban, slider and timeline. No screen in the fleet uses one. If a screen ever needs a chart or a kanban, that is a rule to write then, against the real screen, rather than a guess now.
-
-A screen built on a stand-in is on the standard. Do not mark it as an exception, and do not rebuild it when the app installs Pro, unless the Pro component does something the screen actually needs. Installing Pro is worth doing on its own; rewriting working screens afterwards is not.
+Carousel, chart, command and kanban have no replacement. No screen in the fleet needs one. If a screen ever needs a chart or a kanban, that is a rule to write then, against the real screen, rather than a guess now.

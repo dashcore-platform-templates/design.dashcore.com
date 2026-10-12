@@ -41,11 +41,11 @@ class HandoffTest extends TestCase
         $this->assertStringEndsWith('/designs/harbor-point/pack.json', Handoff::packUrl($design));
         $this->assertStringContainsString('Harbor Point', $prompt);
         $this->assertStringContainsString('composer require dashcore/design-kit', $prompt);
-        // Flux Pro is not on Packagist, so the repository line has to travel with
-        // the require or Composer reports a package that does not exist.
-        $this->assertStringContainsString('composer config repositories.flux-pro composer '.Handoff::FLUX_REPO, $prompt);
-        $this->assertStringContainsString('composer require livewire/flux-pro', $prompt);
-        $this->assertStringContainsString('Never ask me for the licence key', $prompt);
+        // The fleet is on free Flux. An agent told to install Pro would stop
+        // at a licence nobody holds any more.
+        $this->assertStringNotContainsString('composer require livewire/flux-pro', $prompt);
+        $this->assertStringNotContainsString('fluxui.dev', $prompt);
+        $this->assertStringContainsString('Do not install `livewire/flux-pro`', $prompt);
         $this->assertStringContainsString('design:apply '.Handoff::packUrl($design).' --force', $prompt);
         $this->assertStringContainsString('design/CLAUDE.snippet.md', $prompt);
         $this->assertStringContainsString('design/MIGRATION.md', $prompt);
@@ -62,16 +62,8 @@ class HandoffTest extends TestCase
             $this->assertStringContainsString($command, $walkthrough, "docs/walkthrough.md step 6 is missing: {$command}");
         }
         $this->assertStringContainsString(Handoff::tokenCommand(), $walkthrough);
-        $this->assertStringContainsString(Handoff::fluxCommand(), $walkthrough);
-
-        // Order matters in a way nothing else would catch: Tailwind has to see
-        // the Pro views before the build, or their classes never reach the CSS.
-        $commands = Handoff::commands('<url>');
-        $this->assertLessThan(
-            array_search('npm run build', $commands, true),
-            array_search('composer require livewire/flux-pro', $commands, true),
-            'Flux Pro must be installed before the build'
-        );
+        $this->assertStringNotContainsString('composer require livewire/flux-pro', $walkthrough);
+        $this->assertStringNotContainsString('fluxui.dev', $walkthrough);
     }
 
     #[Test]

@@ -4,9 +4,11 @@
 @php ['t' => $t, 'motif' => $motif, 'shell' => $shell] = \App\Design\Blocks::context($design); @endphp
 {{-- @ds-audit-ignore-file the component gallery. It shows flux:badge beside x-ds::badge and an xs button beside a full one, so the standard can be seen being broken next to being kept. Auditing it reports the demonstration. --}}
 {{--
-    The Components screen: every Flux component that renders without a user
-    action, free and Pro, in the current design and register. Built from real
-    Flux components so what you see is what a kit ships, not a drawing of it.
+    The Components screen: every free Flux component that renders without a
+    user action, in the current design and register. Built from real Flux
+    components so what you see is what a kit ships, not a drawing of it. The
+    fleet does not install Flux Pro; where 06 names a Pro component, the free
+    stand-in it names is what is drawn here.
     Components that only exist after a click (modal, toast, dropdown menu,
     command palette, context menu, popover, carousel) are shown by their
     trigger and named in the last section.
@@ -21,12 +23,7 @@
         <div>
             <p class="{{ $eyebrowClass }} mb-1.5">Components</p>
             <h1 class="text-2xl font-semibold leading-[1.25] text-(--ds-text-strong) {{ $design->pairing()['second']['kind'] !== 'mono' ? 'font-second' : '' }}">Every Flux component in this design</h1>
-            <p class="mt-1 text-sm text-(--ds-text-muted)">Free and Pro. Rules are in the standard, section 06. Anything that fails contrast here fails the design.</p>
-            {{-- Ten Pro components render on this screen, and most of the fleet
-                 installs the free package only. Without this line somebody can
-                 judge a design here and promise an app a component it cannot
-                 install. Section 06 names a free stand-in for eleven of them. --}}
-            <p class="mt-1 text-sm text-(--ds-text-muted)">Accordion, chart, composer, date picker, editor, file upload, pillbox, slider, tabs and timeline come from Flux Pro. The licence covers every fleet site, but a site that has not installed it yet is still on the standard, and section 06 says what it uses meanwhile.</p>
+            <p class="mt-1 text-sm text-(--ds-text-muted)">Free Flux only, as every fleet app installs it. Rules are in the standard, section 06. Anything that fails contrast here fails the design.</p>
         </div>
     </div>
 
@@ -150,17 +147,13 @@
                     <flux:label>Textarea</flux:label>
                     <flux:textarea rows="2" placeholder="Prose at the density's prose size." />
                 </flux:field>
-                <flux:field class="sm:col-span-2">
-                    <flux:label>Date picker <span class="ds-label ms-1.5 font-normal">Pro</span></flux:label>
-                    <flux:date-picker value="2026-09-15" />
+                <flux:field>
+                    <flux:label>Date</flux:label>
+                    <flux:input type="date" value="2026-09-15" />
                 </flux:field>
-                <flux:field class="sm:col-span-2">
-                    <flux:label>Pillbox <span class="ds-label ms-1.5 font-normal">Pro</span></flux:label>
-                    <flux:pillbox multiple placeholder="Teams">
-                        <flux:pillbox.option value="sales" selected>Sales</flux:pillbox.option>
-                        <flux:pillbox.option value="ops" selected>Operations</flux:pillbox.option>
-                        <flux:pillbox.option value="fin">Finance</flux:pillbox.option>
-                    </flux:pillbox>
+                <flux:field>
+                    <flux:label>File</flux:label>
+                    <flux:input type="file" />
                 </flux:field>
             </div>
             <div class="flex flex-wrap items-center gap-6 pt-2">
@@ -175,20 +168,16 @@
                 <flux:radio label="Sidebar" checked />
                 <flux:radio label="Top nav" />
             </flux:radio.group>
-            <div>
-                <flux:text variant="subtle" class="mb-1">Slider <span class="ds-label ms-1.5 font-normal">Pro</span></flux:text>
-                <flux:slider :value="40" />
-            </div>
         </section>
 
         {{-- Data --}}
         <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card) lg:col-span-6 {{ $section }}">
             <p class="{{ $eyebrowClass }}">Data</p>
-            <flux:tabs variant="segmented" size="sm">
-                <flux:tab selected>All</flux:tab>
-                <flux:tab>Sales</flux:tab>
-                <flux:tab>Operations</flux:tab>
-            </flux:tabs>
+            <flux:radio.group variant="segmented" size="sm">
+                <flux:radio label="All" checked />
+                <flux:radio label="Sales" />
+                <flux:radio label="Operations" />
+            </flux:radio.group>
             <flux:table>
                 <flux:table.columns>
                     <flux:table.column>Ref</flux:table.column>
@@ -219,64 +208,17 @@
                     <flux:text variant="subtle" class="text-xs">Skeleton</flux:text>
                 </div>
             </div>
-            <flux:accordion>
-                <flux:accordion.item>
-                    <flux:accordion.heading>Accordion <span class="ds-label ms-1.5 font-normal">Pro</span></flux:accordion.heading>
-                    <flux:accordion.content>Reference content only. Never hides a form's required fields.</flux:accordion.content>
-                </flux:accordion.item>
-                <flux:accordion.item>
-                    <flux:accordion.heading>Second item</flux:accordion.heading>
-                    <flux:accordion.content>Headings at the section heading size, one pixel border between items.</flux:accordion.content>
-                </flux:accordion.item>
-            </flux:accordion>
-        </section>
-
-        {{-- Chart and timeline --}}
-        <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card) lg:col-span-7 {{ $section }}">
-            <p class="{{ $eyebrowClass }}">Chart <span class="ds-label ms-1.5 font-normal">Pro</span></p>
-            <flux:text variant="subtle" class="text-xs">Series one is accent, series two is muted text. Axes and grid are border. Unit: items per day.</flux:text>
-            <flux:chart :value="[['day' => 'Mon', 'open' => 112, 'closed' => 84], ['day' => 'Tue', 'open' => 148, 'closed' => 97], ['day' => 'Wed', 'open' => 131, 'closed' => 120], ['day' => 'Thu', 'open' => 156, 'closed' => 110], ['day' => 'Fri', 'open' => 140, 'closed' => 133]]" class="h-48">
-                <flux:chart.svg>
-                    <flux:chart.line field="open" class="text-(--ds-accent)" />
-                    <flux:chart.line field="closed" class="text-(--ds-text-muted)" />
-                    <flux:chart.axis axis="x" field="day">
-                        <flux:chart.axis.tick />
-                        <flux:chart.axis.line class="text-(--ds-border)" />
-                    </flux:chart.axis>
-                    <flux:chart.axis axis="y">
-                        <flux:chart.axis.grid class="text-(--ds-border)" />
-                        <flux:chart.axis.tick />
-                    </flux:chart.axis>
-                </flux:chart.svg>
-            </flux:chart>
-        </section>
-
-        <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card) lg:col-span-5 {{ $section }}">
-            <p class="{{ $eyebrowClass }}">Timeline <span class="ds-label ms-1.5 font-normal">Pro</span></p>
-            <flux:timeline>
-                @foreach ([['Item opened', 'Mara Ellison, 09:00'], ['Assigned to Operations', 'Devin Okafor, 09:15'], ['Flagged for attention', 'System, 09:40']] as [$event, $meta])
-                    <flux:timeline.item>
-                        <flux:timeline.content>
-                            <flux:heading size="sm">{{ $event }}</flux:heading>
-                            <flux:text variant="subtle" class="tabular-nums">{{ $meta }}</flux:text>
-                        </flux:timeline.content>
-                    </flux:timeline.item>
-                @endforeach
-            </flux:timeline>
-        </section>
-
-        {{-- Editor, file upload, composer --}}
-        <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card) lg:col-span-6 {{ $section }}">
-            <p class="{{ $eyebrowClass }}">Editor <span class="ds-label ms-1.5 font-normal">Pro</span></p>
-            <flux:editor value="<p>Rich text at the density's prose size. The toolbar is ghost buttons in one row, with no font or colour controls.</p>" />
-        </section>
-        <section class="rounded-(--radius-lg) border border-(--ds-border) bg-(--ds-surface) p-(--ds-card) lg:col-span-6 {{ $section }}">
-            <p class="{{ $eyebrowClass }}">File upload and composer <span class="ds-label ms-1.5 font-normal">Pro</span></p>
-            <flux:file-upload>
-                <flux:file-upload.dropzone heading="Drop the export here" text="CSV or XLSX up to 10 MB." />
-            </flux:file-upload>
-            <flux:file-item heading="items-september.csv" :size="188416" />
-            <flux:composer placeholder="Write a note for the owner" />
+            {{-- 06's stand-in for the Pro accordion: native details, one pixel border between items. --}}
+            <div class="divide-y divide-(--ds-border) border-y border-(--ds-border)">
+                <details class="group" open>
+                    <summary class="flex cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-medium text-(--ds-text-strong) [&::-webkit-details-marker]:hidden">Folded section<flux:icon name="chevron-down" variant="micro" class="size-4 shrink-0 text-(--ds-text-muted) transition-transform group-open:rotate-180" /></summary>
+                    <p class="pb-3 text-sm text-(--ds-text)">Reference content only. Never hides a form's required fields.</p>
+                </details>
+                <details class="group">
+                    <summary class="flex cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-medium text-(--ds-text-strong) [&::-webkit-details-marker]:hidden">Second item<flux:icon name="chevron-down" variant="micro" class="size-4 shrink-0 text-(--ds-text-muted) transition-transform group-open:rotate-180" /></summary>
+                    <p class="pb-3 text-sm text-(--ds-text)">Headings at the section heading size, one pixel border between items.</p>
+                </details>
+            </div>
         </section>
 
         {{--
