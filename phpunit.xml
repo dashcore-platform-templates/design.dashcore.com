@@ -42,22 +42,16 @@
             design reached production on 17 September 2026: CI caught it,
             the local suite could not.
 
-            These are defaults. A real environment variable wins over an
-            <env> here, which is why CI keeps setting its own at job level
-            and pointing at its own container.
+            The connection and database are forced (env and server), so a DB_*
+            leaked from .env or the shell can never point RefreshDatabase at
+            the development database. Host, port and credentials are not:
+            they come from .env here and from the job in CI, whose container
+            holds a database of this name.
         -->
         <env name="DB_CONNECTION" value="pgsql" force="true"/>
         <server name="DB_CONNECTION" value="pgsql" force="true"/>
-        <env name="DB_HOST" value="127.0.0.1" force="true"/>
-        <server name="DB_HOST" value="127.0.0.1" force="true"/>
-        <env name="DB_PORT" value="5432" force="true"/>
-        <server name="DB_PORT" value="5432" force="true"/>
         <env name="DB_DATABASE" value="design_dashcore_test" force="true"/>
         <server name="DB_DATABASE" value="design_dashcore_test" force="true"/>
-        <env name="DB_USERNAME" value="postgres" force="true"/>
-        <server name="DB_USERNAME" value="postgres" force="true"/>
-        <env name="DB_PASSWORD" value="" force="true"/>
-        <server name="DB_PASSWORD" value="" force="true"/>
         <env name="DB_URL" value="" force="true"/>
         <server name="DB_URL" value="" force="true"/>
         <env name="MAIL_MAILER" value="array" force="true"/>

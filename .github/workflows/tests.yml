@@ -24,7 +24,7 @@ jobs:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_DB: testing
+          POSTGRES_DB: design_dashcore_test
           POSTGRES_USER: testing
           POSTGRES_PASSWORD: testing
         ports:
@@ -41,7 +41,7 @@ jobs:
       DB_CONNECTION: pgsql
       DB_HOST: 127.0.0.1
       DB_PORT: 5432
-      DB_DATABASE: testing
+      DB_DATABASE: design_dashcore_test
       DB_USERNAME: testing
       DB_PASSWORD: testing
 
