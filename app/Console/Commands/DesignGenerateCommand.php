@@ -37,7 +37,8 @@ class DesignGenerateCommand extends Command
         $this->components->info('Asking '.config('design.model').' for the seven decisions.');
 
         try {
-            $design = $generator->generate($brief, $this->option('slug') ?: null);
+            $slug = $this->option('slug');
+            $design = $generator->generate($brief, is_string($slug) && $slug !== '' ? $slug : null);
         } catch (GenerationFailed $e) {
             $this->components->error($e->getMessage());
 

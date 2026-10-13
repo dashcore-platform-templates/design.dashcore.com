@@ -18,8 +18,9 @@ class DesignCheckCommand extends Command
 
     public function handle(): int
     {
-        $designs = $this->argument('slug')
-            ? collect([Design::load($this->argument('slug'))])
+        $slug = $this->argument('slug');
+        $designs = is_string($slug) && $slug !== ''
+            ? collect([Design::load($slug)])
             : Design::all();
 
         $failed = false;
