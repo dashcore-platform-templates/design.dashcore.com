@@ -16,6 +16,7 @@ use Dashcore\Bridge\Console\ReportTelemetryCommand;
 use Dashcore\Bridge\Console\SsoStatusCommand;
 use Dashcore\Bridge\Http\Middleware\EnsureBridgeScope;
 use Dashcore\Bridge\Http\Middleware\SendSignInToSso;
+use Dashcore\Bridge\Http\Middleware\SetSecurityHeaders;
 use Dashcore\Bridge\Http\Middleware\VerifyBridgeRequest;
 use Dashcore\Bridge\Contracts\ResolvesSsoUser;
 use Dashcore\Bridge\Identity\IdentityResolver;
@@ -95,6 +96,11 @@ class BridgeServiceProvider extends ServiceProvider
         $kernel = $this->app->make(HttpKernel::class);
         if ($kernel instanceof Kernel) {
             $kernel->appendMiddlewareToGroup('web', SendSignInToSso::class);
+
+            // Global, not the web group: an API answer and an error page are
+            // pages a browser reads too. The middleware checks the switch per
+            // request, so turning it off is a setting rather than a restart.
+            $kernel->pushMiddleware(SetSecurityHeaders::class);
         }
 
         $this->publishes([
