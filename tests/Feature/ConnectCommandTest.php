@@ -30,10 +30,19 @@ class ConnectCommandTest extends TestCase
     public function it_names_the_repository_it_would_report_as(): void
     {
         // Read off the git remote, because that is what somebody means by
-        // "this repo" and it cannot be typed into somebody else's name.
-        $this->artisan('design:connect')
-            ->expectsOutputToContain('dashcoretech/design.dashcore.com')
-            ->assertFailed();
+        // "this repo" and it cannot be typed into somebody else's name. Either
+        // owner: the release copy lives under dashcore-platform-templates.
+        $output = new BufferedOutput;
+
+        $command = new ConnectCommand;
+        $command->setLaravel($this->app);
+        $exitCode = $command->run(new ArrayInput([]), $output);
+
+        $this->assertMatchesRegularExpression(
+            '#\b(dashcoretech|dashcore-platform-templates)/design\.dashcore\.com\b#',
+            $output->fetch()
+        );
+        $this->assertNotSame(0, $exitCode);
     }
 
     #[Test]

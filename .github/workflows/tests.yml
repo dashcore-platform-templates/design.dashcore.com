@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - 'maintain/**'
   pull_request:
 
 permissions:
