@@ -26,6 +26,8 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 **The frame `dashcore/ui` drew is in the package.** New, and nothing an app on the standard has to do. An app that does not use Flux draws the sidebar shell with `x-ds::shell`, with `x-ds::account`, `x-ds::theme-toggle`, `x-ds::flash` and `x-ds::fonts` beside it. They follow 02 and 03 rather than `dashcore/ui`'s own rules: a 16rem sidebar on `sunken`, 12px labels in mixed case, the accent bar on the current page, the brand block in body type. An app moving off `dashcore/ui` keeps `<x-dashcore::…>`, the `dc-*` colour names and the `Dashcore\Ui` classes for one major.
 
+**An app can take a style instead of a design.** New, and nothing an app on a design has to do. `php artisan design:apply --style=dashcore` points an app at the `dashcore` style in the package rather than copying a design's tokens into it, and `design/design.json` then names the style and nothing else (09). A release of the package restyles every app on the style; `design:update` re-applies it.
+
 ---
 
 ## 12 October 2026

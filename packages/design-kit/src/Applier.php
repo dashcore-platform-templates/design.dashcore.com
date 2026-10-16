@@ -287,6 +287,80 @@ final class Applier
         return $lines;
     }
 
+    /** The lines a style puts in an app's app.css, straight after Tailwind. */
+    public static function styleLines(string $name): string
+    {
+        return "@import '../../vendor/dashcore/design-kit/dist/{$name}.css';\n@source '../../vendor/dashcore/design-kit/resources/views';";
+    }
+
+    /**
+     * An app's app.css, taking a style from vendor/ rather than a copy of a
+     * design's tokens.
+     *
+     * The applied block goes, because the stylesheet carries all of it and two
+     * sets of the same variables would leave the order of the file to decide.
+     * dashcore/ui's import and source lines go too: the style replaces them,
+     * and leaving them would load two definitions of every dc-* name. Lines
+     * already there are left where they are, so applying twice is a no-op.
+     */
+    public static function applyStyleCss(string $css, string $name): string
+    {
+        $start = strpos($css, self::START);
+        $end = strpos($css, self::END);
+        if ($start !== false && $end !== false && $end > $start) {
+            $css = substr($css, 0, $start).ltrim(substr($css, $end + strlen(self::END)), "\n");
+        }
+
+        $css = (string) preg_replace('#^\s*@(import|source)\s+[\'"][^\'"]*vendor/dashcore/ui/[^\'"]*[\'"]\s*;\s*\n?#m', '', $css);
+        // A different style's import, when an app moves from one to another.
+        $css = (string) preg_replace('#^\s*@import\s+[\'"][^\'"]*vendor/dashcore/design-kit/dist/(?!'.preg_quote($name, '#').'\.css)[^\'"]*[\'"]\s*;\s*\n?#m', '', $css);
+
+        $wanted = self::styleLines($name);
+        $missing = array_values(array_filter(explode("\n", $wanted), fn (string $line) => ! str_contains($css, $line)));
+        if ($missing === []) {
+            return $css;
+        }
+
+        $insert = implode("\n", $missing);
+        if (preg_match('#^@import\s+[\'"]tailwindcss[\'"]\s*;[^\n]*\n#m', $css, $m, PREG_OFFSET_CAPTURE)) {
+            $at = $m[0][1] + strlen($m[0][0]);
+
+            return substr($css, 0, $at).$insert."\n".substr($css, $at);
+        }
+
+        return "@import 'tailwindcss';\n".$insert."\n".ltrim($css);
+    }
+
+    /**
+     * The app's app.js, taking the frame's script: Escape closes the drawer and
+     * the theme toggle remembers its choice. dashcore/ui's import becomes it.
+     */
+    public static function applyStyleJs(string $js): string
+    {
+        $line = "import '../../vendor/dashcore/design-kit/resources/js/frame.js';";
+        $js = (string) preg_replace('#^[ \t]*import\s+[\'"][^\'"]*vendor/dashcore/ui/resources/js/ui\.js[\'"][ \t]*;?[ \t]*$#m', $line, $js);
+
+        return str_contains($js, $line) ? $js : rtrim($js)."\n".$line."\n";
+    }
+
+    /**
+     * The .env keys the components read for a style. Brand copy is left
+     * alone: each app writes its own sign-in words (standard/14).
+     *
+     * @param  array<string,mixed>  $tokens
+     * @return array<string,string>
+     */
+    public static function styleEnvValues(array $tokens, string $motif): array
+    {
+        $second = $tokens['fonts']['second'] ?? [];
+
+        return [
+            'DESIGN_MOTIF' => $motif,
+            'DESIGN_SECOND_KIND' => (string) ($second['kind'] ?? 'mono'),
+            'DESIGN_CONDENSED' => ! empty($second['condensed']) ? 'true' : 'false',
+        ];
+    }
+
     /** Replace the block between the markers, or append it. */
     public static function applyCss(string $css, string $block): string
     {

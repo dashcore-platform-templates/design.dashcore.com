@@ -218,6 +218,67 @@ DESIGN_TOKEN=dsn_…
 
 One token covers every app you work on, because it is yours rather than any repository's. It never goes in CI: a workflow reports and never pulls.
 
+## Take the Dashcore style
+
+Every Dashcore app takes one style, `dashcore` (standard section 14), instead of a design of its own. It is read from this package on every build rather than copied into the app, so a release restyles the whole fleet.
+
+```bash
+composer require dashcore/design-kit
+php artisan design:apply --style=dashcore
+npm run build
+```
+
+That writes `design/design.json` naming the style, puts two lines after Tailwind in `resources/css/app.css`, and adds the frame's script to `resources/js/app.js`:
+
+```css
+@import 'tailwindcss';
+@import '../../vendor/dashcore/design-kit/dist/dashcore.css';
+@source '../../vendor/dashcore/design-kit/resources/views';
+```
+
+An app without Flux draws its frame with the package's components:
+
+```blade
+<head>
+    <x-ds::theme-script />
+    <x-ds::fonts />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body>
+    <x-ds::shell :menu="$menu" product="Finance" :home="route('dashboard')" navigate>
+        <x-ds::page-header title="Runway" description="Twelve months at the current burn." />
+        <x-ds::flash />
+        {{ $slot }}
+
+        <x-slot:footer>
+            <x-ds::account :name="$user->name" :email="$user->email">
+                <x-ds::theme-toggle />
+            </x-ds::account>
+        </x-slot:footer>
+    </x-ds::shell>
+</body>
+```
+
+The menu takes the shapes `dashcore/ui` took (`Dashcore\DesignKit\Frame\Menu` lists them). An app's own test holds it to the shell:
+
+```php
+\Dashcore\DesignKit\Testing\Shell::assertConforms($this->get('/')->getContent());
+```
+
+### Moving off dashcore/ui
+
+For one major, an app moving across changes no view. `<x-dashcore::…>` still renders, the `dc-*` colour names are aliases of the roles, and `Dashcore\Ui\Menu`, `Version` and `Testing\Shell` resolve to this package's. Swap the dependency and apply the style:
+
+```bash
+composer remove dashcore/ui
+composer require dashcore/design-kit
+php artisan design:apply --style=dashcore
+```
+
+Where `dashcore/ui` and the standard differed, the standard won: 12px labels in mixed case rather than 11px uppercase, the sidebar at 16rem on `sunken`, the status colours in 04, a 24px title at weight 600, a destructive button as an outline. Screens look slightly different afterwards; nothing breaks.
+
+With Flux, the notes `dashcore/ui` carried still hold: do not wrap pages in `<flux:main>` inside the shell, and use `<x-ds::account>` in the footer rather than `<flux:sidebar.profile>`.
+
 ## Apply a design
 
 Give it the design's slug, its pack URL from design.dashcore.com, or a local design file:

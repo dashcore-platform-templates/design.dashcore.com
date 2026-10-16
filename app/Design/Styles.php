@@ -19,6 +19,9 @@ use RuntimeException;
  */
 final class Styles
 {
+    /** The motif each style takes (07). Not a token, but the components read it. */
+    public const MOTIFS = ['dashcore' => 'accent-bar'];
+
     /** @return list<string> */
     public static function names(): array
     {

@@ -136,3 +136,23 @@ In a fresh Laravel Livewire Flux kit, one artisan command reads the file and:
 - Removes the four Lucide-named icon files the kit ships.
 
 Nothing else in the kit changes. Running it twice with the same file is a no-op.
+
+## A style instead of a design
+
+A Dashcore app takes the `dashcore` style (14) rather than a design of its own. Its `design/design.json` names the style and holds nothing else:
+
+```json
+{
+  "schema": "dashcore-design/1",
+  "style": "dashcore"
+}
+```
+
+`php artisan design:apply --style=dashcore` writes that file, and points the app at the package rather than copying anything out of it:
+
+- Two lines in `resources/css/app.css`, straight after Tailwind: an import of the style's stylesheet from `vendor/dashcore/design-kit/dist/`, and the `@source` line for the package's views. An applied design block, or `dashcore/ui`'s two lines, are removed.
+- The frame's script in `resources/js/app.js`, in place of `dashcore/ui`'s.
+- The two faces, where a design's would go.
+- `DESIGN_MOTIF`, `DESIGN_SECOND_KIND` and `DESIGN_CONDENSED` in `.env`. Sign-in copy is the app's own and is left alone.
+
+The style's values live in the package and nowhere in the app, so a release of `dashcore/design-kit` changes every app on the style at once, with nothing to re-apply. `design:update` on an app on a style re-applies it and audits.

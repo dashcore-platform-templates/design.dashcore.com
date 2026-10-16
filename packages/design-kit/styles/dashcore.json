@@ -1,6 +1,7 @@
 {
     "schema": "dashcore-style/1",
     "style": "dashcore",
+    "motif": "accent-bar",
     "tokens": {
         "fonts": {
             "sans": {

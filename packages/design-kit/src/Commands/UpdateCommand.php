@@ -42,6 +42,27 @@ class UpdateCommand extends Command
 
         $source = $this->argument('source');
 
+        // An app on a built-in style names it, and there is nothing to fetch:
+        // the style arrived with the package. Re-applying puts back anything a
+        // release moved, such as a renamed stylesheet, and audits as below.
+        $current = json_decode(File::get($file), true);
+        $style = is_array($current) && is_string($current['style'] ?? null) ? $current['style'] : null;
+        if ($style !== null && (! is_string($source) || $source === '')) {
+            $this->line("  <fg=gray>Using the {$style} style, which this app already has.</>");
+            $this->components->info('Update dashcore/design-kit before this, if you have not. The style ships in it.');
+
+            if ($this->call('design:apply', ['--style' => $style]) !== self::SUCCESS) {
+                $this->components->error('The style did not apply. Nothing was audited.');
+
+                return self::FAILURE;
+            }
+
+            $this->line('');
+            $this->call('design:audit');
+
+            return self::SUCCESS;
+        }
+
         // The design file names its own slug, so an app on the standard can be
         // updated without anybody remembering which design it took.
         if (! is_string($source) || $source === '') {
