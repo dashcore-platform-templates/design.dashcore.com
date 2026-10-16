@@ -45,7 +45,7 @@ The order matters. The publishing credential is a classic token, and a classic t
 
 1. Here, under Settings then Deploy keys, add a key with write access. A deploy key reaches one repository and nothing else, which is the whole point.
 2. In design.dashcore.com, add the private half as a secret named `DASHCORE_DESIGN_KEY`. The publish workflow prefers it over `DASHCORE_DESIGN` whenever it is set.
-3. Push to master there and read the publish job. It prints which repository the key belongs to before it pushes, so a key added to the wrong repo says so.
+3. Push to main in the design repo and read the publish job. It prints which repository the key belongs to before it pushes, so a key added to the wrong repo says so.
 4. Here, under Settings then Collaborators and teams, set every human grant to read. Composer only ever reads, so nothing about installing the package changes.
 5. Delete the `DASHCORE_DESIGN` secret and revoke the token behind it.
 
@@ -53,7 +53,7 @@ An organisation owner keeps write and cannot be locked out of their own repo. Th
 
 ## Install
 
-This repo is republished automatically. A push to master in the design repo updates it, and a `design-kit/vX.Y.Z` tag there releases that version here:
+This repo is republished automatically. A push to main in the design repo updates it, and a `design-kit/vX.Y.Z` tag there releases that version here:
 
 ```bash
 git tag design-kit/v1.1.0 && git push origin design-kit/v1.1.0

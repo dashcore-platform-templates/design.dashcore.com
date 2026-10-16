@@ -34,7 +34,7 @@ Composer cannot install from a subdirectory, so it is published to `dashcoretech
 
 Publishing is automatic:
 
-- push to `master` → mirror updated
+- push to `main` → mirror updated
 - tag `design-kit/vX.Y.Z` → that version released
 
 A release reaches every kit on the next `composer update`, new audit rules included. Rules show up as findings on the board and reporting never fails a build, so there is nothing to stop and wait for. A major means the package's own interface broke, which is rare.
@@ -71,7 +71,7 @@ Longer version with what to look for at each stage: [docs/walkthrough.md](docs/w
 
 ## Running it
 
-PHP 8.3 and Node. Herd serves it at `design.dashcore.com.test`.
+PHP 8.5 and Node. Herd serves it at `design.dashcore.com.test`.
 
 **Postgres, not SQLite** — including the test suite. Production and CI run Postgres, and the two disagree in ways a SQLite test cannot see. `jsonb` does not keep object key order, which reordered every design on the way out and reached production once.
 
