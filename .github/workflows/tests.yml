@@ -23,7 +23,7 @@ jobs:
     # before somebody opens the page.
     services:
       postgres:
-        image: postgres:17
+        image: postgres:18
         env:
           POSTGRES_DB: design_dashcore_test
           POSTGRES_USER: testing
