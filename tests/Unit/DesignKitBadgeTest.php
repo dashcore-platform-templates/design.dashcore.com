@@ -33,6 +33,9 @@ class DesignKitBadgeTest extends TestCase
         $this->assertStringContainsString('var(--ds-danger-soft)', $html);
         $this->assertStringContainsString('var(--ds-danger)', $html);
         $this->assertStringContainsString('Failed', $html);
+        // A tag, not a pill: the leading rule takes the status colour (06).
+        $this->assertStringContainsString('border-s-2', $html);
+        $this->assertStringContainsString('border-inline-start-color: var(--ds-danger)', $html);
     }
 
     #[Test]
@@ -43,6 +46,7 @@ class DesignKitBadgeTest extends TestCase
         $this->assertStringContainsString('var(--ds-sunken)', $html);
         $this->assertStringContainsString('var(--ds-text-muted-on-sunken)', $html);
         $this->assertStringNotContainsString('-soft', $html, 'a category must not be painted a status colour');
+        $this->assertStringContainsString('border-inline-start-color: var(--ds-border-strong)', $html);
     }
 
     #[Test]

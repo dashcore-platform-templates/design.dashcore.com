@@ -23,11 +23,14 @@
 
     // Neutral sits on sunken with the muted step that 04 measures against it.
     // Plain text-muted is the 500 step and does not clear a quiet surface.
+    //
+    // The leading rule is what makes it a tag rather than a pill (06). It takes
+    // the text's own colour, so the rule and the words never say two things.
     $style = $status
-        ? "background: var(--ds-{$status}-soft); color: var(--ds-{$status});"
-        : 'background: var(--ds-sunken); color: var(--ds-text-muted-on-sunken);';
+        ? "background: var(--ds-{$status}-soft); color: var(--ds-{$status}); border-inline-start-color: var(--ds-{$status});"
+        : 'background: var(--ds-sunken); color: var(--ds-text-muted-on-sunken); border-inline-start-color: var(--ds-border-strong);';
 @endphp
-<span {{ $attributes->class('inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium whitespace-nowrap') }}
+<span {{ $attributes->class('inline-flex items-center rounded-(--radius-sm) border-s-2 px-1.5 py-0.5 text-xs font-medium whitespace-nowrap') }}
       style="{{ $style }}">
     {{ $slot }}
 </span>

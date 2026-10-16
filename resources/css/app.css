@@ -63,6 +63,21 @@ select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
+/*
+ * 06: a destructive action is an outline, never a red fill. The same rule the
+ * adapter writes into a kit, here for the tool's chrome and every mockup frame.
+ * Flux marks the variant only by its fill class, so that class is the hook.
+ */
+[data-flux-button].bg-red-500 {
+    background: transparent;
+    color: var(--ds-danger);
+    border: 1px solid var(--ds-danger);
+    box-shadow: none;
+}
+[data-flux-button].bg-red-500:hover {
+    background: var(--ds-danger-soft);
+}
+
 /* The second face of a pairing: mono, serif or display, by role (03). */
 @utility font-second {
     font-family: var(--font-second);

@@ -178,3 +178,9 @@ Cut to five. The ids stay as they were, because every design file and exported p
 4. The ExecutiveOS brief runs again on Fable, and the seven decisions and their reasons go side by side against the saved run. Any reason that got weaker means that rule comes back above the marker.
 
 Nothing that the schema, the resolver or the rules pass enforces can change as a result of any of this. Expected prompt after the cut: six to eight thousand tokens, down from about seventeen.
+
+## 14 The Dashcore style — decided 16 October 2026
+
+The whole section sits below the marker except its heading and one sentence. The generator needs to know the style exists and is not an option; it must never see the values, or a client design could reach for an accent or a pairing that only this style is allowed. Enforced by: people, until the adapter carries styles; then code.
+
+Settled the same day, with `dashcore/ui`'s `DESIGN.md` beside the standard. The standard's rule stood on the type scale, status colours and sidebar. `DESIGN.md`'s became everyone's for selected tabs, the danger button, table row height and the badge, each in its own section. The plan behind it is `docs/fleet-design-plan.md`.

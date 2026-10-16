@@ -62,6 +62,10 @@ class ApplierTest extends TestCase
         // !important. Inside a layer the override would silently do nothing.
         $fromTable = substr($block, (int) strpos($block, '[data-flux-table]'));
         $this->assertStringNotContainsString('@layer', $fromTable);
+        // 06's danger button is an outline. A screen writes variant="danger"
+        // and the outline arrives here, outside any layer like the table.
+        $this->assertStringContainsString('[data-flux-button].bg-red-500 {', $block);
+        $this->assertStringContainsString('border: 1px solid var(--ds-danger);', $block);
         // The dark muted-text correction from 04: zinc-500 becomes the 400 step in dark.
         $this->assertMatchesRegularExpression('/\.dark \{[^}]*--color-zinc-500: #a8a29e;/s', $block);
     }

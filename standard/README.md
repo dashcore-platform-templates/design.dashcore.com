@@ -54,6 +54,7 @@ They have to look like one company without looking like one client's app repaint
 | `11-errors.md` | Error pages and first run. |
 | `12-widths.md` | The three widths we design at. |
 | `13-public.md` | Landing pages and anything a signed-out person sees. |
+| `14-dashcore.md` | The one style every Dashcore app takes, and the four exceptions only it may make. |
 
 ---
 

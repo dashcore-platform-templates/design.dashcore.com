@@ -239,6 +239,20 @@ final class Applier
         $lines[] = '    background: var(--ds-sunken);';
         $lines[] = '}';
 
+        // 06's danger button is an outline, and Flux's is a solid red fill. Flux
+        // marks the variant only by its fill class, so that class is the hook;
+        // a screen keeps writing variant="danger" and the outline arrives here.
+        $lines[] = '/* 06: a destructive action is an outline, never a red fill. */';
+        $lines[] = '[data-flux-button].bg-red-500 {';
+        $lines[] = '    background: transparent;';
+        $lines[] = '    color: var(--ds-danger);';
+        $lines[] = '    border: 1px solid var(--ds-danger);';
+        $lines[] = '    box-shadow: none;';
+        $lines[] = '}';
+        $lines[] = '[data-flux-button].bg-red-500:hover {';
+        $lines[] = '    background: var(--ds-danger-soft);';
+        $lines[] = '}';
+
         $lines[] = self::END;
 
         return implode("\n", $lines);

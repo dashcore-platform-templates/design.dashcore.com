@@ -12,10 +12,12 @@ Two densities. Comfortable is for apps used occasionally or by the public. Compa
 |---|---|---|
 | Page gutter and section gap | 32 | 24 |
 | Card, panel and stat tile padding | 24 | 16 |
-| Table row height | 48 | 40 |
+| Table row height | 44 | 44 |
 | Control height | 40 | 36 |
 | Gap between form fields | 24 | 16 |
 | Prose and input text size | 16 | 14 |
+
+Table rows are 44px in both densities. A row holds one line of 14px text and, at most, a 40px control, so the height is set by what sits in it rather than by the density; compact tightens the cell padding instead.
 
 ## Radius
 
@@ -31,7 +33,7 @@ Three steps. **Sharp** suits dense data and technical work. **Soft** is the defa
 | Section gap between regions | 32 | 24 |
 | Card and panel padding | 24 | 16 |
 | Stat tile padding | 24 | 16 |
-| Table row height | 48 | 40 |
+| Table row height | 44 | 44 |
 | Table cell horizontal padding | 16 | 12 |
 | Control height (inputs, buttons) | 40 | 36 |
 | Gap between a label and its control | 8 | 6 |

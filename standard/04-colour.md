@@ -29,7 +29,7 @@ The generator picks one per project. **Pure** is a true grey and suits technical
 - One accent. The generator chooses a hue and a saturation; the resolver builds the shades.
 - The accent hue must sit at least 30 degrees away from red (0) and amber (40) so it is never read as danger or warning. Green near 140 is allowed but discouraged, since success then loses its meaning.
 - Saturation is between 45 and 85 percent in HSL. Under that it reads as a grey; over it, it vibrates on white.
-- As a fill, the accent appears on: the primary button, the active nav indicator, the checked state of switches, checkboxes and radios, the selected tab, progress fills, and a count marker on a nav item or a notification bell. Nowhere else. A count marker is small, carries `on-accent` text, and sits at `text-xs` like everything else, because 03 sets no size below 12px. A count is attention and never danger, so it is never red: red says something has gone wrong, and a pile of unread items has not.
+- As a fill, the accent appears on: the primary button, the active nav indicator, the checked state of switches, checkboxes and radios, progress fills, and a count marker on a nav item or a notification bell. Nowhere else. A count marker is small, carries `on-accent` text, and sits at `text-xs` like everything else, because 03 sets no size below 12px. A count is attention and never danger, so it is never red: red says something has gone wrong, and a pile of unread items has not.
 - As text or icon, only `accent-content` is used. It is derived against the accent tint rather than the page, because that tint sits behind selected rows and active list items and is the worst of the three surfaces accent text lands on. Passing there means passing on page and surface too.
 - Secondary text on that tint takes `text-muted-on-sunken`, the same role a status tint uses. Plain `text-muted` is the 500 step and does not clear a tint.
 - Never on page or surface backgrounds. `accent-soft` may tint one region per view when the filled-stat motif is chosen, and is otherwise used only behind selected rows and active list items.
@@ -46,7 +46,7 @@ These never change per project.
 | Danger | red 700 | red 400 | red 600 |
 | Info | blue 700 | blue 400 | blue 700 |
 
-Status colours mark status. A green button is not a primary button; a red one is a destructive one. Success, warning and danger appear only on badges, callouts, toasts, form errors, and deltas.
+Status colours mark status. A green button is not a primary button; a red-outlined one is a destructive one, and nothing is ever filled red. Success, warning and danger appear only on badges, callouts, toasts, form errors, and deltas.
 
 ## The contrast floor
 
