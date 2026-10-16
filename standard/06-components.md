@@ -1,6 +1,6 @@
 # 06. Components
 
-The component inventory is fixed and is not something a project or a generator chooses. It is Flux's free set plus five custom components: page header, stat tile, stat row, empty state and badge. Page titles go through the page header component, because that is what applies the pairing's second face at title size.
+The component inventory is fixed and is not something a project or a generator chooses. It is Flux's free set plus five custom components: page header, stat tile, stat row, empty state and badge, and the frame for an app that does not draw its shell with Flux. Page titles go through the page header component, because that is what applies the pairing's second face at title size.
 
 <!-- prompt-end -->
 
@@ -9,6 +9,7 @@ Each entry below is the Flux component and the rule the standard adds: what it i
 ## Navigation
 
 - **Sidebar** `flux:sidebar` with `sidebar.header`, `sidebar.nav`, `sidebar.group`, `sidebar.item`. Regions and limits are in 02. Active item styling is set by the motif (07).
+- **The frame** For an app that does not use Flux, the sidebar shell is `x-ds::shell`, which takes the app's menu as an array and draws 02's regions from it. Its parts are `x-ds::account` for the user menu at the foot of the sidebar, `x-ds::theme-toggle` with `x-ds::theme-script` in the head for a light and dark switch, `x-ds::flash` for the page's status, warning and error messages, and `x-ds::fonts` for the style's faces. The flash is the badge's treatment at page width: the status's soft tint and a two pixel rule in its colour. An app never draws its own sidebar beside it, and `Dashcore\DesignKit\Testing\Shell::assertConforms()` fails a page that does.
 - **Navbar** `flux:navbar` and `flux:navbar.item` for the top nav shell only.
 - **Navlist and navmenu** `flux:navlist`, `flux:navmenu`. Navlist is the vertical list inside the sidebar; navmenu is the dropdown form of a nav for the top nav shell on small screens. Navmenu never appears in content. Navlist appears in content in one case only: a section with its own destinations, such as settings, where it sits vertically beside the panel it switches and carries one level with no nesting. That is a sub-navigation and never a second main nav, so the sidebar or top nav still says which section you are in.
 - **Header** `flux:header` appears below `lg` in the sidebar shell, where it carries the drawer toggle, and always in the top nav shell.

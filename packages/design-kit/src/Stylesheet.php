@@ -87,6 +87,10 @@ final class Stylesheet
 
         array_push($lines, ...Applier::fluxCorrections());
 
+        // The frame x-ds::shell draws with, and dashcore/ui's dc-* names.
+        $lines[] = '';
+        $lines[] = rtrim((string) file_get_contents(dirname(__DIR__).'/resources/css/frame.css'));
+
         return implode("\n", $lines)."\n";
     }
 
@@ -107,6 +111,8 @@ final class Stylesheet
         foreach ($tokens['status'] as $name => $s) {
             $out[] = "--ds-{$name}: {$s["text-{$register}"]}; --ds-{$name}-fill: {$s['fill']}; --ds-{$name}-soft: {$s["soft-{$register}"]};";
         }
+        // 02: the sidebar is sunken in light and surface in dark.
+        $out[] = '--ds-sidebar: '.$tokens[$register][$register === 'dark' ? 'surface' : 'sunken'].';';
         if ($register === 'dark') {
             // 04's dark muted correction: Flux's zinc-500 fails on zinc-800.
             $out[] = "--color-zinc-500: {$tokens['neutral'][400]};";
