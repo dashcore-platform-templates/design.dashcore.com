@@ -24,6 +24,8 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 **Code blocks and hand-drawn SVG have rules.** New rules, nothing to change. Code and command output sits on `sunken` with a hairline, never a black block. An SVG mark takes its colour from a role, never a hex.
 
+**The frame `dashcore/ui` drew is in the package.** New, and nothing an app on the standard has to do. An app that does not use Flux draws the sidebar shell with `x-ds::shell`, with `x-ds::account`, `x-ds::theme-toggle`, `x-ds::flash` and `x-ds::fonts` beside it. They follow 02 and 03 rather than `dashcore/ui`'s own rules: a 16rem sidebar on `sunken`, 12px labels in mixed case, the accent bar on the current page, the brand block in body type. An app moving off `dashcore/ui` keeps `<x-dashcore::…>`, the `dc-*` colour names and the `Dashcore\Ui` classes for one major.
+
 ---
 
 ## 12 October 2026

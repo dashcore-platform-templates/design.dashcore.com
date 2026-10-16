@@ -15,8 +15,12 @@
 
         <x-slot:description>Knows 7% of what it needs. <flux:link …>Tell it more</flux:link></x-slot:description>
 --}}
-@props(['title', 'description' => null, 'eyebrow' => null])
+@props(['title', 'description' => null, 'eyebrow' => null, 'subtitle' => null])
 @php
+    // dashcore/ui's page header called the line `subtitle` and took its
+    // actions as a named slot. Both still work, so an app moving across
+    // changes no view.
+    $description ??= $subtitle;
     $motif = config('brand.motif', 'accent-bar');
     $labelClass = $motif === 'eyebrow' ? 'ds-eyebrow' : 'ds-label';
     $titleFont = config('brand.second_kind') !== 'mono' ? 'font-second' : '';
@@ -33,7 +37,7 @@
             <p class="mt-1 text-sm text-(--ds-text-muted)">{{ $description }}</p>
         @endif
     </div>
-    @if (trim($slot) !== '')
-        <div class="flex items-center gap-2">{{ $slot }}</div>
+    @if (trim($slot) !== '' || isset($actions))
+        <div class="flex items-center gap-2">{{ $actions ?? '' }}{{ $slot }}</div>
     @endif
 </header>

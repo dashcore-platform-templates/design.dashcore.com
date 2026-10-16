@@ -20,6 +20,10 @@ Regions, in order:
 - **User menu**. Pinned to the bottom. Avatar or initials, name, and a dropdown with settings and sign out. Nothing else lives here.
 - **Main**. Everything to the right. Page background `page`. Contains a page header and a content area.
 
+A Flux app draws this with `flux:sidebar`; an app without Flux draws it with `x-ds::shell` (06). The regions are the same either way.
+
+Dark follows the operating system unless the person has chosen. An app that offers the choice records it as a `dark` or `light` class on `<html>`, and an explicit light choice beats a dark operating system.
+
 ## Top nav shell
 
 - **Header bar**, 3.5rem tall, full width, sticky, `surface` colour with a one pixel bottom `border`. Left to right: brand block, primary nav items inline, spacer, user menu. The items stay inline down to `md`. Below that they move into a `flux:navmenu` behind a toggle, and the brand block stays.
