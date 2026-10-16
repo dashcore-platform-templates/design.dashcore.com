@@ -24,7 +24,7 @@ final class Resolver
         'round' => ['sm' => 6, 'md' => 8, 'lg' => 12, 'xl' => 16, '2xl' => 24],
     ];
 
-    private const DENSITY_STEPS = [
+    public const DENSITY_STEPS = [
         'comfortable' => ['gutter' => 32, 'section' => 32, 'card' => 24, 'stat' => 24, 'row' => 44, 'cell-x' => 16, 'control' => 40, 'label-gap' => 8, 'field-gap' => 24, 'nav-item' => 40, 'brand' => 56, 'prose' => 16],
         'compact' => ['gutter' => 24, 'section' => 24, 'card' => 16, 'stat' => 16, 'row' => 44, 'cell-x' => 12, 'control' => 36, 'label-gap' => 6, 'field-gap' => 16, 'nav-item' => 36, 'brand' => 48, 'prose' => 14],
     ];
@@ -174,7 +174,7 @@ final class Resolver
      * @param  array<int,string>  $notes
      * @return array<string,mixed>
      */
-    private static function measure(array $tokens, array $notes): array
+    public static function measure(array $tokens, array $notes = []): array
     {
         $pairs = [];
         foreach (['light', 'dark'] as $register) {

@@ -256,9 +256,10 @@ final class Design
     }
 
     /**
-     * The design the tool uses is not one of the designs it holds, as far
-     * as these two are concerned. Its tokens are on :root in every layout, so
-     * removing it takes every page down and hiding it leaves the nav lying.
+     * The design the blocks pages draw in, which is not one of the designs the
+     * tool holds as far as these two are concerned: removing it takes those
+     * pages down, and hiding it leaves the nav lying. The tool's own chrome
+     * wears the dashcore style (standard/14), not this design.
      */
     public function isOwn(): bool
     {

@@ -201,10 +201,40 @@ final class Applier
         $lines[] = ':root { '.self::roles($tokens, 'light').' }';
         $lines[] = '.dark { '.self::roles($tokens, 'dark').' }';
 
+        array_push($lines, ...self::utilities(), ...self::fluxCorrections());
+
+        $lines[] = self::END;
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * The label and second-face utilities from 03. Shared by the block written
+     * into a kit and the stylesheet a style ships from vendor/.
+     *
+     * @return list<string>
+     */
+    public static function utilities(): array
+    {
+        $lines = [];
         $lines[] = '@utility font-second { font-family: var(--font-second); }';
         $lines[] = '@utility ds-label { font-size: 12px; line-height: 1.33; font-weight: 500; letter-spacing: 0.04em; color: var(--ds-text-muted); }';
         $lines[] = '@utility ds-eyebrow { font-size: 12px; line-height: 1.33; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ds-text-muted); font-family: var(--font-mono); }';
 
+        return $lines;
+    }
+
+    /**
+     * 06 brought onto Flux where Flux ships something else: the table, and the
+     * danger button. These sit outside any @layer, which beats Tailwind's
+     * utilities without !important, because unlayered styles win over layered
+     * ones.
+     *
+     * @return list<string>
+     */
+    public static function fluxCorrections(): array
+    {
+        $lines = [];
         // The Flux table, brought onto 06. Flux ships a 14px head in body colour
         // with no fill; the standard wants sunken, 12px, muted. Every app using
         // flux:table drifts the same way, so the correction belongs here rather
@@ -253,9 +283,8 @@ final class Applier
         $lines[] = '    background: var(--ds-danger-soft);';
         $lines[] = '}';
 
-        $lines[] = self::END;
 
-        return implode("\n", $lines);
+        return $lines;
     }
 
     /** Replace the block between the markers, or append it. */
