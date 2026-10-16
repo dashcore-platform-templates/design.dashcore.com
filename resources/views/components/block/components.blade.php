@@ -88,7 +88,7 @@
             <div class="flex flex-wrap gap-2">
                 <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-success-soft); color: var(--ds-success)">Done</span>
                 <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-warning-soft); color: var(--ds-warning)">Needs attention</span>
-                <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-danger-soft); color: var(--ds-danger)">Cancelled</span>
+                <span class="inline-flex items-center rounded-(--radius-sm) border-s-2 px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-danger-soft); color: var(--ds-danger); border-inline-start-color: var(--ds-danger)">Cancelled</span>
                 <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-info-soft); color: var(--ds-info)">Scheduled</span>
                 <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-sunken); color: var(--ds-text-muted-on-sunken)">Admin</span>
                 <span class="inline-flex items-center rounded-(--radius-sm) px-1.5 py-0.5 text-xs font-medium" style="background: var(--ds-sunken); color: var(--ds-text-muted-on-sunken)">Rejected</span>

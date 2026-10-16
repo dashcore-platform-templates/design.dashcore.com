@@ -15,7 +15,7 @@ Each motif is defined by where it appears and what it forbids, so it can be chec
 
 ## 1. Accent bar
 
-The active nav item carries a two pixel accent bar on its leading edge, full item height, and its label turns `text-strong`. No background fill on the active item. The same bar marks the selected row in a table and the active tab. Page header has no bottom border.
+The active nav item carries a two pixel accent bar on its leading edge, full item height, and its label turns `text-strong`. No background fill on the active item. The same bar marks the selected row in a table. A selected tab is marked in ink (06), whatever the motif. Page header has no bottom border.
 
 Forbids: filled active nav items, accent-soft row selection.
 

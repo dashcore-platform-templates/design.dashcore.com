@@ -10,6 +10,22 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ---
 
+## 16 October 2026
+
+**The fleet has one style, and the standard now holds it.** No rule changed for a client design, and nothing an app has to do today. Dashcore's own apps wore a look from `dashcore/ui`, which carried its own design rules separate from these. Those rules are folded in here and `dashcore/ui` will be retired. The look itself is new section 14, `dashcore`: Inter with Fraunces, a near-ink accent, warm off-white neutrals, a 4px corner ceiling. Those four things are allowed for that style only, and the generator never offers them. Two values moved on the way in, both because they measured under the floor: the light page is `#f7f4ef` rather than `#f5f2ec`, and muted text on a quiet surface has its own darker step.
+
+**A selected tab is marked in ink, not accent.** Relaxation for the motif, and nothing an app has to do. 06 and 07 said the selected item of a navlist or segmented radio group took the accent, which spent it twice on any screen that also had a primary action. It is now `text-strong` with a two pixel rule. Flux does not paint either one in accent itself, so a screen that followed Flux already matches. The audit cannot see a hand-coloured tab, so this one is unchecked.
+
+**A destructive action is an outline.** Every app gets it on update, with nothing to change on a screen. A danger button was a solid red fill; it is now danger text and a one pixel danger border, with the soft tint on hover, because a filled red button is the loudest thing on any screen. The markup stays `variant="danger"`, and `design:apply` writes the outline into the app's CSS, the way it already corrects the Flux table.
+
+**Table rows are 44px in both densities.** Every app gets it on update, with nothing to change on a screen. Rows were 48px comfortable and 40px compact. The row holds one line of 14px text and at most a 40px control, so the content sets the height; compact keeps its tighter cell padding.
+
+**A badge is a tag, not a pill.** Every app gets it on update, with nothing to change on a screen. `x-ds::badge` gains a two pixel rule on its leading edge, in the status colour, or in `border-strong` when neutral.
+
+**Code blocks and hand-drawn SVG have rules.** New rules, nothing to change. Code and command output sits on `sunken` with a hairline, never a black block. An SVG mark takes its colour from a role, never a hex.
+
+---
+
 ## 12 October 2026
 
 **The fleet is on free Flux.** Tightening, and the audit checks it. Until today 06 treated Flux Pro as the end state and named a free stand-in for an app that had not installed it yet. Dashcore no longer keeps a Pro licence, so every install of `livewire/flux-pro` stopped at Composer's licence prompt, on a fresh clone and in CI alike. 06 now names free Flux as the inventory, and each Pro entry says what replaces it: the stand-ins from before, plus a colour input, a number input, a checkbox group for many-of-many, a list for a timeline and a textarea for the composer. Carousel, chart, command and kanban have no replacement and nothing in the fleet uses them. `design:audit` reports any Pro tag as `Flux Pro component`, with the replacement in the fix, and `design:apply` warns when it finds Pro installed. Measured before shipping: one app had Pro installed, this tool, and it is moved. An app on free Flux already, which was every other one, has nothing to do.

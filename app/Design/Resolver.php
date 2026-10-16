@@ -25,8 +25,8 @@ final class Resolver
     ];
 
     private const DENSITY_STEPS = [
-        'comfortable' => ['gutter' => 32, 'section' => 32, 'card' => 24, 'stat' => 24, 'row' => 48, 'cell-x' => 16, 'control' => 40, 'label-gap' => 8, 'field-gap' => 24, 'nav-item' => 40, 'brand' => 56, 'prose' => 16],
-        'compact' => ['gutter' => 24, 'section' => 24, 'card' => 16, 'stat' => 16, 'row' => 40, 'cell-x' => 12, 'control' => 36, 'label-gap' => 6, 'field-gap' => 16, 'nav-item' => 36, 'brand' => 48, 'prose' => 14],
+        'comfortable' => ['gutter' => 32, 'section' => 32, 'card' => 24, 'stat' => 24, 'row' => 44, 'cell-x' => 16, 'control' => 40, 'label-gap' => 8, 'field-gap' => 24, 'nav-item' => 40, 'brand' => 56, 'prose' => 16],
+        'compact' => ['gutter' => 24, 'section' => 24, 'card' => 16, 'stat' => 16, 'row' => 44, 'cell-x' => 12, 'control' => 36, 'label-gap' => 6, 'field-gap' => 16, 'nav-item' => 36, 'brand' => 48, 'prose' => 14],
     ];
 
     /** Fixed fleet-wide, from 04. Text shades pass 4.5:1 in their register; fills carry white. */

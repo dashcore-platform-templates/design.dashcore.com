@@ -95,7 +95,7 @@ class ResolverTest extends TestCase
 
         $this->assertSame(['sm' => '2px', 'md' => '3px', 'lg' => '4px', 'xl' => '6px', '2xl' => '8px'], $tokens['radius']);
         $this->assertSame('32px', $tokens['density']['gutter']);
-        $this->assertSame('48px', $tokens['density']['row']);
+        $this->assertSame('44px', $tokens['density']['row']);
         $this->assertSame('16px', $tokens['density']['prose']);
     }
 

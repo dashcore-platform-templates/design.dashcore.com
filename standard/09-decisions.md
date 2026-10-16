@@ -76,7 +76,7 @@ Two layers. `decisions` is what the generator wrote and a person may edit. `toke
     },
     "radius": { "sm": "4px", "md": "6px", "lg": "8px", "xl": "12px", "2xl": "16px" },
     "density": {
-      "gutter": "24px", "section": "24px", "card": "16px", "row": "40px", "control": "36px", "prose": "14px"
+      "gutter": "24px", "section": "24px", "card": "16px", "row": "44px", "control": "36px", "prose": "14px"
     },
     "neutral": {
       "50": "#fafaf9", "100": "#f5f5f4", "200": "#e7e5e4", "300": "#d6d3d1", "400": "#a8a29e",

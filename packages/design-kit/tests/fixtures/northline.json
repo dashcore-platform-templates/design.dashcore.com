@@ -80,7 +80,7 @@
             "section": "32px",
             "card": "24px",
             "stat": "24px",
-            "row": "48px",
+            "row": "44px",
             "cell-x": "16px",
             "control": "40px",
             "label-gap": "8px",
