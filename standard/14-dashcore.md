@@ -46,7 +46,7 @@ Shell: `sidebar` for every app with a signed-in area. website is the public site
 | `text-strong` | `#1c1b19` | `#ece7dd` |
 | `text` | `#1c1b19` | `#ece7dd` |
 | `text-muted` | `#6b6560` | `#a39c90` |
-| `text-muted-on-sunken` | `#625c56` | `#a39c90` |
+| `text-muted-on-sunken` | `#6b6560` | `#aaa397` |
 | `accent` | `#4a4438` | `#d9cbb0` |
 | `accent-hover` | `#33301f` | `#e8dcc4` |
 | `accent-content` | `#4a4438` | `#d9cbb0` |
@@ -57,24 +57,33 @@ Shell: `sidebar` for every app with a signed-in area. website is the public site
 
 Status colours are the fleet's, from 04, unchanged.
 
+## The Flux scale
+
+Flux paints its components from the zinc scale, so the style stands its own neutrals in for zinc, each step the role nearest it:
+
+| Step | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Value | `#f7f4ef` | `#efebe2` | `#d8d2c7` | `#b8af9f` | `#9b948a` | `#6b6560` | `#454039` | `#2e2b26` | `#1d1b18` | `#151412` | `#11100e` |
+
 ## What the floor measures out at
+
+Measured by the same check as every design, with the accent tint laid over `surface` as 04 measures it. The style cannot be built if any text pair fails.
 
 | Pair | Light | Dark |
 |---|---|---|
 | text on page | 15.69 | 14.94 |
 | text on surface | 17.21 | 13.94 |
-| text on sunken | 14.47 | 15.43 |
 | text-muted on page | 5.24 | 6.76 |
 | text-muted on surface | 5.74 | 6.31 |
-| text-muted-on-sunken on sunken | 5.54 | 6.99 |
-| text-muted-on-sunken on the accent tint | 5.11 | 4.76 |
-| text-muted-on-sunken on a status tint, lowest | 6.03 | 5.40 |
-| accent-content on the accent tint | 7.49 | 8.10 |
+| text-muted-on-sunken on sunken | 4.83 | 7.60 |
+| text-muted-on-sunken on the accent tint | 4.87 | 4.73 |
+| text-muted-on-sunken on a status tint, lowest | 5.25 | 5.87 |
+| accent-content on the accent tint | 8.18 | 7.39 |
 | on-accent on accent | 9.65 | 10.75 |
 | status text on page, lowest | 4.57 | 6.66 |
 | status text on its own tint, lowest | 4.79 | 5.78 |
 
-Two values moved from the look the fleet wore under `dashcore/ui`, both because of this table. The light page was `#f5f2ec`, where success and warning text measure 4.49:1, under the floor; `#f7f4ef` clears it and is hard to tell apart by eye. And `dashcore/ui` had no muted step for quiet surfaces: its muted text measured 4.40:1 on the accent tint, so `text-muted-on-sunken` is new here at `#625c56`.
+Two values moved from the look the fleet wore under `dashcore/ui`, both because of this table. The light page was `#f5f2ec`, where success and warning text measure 4.49:1, under the floor; `#f7f4ef` clears it and is hard to tell apart by eye. And in dark, muted text on the accent tint measured 4.35:1, so muted text on a quiet surface takes a lighter step there, `#aaa397`.
 
 ## What it leaves to the standard
 

@@ -61,7 +61,7 @@
                 @if ($usedBy->isNotEmpty())
                     Used by {{ $usedBy->count() }} {{ \Illuminate\Support\Str::plural('app', $usedBy->count()) }}
                 @elseif ($design->isOwn())
-                    Used by this tool
+                    Draws the blocks pages
                 @endif
             </p>
         </div>

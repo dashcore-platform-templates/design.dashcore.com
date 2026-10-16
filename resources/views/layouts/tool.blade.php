@@ -1,8 +1,8 @@
 @php
-    // The tool uses the Dashcore default design. Its tokens are emitted on
-    // :root so the chrome is the first thing built to the standard.
-    $own = \App\Design\Design::load(\App\Design\Design::OWN);
-    $ownTokens = $own->tokens();
+    // The tool is a fleet app, so its chrome takes the dashcore style (14),
+    // from the same tokens the package ships. Emitted on :root, so each
+    // mockup frame can still draw the design it shows.
+    $ownTokens = \App\Design\Styles::get('dashcore');
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">

@@ -121,7 +121,7 @@ Row 12 is additive. `DESIGN.md`'s rules come into the standard as written.
 - **Rows 1–3 and 7** are section 14's four exceptions, below the marker.
 - **Row 12** is in 06.
 
-Measuring the style moved two values: the light page to `#f7f4ef`, because success and warning text measured 4.49:1 on `#f5f2ec`, and a new muted step for quiet surfaces at `#625c56`. Figures are in section 14.
+Measuring the style moved two values: the light page to `#f7f4ef`, because success and warning text measured 4.49:1 on `#f5f2ec`, and, in dark, a lighter muted step for quiet surfaces at `#aaa397`, because the old one measured 4.35:1 on the accent tint. Figures are in section 14.
 
 ---
 
