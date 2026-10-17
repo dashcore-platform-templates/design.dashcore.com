@@ -260,11 +260,11 @@
         },
         {
             "name": "dashcore/bridge",
-            "version": "0.11.40",
+            "version": "0.11.43",
             "dist": {
                 "type": "path",
                 "url": "packages/dashcore/bridge",
-                "reference": "1e6175c41a3828e296d08f6d6159ed0ff88542ff"
+                "reference": "ba936fe49ad2766d84cd69d6e55aa791e27ffb19"
             },
             "require": {
                 "ext-sodium": "*",
