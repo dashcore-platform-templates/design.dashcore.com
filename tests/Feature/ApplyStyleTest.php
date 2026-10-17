@@ -97,4 +97,43 @@ class ApplyStyleTest extends TestCase
 
         $this->assertStringContainsString('dist/dashcore.css', File::get($this->kit.'/resources/css/app.css'));
     }
+
+    #[Test]
+    public function a_vite_fonts_array_nobody_renders_is_called_out_not_trusted(): void
+    {
+        File::put($this->kit.'/vite.config.js', "export default {\n    plugins: [laravel({\n        fonts: [\n            bunny('Instrument Sans', { weights: [400] }),\n        ],\n    })],\n};\n");
+        File::ensureDirectoryExists($this->kit.'/resources/views/layouts');
+        File::put($this->kit.'/resources/views/layouts/app.blade.php', "<html><head>@vite(['resources/css/app.css'])</head></html>\n");
+
+        $this->artisan('design:apply', ['--style' => 'dashcore'])
+            ->expectsOutputToContain('no view renders @fonts')
+            ->assertSuccessful();
+
+        // Left alone: rewriting a list nothing renders would look like a fix.
+        $this->assertStringContainsString('Instrument Sans', File::get($this->kit.'/vite.config.js'));
+    }
+
+    #[Test]
+    public function a_bunny_link_in_any_head_is_found_not_only_the_partial(): void
+    {
+        File::ensureDirectoryExists($this->kit.'/resources/views/layouts/partials');
+        $head = $this->kit.'/resources/views/layouts/partials/head.blade.php';
+        File::put($head, "<link rel=\"stylesheet\" href=\"https://fonts.bunny.net/css?family=schibsted-grotesk:400\">\n");
+
+        $this->artisan('design:apply', ['--style' => 'dashcore'])->assertSuccessful();
+
+        $this->assertStringContainsString('inter', File::get($head));
+        $this->assertStringNotContainsString('schibsted', File::get($head));
+    }
+
+    #[Test]
+    public function the_fonts_component_needs_nothing_and_says_nothing(): void
+    {
+        File::ensureDirectoryExists($this->kit.'/resources/views/partials');
+        File::put($this->kit.'/resources/views/partials/head.blade.php', "<x-dashcore::fonts />\n");
+
+        $this->artisan('design:apply', ['--style' => 'dashcore'])
+            ->doesntExpectOutputToContain('Put <x-ds::fonts />')
+            ->assertSuccessful();
+    }
 }
