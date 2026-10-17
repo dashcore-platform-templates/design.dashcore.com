@@ -159,6 +159,8 @@ class DesignKitFrameTest extends TestCase
         $this->assertStringContainsString('Runway', $html);
         $this->assertStringContainsString('Twelve months.', $html);
         $this->assertStringContainsString('<button>Export</button>', $html);
+        // dashcore/ui's marker, which apps' own tests look for.
+        $this->assertStringContainsString('data-dc-page-header', $html);
         $this->assertStringContainsString('data-dc-account', Blade::render('<x-dashcore::account name="Ada" />'));
     }
 
