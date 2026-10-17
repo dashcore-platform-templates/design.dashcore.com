@@ -60,6 +60,7 @@ Generation needs `ANTHROPIC_API_KEY`, and the model is set by `DESIGN_MODEL`. Ev
   - It's autoloaded straight from `composer.json` (`Dashcore\DesignKit\`). Its tests are the `DesignKit` suite.
   - `AppServiceProvider` registers only its `AuditCommand`, plus its `<x-ds::…>` components. This app's `design:check` is a different command from the package's.
   - `publish-design-kit.yml` publishes it by subtree split to the `dashcoretech/design-kit` mirror. **Edit it here, never in the mirror.**
+  - Fleet apps don't install from the mirror. It's private, and their builds can't download it. `packages/design-kit/bin/vendor-into <app> [design-kit/vX.Y.Z]` copies a release into the app's `packages/dashcore/design-kit`, the way bridge is carried.
   - Tag `design-kit/vX.Y.Z` to release.
 - **`packages/dashcore/{bridge,testkit}`** are path repositories with `symlink: false`. They're copied into `vendor/`, so an edit there only takes effect after `composer update dashcore/bridge` (or testkit).
   - testkit adds ratchet checks to the suite: route guards, Postgres test DB, migration round-trips, debug calls, `env()` outside `config/`, and `wire:loading` on Livewire actions.

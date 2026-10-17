@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+#
+# vendor-into — copy a release of design-kit into an application's own
+# repository, so the app installs it from there and no build machine ever
+# has to download it.
+#
+#   packages/design-kit/bin/vendor-into <app-dir> [tag]
+#
+# tag is a design-kit/vX.Y.Z tag of design.dashcore.com and defaults to the
+# newest. This is bridge's bin/vendor-into, adapted for a package that lives
+# in a subdirectory of the repository that tags it.
+#
+# Why: the package is private, and so is its mirror. Your Mac can clone it;
+# a GitHub Actions runner or a Laravel Cloud build server is a blank machine
+# logged in as no one, and cannot. Committing the package into each app
+# means neither of them needs to, and nothing reads the mirror at all.
+#
+# What it does, and nothing more:
+#   1. Exports packages/design-kit at <tag> (runtime files only: no tests, no
+#      bin) into <app-dir>/packages/dashcore/design-kit, with the tag's
+#      version written into its composer.json so composer can resolve it.
+#   2. Points the app's composer.json at that directory: a Composer "path"
+#      repository, files copied rather than symlinked so vendor/ is real.
+#      Any entry that fetched it from the mirror or linked a local checkout
+#      is removed.
+#   3. Tells Pint to leave packages/ alone.
+#   4. Requires dashcore/design-kit at ^<version>, or updates it if the app
+#      already has it.
+#
+# It stops before git. Review the diff, then commit packages/, composer.json,
+# composer.lock and pint.json together.
+set -euo pipefail
+
+package_dir="$(cd "$(dirname "$0")/.." && pwd)"
+root="$(git -C "$package_dir" rev-parse --show-toplevel)"
+subdir="${package_dir#"$root"/}"
+app="${1:?usage: packages/design-kit/bin/vendor-into <app-dir> [tag]}"
+app="$(cd "$app" && pwd)"
+
+if [ ! -f "$app/composer.json" ]; then
+    echo "vendor-into: $app has no composer.json" >&2
+    exit 1
+fi
+
+package="$(php -r 'echo json_decode(file_get_contents($argv[1]), true)["name"];' "$package_dir/composer.json")"
+repository_name="${package//\//-}"                 # dashcore/design-kit → dashcore-design-kit
+
+git -C "$root" fetch --quiet --tags origin || true
+tag="${2:-$(git -C "$root" tag --list 'design-kit/v*' --sort=-v:refname | head -1)}"
+
+if ! git -C "$root" rev-parse --quiet --verify "refs/tags/$tag" >/dev/null; then
+    echo "vendor-into: no tag $tag in $root" >&2
+    exit 1
+fi
+
+version="${tag#design-kit/v}"
+relative="packages/$package"
+dest="$app/$relative"
+staging="$(mktemp -d)"
+trap 'rm -rf "$staging"' EXIT
+
+git -C "$root" archive "$tag:$subdir" | tar -x -C "$staging"
+
+rm -rf "$staging/tests" "$staging/.github" "$staging/.claude" "$staging/bin" \
+       "$staging/phpunit.xml" "$staging/.gitignore" "$staging/.gitattributes" "$staging/composer.lock"
+
+php -r '
+    [$file, $version] = [$argv[1], $argv[2]];
+    $manifest = json_decode(file_get_contents($file), true, flags: JSON_THROW_ON_ERROR);
+    $manifest = ["name" => $manifest["name"], "version" => $version] + $manifest;
+    file_put_contents($file, json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES).PHP_EOL);
+' "$staging/composer.json" "$version"
+
+rm -rf "$dest"
+mkdir -p "$(dirname "$dest")"
+cp -R "$staging" "$dest"
+
+cd "$app"
+# Anything else that supplied this package: the mirror, or a path link into
+# a design.dashcore.com checkout from local development.
+php -r '
+    $relative = $argv[1];
+    $manifest = json_decode(file_get_contents("composer.json"), true, flags: JSON_THROW_ON_ERROR);
+    foreach ($manifest["repositories"] ?? [] as $key => $repository) {
+        $url = (string) ($repository["url"] ?? "");
+        if ($url !== $relative && (str_contains($url, "dashcoretech/design-kit") || str_contains($url, "packages/design-kit"))) {
+            echo is_string($key) ? $key : ($repository["name"] ?? $key), PHP_EOL;
+        }
+    }
+' "$relative" | while read -r name; do
+    composer config --unset "repositories.$name"
+done
+
+php -r '
+    $file = "pint.json";
+    $config = is_file($file) ? json_decode(file_get_contents($file), true, flags: JSON_THROW_ON_ERROR) : [];
+    if (! in_array("packages", $config["exclude"] ?? [], true)) {
+        $config["exclude"] = [...($config["exclude"] ?? []), "packages"];
+        file_put_contents($file, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES).PHP_EOL);
+    }
+'
+
+composer config "repositories.$repository_name" "{\"type\": \"path\", \"url\": \"$relative\", \"options\": {\"symlink\": false}}"
+constraint="^$(echo "$version" | cut -d. -f1-2)"
+composer require "$package:$constraint" --no-interaction --no-scripts --update-with-dependencies
+php artisan package:discover --ansi >/dev/null 2>&1 || true
+
+echo
+echo "vendor-into: $app now installs $package $version from $relative."
+echo "Review, then commit packages/, composer.json, composer.lock and pint.json together."

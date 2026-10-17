@@ -32,6 +32,8 @@ It changes with the standard, and the two should move in one commit.
 
 Composer cannot install from a subdirectory, so it is published to `dashcoretech/design-kit`. That is a mirror. **Edit it there and the change is lost on the next publish.**
 
+The mirror is private, and build machines cannot download it, so fleet apps do not install from it: each carries a release in its own `packages/`, copied there by `packages/design-kit/bin/vendor-into`, the way they carry `dashcore/bridge`.
+
 Publishing is automatic:
 
 - push to `main` → mirror updated
