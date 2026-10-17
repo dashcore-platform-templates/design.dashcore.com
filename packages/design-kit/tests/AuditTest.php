@@ -84,6 +84,17 @@ class AuditTest extends TestCase
     }
 
     #[Test]
+    public function an_app_colour_variable_is_a_finding_and_the_styles_own_are_not(): void
+    {
+        $blade = '<div class="bg-(--color-surface) text-(--color-yellow-700) bg-[var(--color-navy)]">'
+            .'<span class="text-(--color-zinc-500) bg-(--color-accent) text-(--color-accent-content) border-(--color-dc-border) text-(--ds-text)">x</span></div>';
+
+        $found = array_column(array_filter(Audit::file($blade), fn ($f) => $f['rule'] === 'app colour variable'), 'snippet');
+
+        $this->assertSame(['--color-surface', '--color-yellow-700', '--color-navy'], $found);
+    }
+
+    #[Test]
     public function a_partial_class_name_is_not_a_finding(): void
     {
         // p-10 is off the scale; padding-10 and p-1 are not, and neither is a
