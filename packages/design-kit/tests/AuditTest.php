@@ -146,6 +146,21 @@ class AuditTest extends TestCase
     }
 
     #[Test]
+    public function a_hex_beside_a_role_is_still_a_finding(): void
+    {
+        // hr: the brand green sat next to converted classes, and a role on the
+        // line used to excuse every hex on it.
+        $this->assertSame(['hardcoded colour beside a role'], $this->rules('<a class="text-(--ds-text) hover:text-[#1D9E75]">'));
+
+        // A role's own definition and a fallback are what the excuse was for.
+        $this->assertSame([], $this->rules('<style>:root { --ds-accent: #4a4438; }</style>'));
+        $this->assertSame([], $this->rules('<div style="color: var(--ds-accent, #4a4438)">'));
+
+        // A line with no role keeps its old rule, so no app's count moves.
+        $this->assertSame(['hardcoded colour'], $this->rules('<div class="text-[#1D9E75]">'));
+    }
+
+    #[Test]
     public function an_accent_scale_of_the_apps_own_is_a_finding(): void
     {
         // team's teal accent-50 to accent-950 sat behind every button and
