@@ -3,18 +3,17 @@
      build this by hand and one of them read the motif off a different object. --}}
 @php ['t' => $t, 'motif' => $motif, 'shell' => $shell] = \App\Design\Blocks::context($design); @endphp
 {{--
-    The pages from standard/13: the landing page and the legal page. The
-    standard used to exempt these rather than govern them, so this screen is
-    the first time a public page has been drawn to a rule at all.
+    The pages from standard/13: the landing page and the legal page. Public
+    pages keep their own brand and 13 is advice for them, not rules; this is
+    what that advice looks like drawn with a design's roles.
 
     The two things worth looking at are what is missing. There is nothing above
     the hero heading, and the proof section shows a frame of the product rather
     than three icon boxes in a row. Both are bans in 13, and both are what a
     generator reaches for when nobody has said otherwise.
 
-    Marked @ds-public so it answers to 13 rather than to the app rules: the
-    two headings here are heroes, not page titles. Everything else still
-    applies, which is why the off-scale padding was a finding.
+    Marked @ds-public, so the audit leaves it alone: the two headings here are
+    heroes, not page titles, and a public page is not held to the app rules.
 --}}
 {{-- @ds-public --}}
 @php

@@ -1,14 +1,18 @@
 # 13. Public pages
 
-The pages a signed-out person reaches: the landing page, pricing, legal, contact. Until now the standard exempted them, which was never a decision. Nobody had written the rules, so the audit was told to look away.
+The pages a signed-out person reaches: the landing page, pricing, legal, contact. They are not part of what this standard unifies. The standard is for the signed-in back end, the screens a team works in every day, and a public page keeps its own brand.
 
 <!-- prompt-end -->
 
-An exemption and a rule look the same from inside a repo. A landing page marked `@ds-audit-ignore-file` reads as permission to do anything, and fifteen sites doing anything is the drift this standard exists to stop. A public page is the first thing anybody sees of a product, and it is the surface most likely to arrive looking like every other generated page on the internet.
+A public website, a careers page, a product's marketing pages: each of those has an audience and a brand of its own, and holding them to the back end's style would be the wrong job for this standard. What the fleet shares is the experience inside, so that is what it unifies.
 
-Sign-in is not a public page for this purpose. It is in 02 and 11.
+Sign-in is not a public page for this purpose. It is the door to the back end, on the roles and the scale, and it is in 02 and 11.
 
-## What carries over
+## Advice, not rules
+
+The rest of this section is advice for anyone building a public page from a design. None of it is audited. It is kept because a public page is the surface most likely to arrive looking like every other generated page on the internet, and these are the things that make it look that way.
+
+## What carries over, when a page is built from a design
 
 Everything that is the brand rather than the furniture.
 
@@ -50,9 +54,9 @@ A page that needs more than this is usually a page that has not decided what it 
 
 Nothing goes above 48px. A heading larger than that is a poster, and a poster is not a product page.
 
-## What a public page never does
+## What to avoid
 
-These are the tells of a page nobody decided. Each one is banned on its own, and any two of them together make a page that could belong to anybody.
+These are the tells of a page nobody decided. Any one of them weakens a page, and any two of them together make a page that could belong to anybody.
 
 - No gradient as a background, and never a purple-to-blue one.
 - No gradient fill on text. A heading is one colour.
@@ -65,9 +69,7 @@ These are the tells of a page nobody decided. Each one is banned on its own, and
 - No serif italic used as an accent on a sans page.
 - No copy that could be about any product. If the sentence would survive swapping the product name, rewrite it.
 
-These are not preferences. Every one of them is something a generator reaches for when nobody has said otherwise, and the point of this section is to say otherwise.
-
-Where a brand genuinely requires one, that is allowed, and it goes in the design's `decisions` block with the reason, like every other departure.
+Every one of them is something a generator reaches for when nobody has said otherwise, and the point of this section is to say otherwise.
 
 ## Legal pages
 
@@ -79,11 +81,7 @@ These are not marketing pages and they do not take the landing header. The brand
 
 ## What the audit checks
 
-A public page is audited like any other view for colour, spacing, weights and the minimum text size, because it uses the same roles and the same scale.
-
-One rule does not apply to it, the same way it does not apply to a sign-in view: the page title rule, since a hero is not `x-ds::page-header`.
-
-A public page says so once, at the top:
+Nothing. A public page says so once, at the top, and the audit leaves the whole file alone:
 
 ```blade
 {{-- @ds-public --}}
@@ -91,4 +89,4 @@ A public page says so once, at the top:
 
 A marker rather than a folder name, because public is a decision about who reaches a page and no path spells that reliably. Laravel's own `welcome.blade.php` is the exception and needs no marker, since every app has one and it is always the landing page.
 
-`@ds-audit-ignore-file` on a public page is no longer the expected state. That said the page was outside the standard, and from this section on it is inside it. A file still carrying it predates this section, and the fix is to swap the two markers and work the findings.
+The marker is a statement, not a loophole: it says a page is for signed-out people. A back-end screen carrying it is drift the audit cannot see, so it goes on public pages only. `@ds-audit-ignore-file` stays for files outside the standard for another reason, a PDF or an email, with that reason beside it.

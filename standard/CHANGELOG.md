@@ -10,6 +10,14 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ---
 
+## 17 October 2026
+
+**Public pages keep their own brand.** A relaxation, and it reverses 13 of 12 October. The standard unifies the signed-in back end; a page a signed-out person reaches, such as a website, a careers page or a product's marketing pages, is not part of that. A file marked `@ds-public` is now skipped by the audit entirely, where before it lost only the page-title rule. 13 keeps its landing-page shape and its list of generator tells as advice, not rules. Sign-in is not a public page and stays on the style. An app with a page marked `@ds-public` will find its counts fall: run `design:audit --baseline` to keep the gain. Mark public pages only; on a back-end screen the marker hides drift.
+
+**A progress bar measured against a limit may show its status.** A relaxation. 06 said a progress fill is the accent, and 04 kept status colours to badges, callouts, toasts, form errors and deltas. A bar against a budget or a quota can now fill `red` over the limit, `amber` close to it and `green` within it, and the style turns those into the status roles on update, as it does for callouts. Nothing to change on a screen.
+
+**A Flux colour the style cannot turn into a role is a finding.** A tightening, and the audit checks it as `Flux colour off the roles`. `color=` on a Flux component paints straight from Tailwind's palette. A callout or progress bar in a status family and anything in zinc are fine; a coloured button (use `variant="danger"` or `variant="primary"`), a coloured nav badge or text, and a callout or bar in violet or another non-status family are reported, as is a bound colour the audit cannot read. Badges keep their own rule. The ratchet allows what an app has today until it runs `--baseline`.
+
 ## 16 October 2026
 
 **An app on a style takes its title face from the style.** A fix, and every app on the style gets it on update with nothing to change. The components read the motif and the kind of second face from `config('brand')`, which came from `DESIGN_*` keys that `design:apply --style` wrote to `.env.example` only. An environment without them fell back to the defaults, so page titles were drawn in the body face and stat values in Fraunces, the wrong way round. When `design/design.json` names a style, the package now sets all three from the style itself.

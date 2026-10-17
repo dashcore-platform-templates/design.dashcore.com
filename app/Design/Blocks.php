@@ -197,7 +197,7 @@ final class Blocks
         'shell' => 'Build only the shell `brief.shell` names, not both. The sidebar is navigation and identity: no content, no search, no stats. The account menu holds settings and sign out and nothing else, so anything else this app wants to put there is a change to the standard rather than a decision here.',
         'errors' => 'None of these uses the danger colour. Red says data is gone, and a wrong address is not that. None of them draws the shell either, because the page that failed may be the one that draws it.',
         'settings' => 'The navlist here is a sub-navigation beside the panel it switches, one level, no nesting. It is never a second main nav: the sidebar or top nav still says which section you are in.',
-        'landing' => 'A public page opens with a hero, not a page header, so the page-title rule does not apply to it. Mark the file `@ds-public` or the audit reports the hero as a missing page header.',
+        'landing' => 'A public page keeps its own brand and is outside what the standard unifies, so 13 is advice here rather than rules. Mark the file `@ds-public` and the audit leaves it alone; without the marker the hero is reported as a missing page header.',
         'email' => 'Nothing else in the standard reaches here. No utility classes, no custom properties, pixel values inline, because that is all an email client honours. Mark the file `@ds-audit-ignore-file` with that reason.',
     ];
 

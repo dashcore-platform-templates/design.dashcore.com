@@ -78,7 +78,7 @@
                         </div>
 
                         @error('recovery_code')
-                            <flux:text color="red">
+                            <flux:text class="text-(--ds-danger)">
                                 {{ $message }}
                             </flux:text>
                         @enderror

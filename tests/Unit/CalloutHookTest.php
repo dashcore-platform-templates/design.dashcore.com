@@ -42,4 +42,21 @@ class CalloutHookTest extends TestCase
         }
         $this->assertStringContainsString("[data-flux-callout][class*='var(--color-yellow-50)']", $css);
     }
+
+    #[Test]
+    public function a_status_progress_bar_takes_its_role(): void
+    {
+        // Flux sets the bar from a family's 600 step in the bar's own classes.
+        $progress = file_get_contents(dirname(__DIR__, 2).'/vendor/livewire/flux/stubs/resources/views/flux/progress.blade.php');
+        $css = implode("\n", Applier::fluxCorrections());
+
+        $this->assertIsString($progress);
+        foreach (Applier::CALLOUT_FAMILIES as $status => $families) {
+            foreach ($families as $family) {
+                $this->assertStringContainsString("[--flux-progress-color:var(--color-{$family}-600)]", $progress, "Flux no longer marks a {$family} progress bar the way the correction expects");
+                $this->assertStringContainsString("[data-flux-progress][class*='var(--color-{$family}-600)']", $css);
+            }
+            $this->assertStringContainsString("--flux-progress-color: var(--ds-{$status});", $css);
+        }
+    }
 }
