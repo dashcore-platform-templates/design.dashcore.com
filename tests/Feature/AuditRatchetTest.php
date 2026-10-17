@@ -87,4 +87,21 @@ class AuditRatchetTest extends TestCase
             ->doesntExpectOutputToContain('design/MIGRATION.md')
             ->assertFailed();
     }
+
+    #[Test]
+    public function an_app_with_no_views_has_nothing_off_and_can_record_and_report(): void
+    {
+        File::deleteDirectory($this->kit.'/resources/views');
+
+        $this->artisan('design:audit')->expectsOutputToContain('Nothing off the standard.')->assertSuccessful();
+        $this->artisan('design:audit', ['--baseline' => true])->assertSuccessful();
+        $this->assertSame([], json_decode(File::get($this->kit.'/design/allowance.json'), true)['rules']);
+        $this->artisan('design:audit', ['--report' => true])->assertSuccessful();
+    }
+
+    #[Test]
+    public function a_path_somebody_typed_still_has_to_exist(): void
+    {
+        $this->artisan('design:audit', ['path' => 'resources/nope'])->expectsOutputToContain('Nothing at resources/nope.')->assertFailed();
+    }
 }
