@@ -7,6 +7,7 @@ use Dashcore\DesignKit\Allowance;
 use Dashcore\DesignKit\Audit;
 use Dashcore\DesignKit\Report;
 use Dashcore\DesignKit\Source;
+use Dashcore\DesignKit\Style;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\File;
@@ -275,9 +276,16 @@ class AuditCommand extends Command
             ? json_decode(File::get(base_path('design/design.json')), true)
             : null;
 
-        $standard = File::exists(base_path('design/STANDARD.md'))
-            ? Source::standardVersion(File::get(base_path('design/STANDARD.md')))
-            : null;
+        $style = is_array($design) && is_string($design['style'] ?? null) ? $design['style'] : null;
+
+        // An app on a design has the standard in its pack. An app on a style
+        // has it in this package, which is the standard it is held to.
+        $standardFile = File::exists(base_path('design/STANDARD.md'))
+            ? base_path('design/STANDARD.md')
+            : ($style !== null && File::exists(Style::standardPath()) ? Style::standardPath() : null);
+        $standard = $standardFile !== null ? Source::standardVersion(File::get($standardFile)) : null;
+
+        $allowance = Allowance::read(base_path(Allowance::FILE));
 
         $payload = Report::payload(
             $byRule,
@@ -285,6 +293,8 @@ class AuditCommand extends Command
             $filesChecked,
             $standard,
             is_array($design) ? Source::designSlug($design) : null,
+            style: $style,
+            allowance: $allowance === null ? null : array_sum($allowance['rules']),
         );
 
         $url = $source.'/api/reports';

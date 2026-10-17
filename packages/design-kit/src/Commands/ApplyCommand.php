@@ -213,6 +213,9 @@ class ApplyCommand extends Command
 
         $this->line('');
         $this->components->info($changed === [] ? 'Already on the style. Nothing changed.' : 'Applied. Run `npm run build` and reload. A release of dashcore/design-kit restyles this app from here on.');
+        // A pack brings design/STANDARD.md and a CLAUDE.md snippet; a style
+        // brings neither, because the standard ships in this package.
+        $this->line('  <fg=gray>Agents read the rules from vendor/dashcore/design-kit/STANDARD.md. Say so in CLAUDE.md.</>');
 
         return self::SUCCESS;
     }

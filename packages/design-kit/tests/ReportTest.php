@@ -19,8 +19,10 @@ class ReportTest extends TestCase
             'v3.0.0',
         );
 
+        // The style's name and the allowance's total are a word and a number,
+        // never source, so they are the only additions since 6.0.
         $this->assertSame([
-            'standard_version', 'package_version', 'design_slug', 'findings',
+            'standard_version', 'package_version', 'design_slug', 'style', 'allowance', 'findings',
             'total_findings', 'files_with_findings', 'files_checked', 'reported_at',
         ], array_keys($payload), 'nothing else leaves the repo');
 
@@ -78,5 +80,17 @@ class ReportTest extends TestCase
         $payload = Report::payload([], 0, 1, null, null, 'v3.0.0');
 
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+00:00$/', $payload['reported_at']);
+    }
+
+    #[Test]
+    public function a_style_and_an_allowance_ride_along_and_default_to_null(): void
+    {
+        $plain = Report::payload([], 0, 1, null, 'harbor-point', 'v6.1.0');
+        $this->assertNull($plain['style']);
+        $this->assertNull($plain['allowance']);
+
+        $styled = Report::payload(['x' => 2], 1, 1, null, null, 'v6.1.0', style: 'dashcore', allowance: 40);
+        $this->assertSame('dashcore', $styled['style']);
+        $this->assertSame(40, $styled['allowance']);
     }
 }

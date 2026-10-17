@@ -20,8 +20,10 @@ use Illuminate\Support\Carbon;
  * @property string|null $standard_version
  * @property string|null $package_version
  * @property string|null $design_slug
+ * @property string|null $style
  * @property array<string,int> $findings
  * @property int $total_findings
+ * @property int|null $allowance
  * @property int $files_with_findings
  * @property int $files_checked
  * @property Carbon $reported_at
@@ -32,8 +34,8 @@ class SiteReport extends Model
     use HasFactory;
 
     protected $fillable = [
-        'standard_version', 'package_version', 'design_slug',
-        'findings', 'total_findings', 'files_with_findings', 'files_checked',
+        'standard_version', 'package_version', 'design_slug', 'style',
+        'findings', 'total_findings', 'allowance', 'files_with_findings', 'files_checked',
         'reported_at',
     ];
 
@@ -73,6 +75,6 @@ class SiteReport extends Model
      */
     public function hasDesign(): bool
     {
-        return $this->standard_version !== null || $this->design_slug !== null;
+        return $this->standard_version !== null || $this->design_slug !== null || $this->style !== null;
     }
 }

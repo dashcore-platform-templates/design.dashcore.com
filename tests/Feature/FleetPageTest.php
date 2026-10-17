@@ -168,4 +168,19 @@ class FleetPageTest extends TestCase
 
         $this->assertSame(1, Site::query()->count());
     }
+
+    #[Test]
+    public function an_app_on_the_style_shows_it_and_what_it_is_allowed(): void
+    {
+        $site = Site::factory()->create(['name' => 'Finance', 'repository' => 'dashcoretech/finance.dashcore.com', 'design_slug' => null]);
+        $site->forceFill(['style' => 'dashcore'])->save();
+        SiteReport::factory()->for($site)->withFindings(['hardcoded colour' => 12])->create(['design_slug' => null, 'style' => 'dashcore', 'allowance' => 40]);
+
+        $this->actingAs(User::factory()->create())
+            ->get('/fleet')
+            ->assertOk()
+            ->assertSee('dashcore</span> style', false)
+            ->assertSee('allowed 40')
+            ->assertDontSee('Not applied');
+    }
 }

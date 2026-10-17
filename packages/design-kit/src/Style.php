@@ -33,6 +33,12 @@ final class Style
         return is_array($data) && is_string($data['motif'] ?? null) ? $data['motif'] : 'accent-bar';
     }
 
+    /** The standard as this release of the package carries it. */
+    public static function standardPath(): string
+    {
+        return dirname(__DIR__).'/STANDARD.md';
+    }
+
     public static function jsonPath(string $name): string
     {
         return dirname(__DIR__).'/styles/'.basename($name).'.json';
