@@ -39,4 +39,43 @@ class DesignKitProviderTest extends TestCase
         // this. Empty, the report went to "/api/reports" and was lost.
         $this->assertSame('https://design.dashcore.com', config('design-kit.source'));
     }
+
+    #[Test]
+    public function an_app_on_a_style_takes_its_title_face_from_the_style_not_its_environment(): void
+    {
+        // Found on finance: DESIGN_SECOND_KIND was in .env.example only, so the
+        // config default, mono, drew the page title in the body face and the
+        // stat values in Fraunces, the wrong way round.
+        $root = sys_get_temp_dir().'/design-kit-provider-'.bin2hex(random_bytes(4));
+        mkdir($root.'/design', 0777, true);
+        file_put_contents($root.'/design/design.json', json_encode(['schema' => 'dashcore-design/1', 'style' => 'dashcore']));
+
+        $original = $this->app->basePath();
+        config(['brand.second_kind' => 'mono', 'brand.motif' => 'eyebrow']);
+
+        try {
+            $this->app->setBasePath($root);
+            (new DesignKitServiceProvider($this->app))->register();
+        } finally {
+            $this->app->setBasePath($original);
+            @unlink($root.'/design/design.json');
+            @rmdir($root.'/design');
+            @rmdir($root);
+        }
+
+        $this->assertSame('serif', config('brand.second_kind'));
+        $this->assertSame('accent-bar', config('brand.motif'));
+        $this->assertFalse(config('brand.condensed'));
+    }
+
+    #[Test]
+    public function an_app_on_a_design_of_its_own_keeps_its_environment(): void
+    {
+        config(['brand.second_kind' => 'mono']);
+
+        // This app's root has no design/design.json naming a style.
+        (new DesignKitServiceProvider($this->app))->register();
+
+        $this->assertSame('mono', config('brand.second_kind'));
+    }
 }
