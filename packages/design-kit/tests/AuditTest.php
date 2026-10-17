@@ -146,6 +146,21 @@ class AuditTest extends TestCase
     }
 
     #[Test]
+    public function an_accent_scale_of_the_apps_own_is_a_finding(): void
+    {
+        // team's teal accent-50 to accent-950 sat behind every button and
+        // focus ring, and read as the style's accent to the palette rule.
+        foreach (['<button class="bg-accent-600 hover:bg-accent-700 text-white">', '<input class="focus:ring-accent-500">', '<p class="dark:text-accent-400">', '<div style="color: var(--color-accent-600)">'] as $off) {
+            $this->assertContains('brand colour scale', $this->rules($off), $off);
+        }
+
+        // The style's own accent names are not a scale.
+        foreach (['<button class="bg-(--ds-accent) text-(--ds-on-accent)">', '<p class="text-accent-content">', '<div class="bg-accent text-accent-foreground">', '<i class="accent-(--ds-accent)">'] as $fine) {
+            $this->assertNotContains('brand colour scale', $this->rules($fine), $fine);
+        }
+    }
+
+    #[Test]
     public function a_flux_colour_the_style_cannot_turn_into_a_role_is_a_finding(): void
     {
         // Callouts and progress bars in a status family are corrected by the
