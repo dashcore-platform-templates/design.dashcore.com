@@ -279,6 +279,17 @@ Where `dashcore/ui` and the standard differed, the standard won: 12px labels in 
 
 With Flux, the notes `dashcore/ui` carried still hold: do not wrap pages in `<flux:main>` inside the shell, and use `<x-ds::account>` in the footer rather than `<flux:sidebar.profile>`.
 
+## Hold an app to the standard where it is
+
+An app that is far off the standard can still be held to it, from the day it joins:
+
+```bash
+php artisan design:audit --baseline   # records today's counts in design/allowance.json; commit it
+php artisan design:audit              # in CI: fails only when a rule's count rises
+```
+
+The allowance only shrinks: run `--baseline` again after fixing screens and it keeps the lower count for every rule. A rule a newer release of this package adds is allowed at whatever it finds until it is recorded, so an update never turns a build red. Standard section 09 has the detail.
+
 ## Apply a design
 
 Give it the design's slug, its pack URL from design.dashcore.com, or a local design file:

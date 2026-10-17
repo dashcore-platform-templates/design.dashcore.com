@@ -156,3 +156,16 @@ A Dashcore app takes the `dashcore` style (14) rather than a design of its own. 
 - `DESIGN_MOTIF`, `DESIGN_SECOND_KIND` and `DESIGN_CONDENSED` in `.env`. Sign-in copy is the app's own and is left alone.
 
 The style's values live in the package and nowhere in the app, so a release of `dashcore/design-kit` changes every app on the style at once, with nothing to re-apply. `design:update` on an app on a style re-applies it and audits.
+
+## The allowance
+
+An app joins the standard where it is, not where it should be. `php artisan design:audit --baseline` records what the audit finds that day, by rule, in `design/allowance.json`, and from then on `design:audit` fails only when a rule's count rises above it. The file is committed.
+
+```json
+{
+  "known": ["Flux badge", "hardcoded colour", "…every rule the package knew"],
+  "rules": { "hardcoded colour": 14, "spacing off the scale": 31 }
+}
+```
+
+The allowance only shrinks. Recording it again keeps the lower count for every rule, so a screen fixed stays fixed, and raising a count is an edit to the file that a reviewer sees. A rule the package knew and the app had none of is held at zero. A rule a newer release added, which `known` does not list, is allowed at whatever it finds until the app records it, so a new rule never turns a build red on the day it ships. `--report` never fails, allowance or not.

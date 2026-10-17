@@ -3,6 +3,7 @@
 namespace Dashcore\DesignKit\Commands;
 
 use Dashcore\DesignKit\ActionsToken;
+use Dashcore\DesignKit\Allowance;
 use Dashcore\DesignKit\Audit;
 use Dashcore\DesignKit\Report;
 use Dashcore\DesignKit\Source;
@@ -21,6 +22,11 @@ use SplFileInfo;
  * changing it: the path can be a directory or a single Blade file. --fix
  * applies only the mechanical half, weights and off-scale spacing, which have
  * no judgment in them. Everything else is reported and left alone.
+ *
+ * With design/allowance.json in place (--baseline writes it) the audit is a
+ * ratchet: it fails only when a rule's count rises above the allowance, so an
+ * app far off the standard can be held to it without a red build. See
+ * Allowance.
  */
 class AuditCommand extends Command
 {
@@ -28,7 +34,8 @@ class AuditCommand extends Command
         {path=resources/views : A directory to walk, or one Blade file}
         {--fix : Apply the mechanical rewrites (weights, off-scale spacing) and report the rest}
         {--full : List every finding rather than the first few per file}
-        {--report : Also send the counts to design.dashcore.com, for the fleet view}';
+        {--report : Also send the counts to design.dashcore.com, for the fleet view}
+        {--baseline : Record today\'s counts as this app\'s allowance, in design/allowance.json; it only ever shrinks}';
 
     protected $description = 'Find what in this app is off the Dashcore Standard';
 
@@ -126,6 +133,16 @@ class AuditCommand extends Command
 
         $this->report($byRule, $filesWithFindings, $files->count());
 
+        $allowancePath = base_path(Allowance::FILE);
+
+        if ($this->option('baseline')) {
+            File::ensureDirectoryExists(dirname($allowancePath));
+            File::put($allowancePath, Allowance::record($byRule, Allowance::read($allowancePath)));
+            $this->components->info("Recorded {$totalFindings} ".Str::plural('finding', $totalFindings).' as the allowance in '.Allowance::FILE.'. From here the audit fails only when a count rises.');
+
+            return self::SUCCESS;
+        }
+
         if ($totalFindings === 0) {
             $this->components->info('Nothing off the standard.');
 
@@ -154,7 +171,52 @@ class AuditCommand extends Command
         // builds red, which is the only reason adding a rule was ever a major.
         // An app that does want findings to fail its build runs the audit
         // without --report, deliberately, as its own check.
-        return $this->option('report') ? self::SUCCESS : self::FAILURE;
+        if ($this->option('report')) {
+            return self::SUCCESS;
+        }
+
+        $allowance = Allowance::read($allowancePath);
+
+        return $allowance === null ? self::FAILURE : $this->ratchet($byRule, $allowance);
+    }
+
+    /**
+     * The audit's answer once an app has an allowance: worse than recorded
+     * fails, anything else passes and says what it saw.
+     *
+     * @param  array<string,int>  $byRule
+     * @param  array{known: list<string>, rules: array<string,int>}  $allowance
+     */
+    private function ratchet(array $byRule, array $allowance): int
+    {
+        ['rises' => $rises, 'unrecorded' => $unrecorded, 'below' => $below] = Allowance::compare($byRule, $allowance);
+
+        $this->line('');
+        foreach ($rises as $rule => [$now, $allowed]) {
+            $this->components->twoColumnDetail("  <fg=red>{$rule}</>", "<fg=red>{$now}, allowed {$allowed}</>");
+        }
+        foreach ($unrecorded as $rule => $now) {
+            // A rule this release added. Allowed until it is recorded, so a new
+            // rule never turns a build red on the day it ships.
+            $this->components->twoColumnDetail("  {$rule}", "{$now}, a new rule: allowed until --baseline records it");
+        }
+        foreach ($below as $rule => [$now, $allowed]) {
+            $this->components->twoColumnDetail("  <fg=green>{$rule}</>", "<fg=green>{$now}, allowed {$allowed}</>");
+        }
+
+        if ($rises !== []) {
+            $this->line('');
+            $this->components->error('Worse than the allowance in '.Allowance::FILE.'. Fix what this change added; the allowance does not go up.');
+
+            return self::FAILURE;
+        }
+
+        $this->line('');
+        $this->components->info($below === []
+            ? 'Within the allowance.'
+            : 'Within the allowance, and below it. Run design:audit --baseline to lower it, so the gain is kept.');
+
+        return self::SUCCESS;
     }
 
     /**
