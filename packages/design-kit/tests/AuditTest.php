@@ -169,6 +169,16 @@ class AuditTest extends TestCase
             $this->assertContains('brand colour scale', $this->rules($off), $off);
         }
 
+        // The starter template's own neutral and status scales are the same thing.
+        foreach (['<div class="bg-surface-900 text-surface-100">', '<p class="text-success-500">', '<span class="ring-ink-200">', '<i style="color: var(--color-brass-500)">'] as $off) {
+            $this->assertContains('brand colour scale', $this->rules($off), $off);
+        }
+
+        // Tailwind's families are the palette rule's, and these are not colours.
+        foreach (['<div class="bg-zinc-100 ring-offset-2 bg-opacity-50 text-2xl border-t-2">'] as $fine) {
+            $this->assertNotContains('brand colour scale', $this->rules($fine), $fine);
+        }
+
         // The style's own accent names are not a scale.
         foreach (['<button class="bg-(--ds-accent) text-(--ds-on-accent)">', '<p class="text-accent-content">', '<div class="bg-accent text-accent-foreground">', '<i class="accent-(--ds-accent)">'] as $fine) {
             $this->assertNotContains('brand colour scale', $this->rules($fine), $fine);
