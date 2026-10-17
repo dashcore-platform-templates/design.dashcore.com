@@ -12,6 +12,8 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ## 16 October 2026
 
+**An app on a style takes its title face from the style.** A fix, and every app on the style gets it on update with nothing to change. The components read the motif and the kind of second face from `config('brand')`, which came from `DESIGN_*` keys that `design:apply --style` wrote to `.env.example` only. An environment without them fell back to the defaults, so page titles were drawn in the body face and stat values in Fraunces, the wrong way round. When `design/design.json` names a style, the package now sets all three from the style itself.
+
 **A stat value can stand on its own.** New, and nothing an app has to do. `x-ds::stat-value` is the value line of `x-ds::stat`, for a tile that carries more than the stat tile draws, such as a link, a tooltip or a badge beside the label. It sets the value the way the tile does, and `tone` takes a status for a figure whose sign is the news. A value drawn as `flux:heading size="xl"` was reported as a page title; this is what replaces it.
 
 **A Flux callout takes the status roles.** Every app gets it on update, with nothing to change on a screen. 06 already said a callout is soft and in the status colours, but Flux paints each one from a Tailwind family, so callouts kept Tailwind's yellow and red, and one app overrode those families in its own CSS to fix their contrast. The package now corrects every status callout to the flash's treatment: the status's soft tint, a two pixel rule in its colour, the heading in the status colour and the text in `text`. The markup stays `variant="warning"`. An app that overrode Tailwind's yellow or red for its callouts can drop the override.
