@@ -9,6 +9,9 @@ on:
 
 permissions:
   contents: read
+  # The tool reports to its own board like every fleet app, proving which
+  # repository it is with GitHub's token rather than a stored secret.
+  id-token: write
 
 jobs:
   ci:
@@ -72,3 +75,11 @@ jobs:
 
       - name: Run CI Checks
         run: composer ci:check
+
+      # composer ci:check already fails on any finding (design:audit with no
+      # allowance), so this step only tells the board.
+      - name: Report to design.dashcore.com
+        if: github.ref_name == github.event.repository.default_branch
+        env:
+          DESIGN_SOURCE: https://design.dashcore.com
+        run: php artisan design:audit --report
