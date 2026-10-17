@@ -31,4 +31,12 @@ class DesignKitProviderTest extends TestCase
             $this->assertContains($name, $commands, "the provider does not register {$name}");
         }
     }
+
+    #[Test]
+    public function the_audit_knows_which_board_to_report_to(): void
+    {
+        // The tool's own CI reports with design:audit --report, which reads
+        // this. Empty, the report went to "/api/reports" and was lost.
+        $this->assertSame('https://design.dashcore.com', config('design-kit.source'));
+    }
 }
