@@ -129,11 +129,15 @@ Measuring the style moved two values: the light page to `#f7f4ef`, because succe
 
 ## Where it stands
 
-17 October 2026.
+17 October 2026, end of day.
 
-- **Phase 0** done (#43).
-- **Phase 1** done (#44–#50). design-kit 6.2.0 carries the style from `vendor/`, the frame, `design:apply --style`, the ratchet and the standard. The mirror stays private and fleet apps take a copied release (`bin/vendor-into`). This site wears the style.
-- **Phase 2 and 3:** finance moved first (dashcoretech/finance.dashcore.com#287) and reports to `/fleet`. The other 23 apps are rolling out: the seven `dashcore/ui` apps move onto the style; the sixteen others install design-kit and report, with no visual change.
+- **Phases 0 and 1 are done** (#43–#56). design-kit carries the style from `vendor/`, along with the frame, `design:apply --style`, the ratchet and the standard; the current release is 6.3.2. The mirror stays private, and every app carries a copied release (`bin/vendor-into`).
+- **Phases 2 and 3 are done.** All 25 catalogue apps report to `/fleet`: the 24 plus this one. The eight `dashcore/ui` apps (finance, sales, security, login, api, brain, email, hr) are on the style and `dashcore/ui` is gone from them.
+- **Phase 4: the style is applied to 14 of the other 16 apps** (ceo, agents, memory, health, talent, coaching, delivery, team, audit, onboarding, standards, tests, services, dashboards). They take the style's fonts, roles, radius and Flux corrections from `vendor/`. Most still draw their own layout and brand colour scales, which their allowances count and which move onto the frame screen by screen.
+- **The other two aren't restyled.** marketing is styled by `public/os.css` outside the build, and restyling it is the owner's decision. website is static HTML in `public/` that the audit can't read.
+- **Phase 5 is on everywhere.** Every app's CI runs `design:audit` against its allowance before reporting, so a rise fails the build, on pull requests too.
+
+**What's left is the allowances:** 17,818 findings across the fleet, more than half of them in team (5,636) and hr (4,886). They come down one screen per commit, and `--baseline` keeps each gain.
 
 ## Phases
 
