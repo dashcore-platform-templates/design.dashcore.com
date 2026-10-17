@@ -30,6 +30,7 @@ final class Audit
         'Flux Pro component',
         'Flux table styled on the screen',
         'hardcoded colour',
+        'hardcoded colour beside a role',
         'Lucide icon name',
         'page title not in the page header',
         'spacing off the scale',
@@ -136,6 +137,19 @@ final class Audit
             foreach (self::matches($line, '/(?<![\w-])#[0-9a-fA-F]{3,8}\b/') as $m) {
                 if (! str_contains($line, '--ds-') && ! str_contains($line, 'dashcore-design')) {
                     $findings[] = self::finding('hardcoded colour', $n, $m, 'Move it to a --ds-* role, or to the design file if it is an identity colour.');
+                }
+            }
+
+            // A line that names a role used to excuse every hex on it, which
+            // was meant for a role's own definition (--ds-accent: #…) and a
+            // fallback (var(--ds-accent, #…)). It also hid text-[#1D9E75]
+            // beside text-(--ds-text) on hr, about 650 of them. Those are
+            // reported under their own name, so no app's count of the old
+            // rule rises.
+            if (str_contains($line, '--ds-') && ! str_contains($line, 'dashcore-design')) {
+                $rest = (string) preg_replace('/--ds-[\w-]+\s*:\s*[^;{}]*|var\(--ds-[\w-]+\s*,[^)]*\)/', '', $line);
+                foreach (self::matches($rest, '/(?<![\w-])#[0-9a-fA-F]{3,8}\b/') as $m) {
+                    $findings[] = self::finding('hardcoded colour beside a role', $n, $m, 'Move it to a --ds-* role. The role on the same line does not cover it.');
                 }
             }
 
