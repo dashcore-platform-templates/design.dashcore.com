@@ -30,6 +30,8 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 **The audit can hold an app where it is.** New, and nothing an app has to do. `design:audit --baseline` records an app's findings by rule in `design/allowance.json`, and from then on `design:audit` fails only when a count rises (09). The allowance only shrinks. A rule a release adds is allowed until the app records it, so a new rule still never turns a build red, and `--report` still never fails.
 
+**An app with no Blade views audits clean.** No rule changed, and nothing an app has to do. `design:audit` stopped with an error when `resources/views` did not exist, which a site of static pages does not have, so it could neither record an allowance nor report. It now finds nothing, which is true: the rules read Blade views. A path passed by hand must still exist.
+
 ---
 
 ## 12 October 2026
