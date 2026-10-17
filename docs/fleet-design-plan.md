@@ -62,9 +62,9 @@ design-kit ships the `dashcore` style as a built CSS file in the package. An app
 
 The contrast check runs when design-kit is built, not when it's applied. A style that fails contrast can't be released.
 
-### 3. Updates ride the dependency PRs we already have
+### 3. Updates travel as a copied release
 
-A style or rule change is a design-kit release. The automated dependency PRs every repo already gets (`deps/safe-…`) carry it to each app, tested and reviewable. For a major release, the PR body is the release's "Upgrading to N" section.
+design-kit stays private (decided 17 October 2026), and a private package can't be downloaded by CI or a Laravel Cloud build. So every app carries the release it runs in `packages/dashcore/design-kit`, the way it carries `dashcore/bridge`. `packages/design-kit/bin/vendor-into <app>` copies a `design-kit/vX.Y.Z` tag in. A style or rule change is a tag, then one PR per app that copies it in. Herd Companion already rolls bridge releases across the fleet this way (`FleetBridgeService`), and design-kit can join it.
 
 There's no runtime fetch from this site. An app must render the same whether design.dashcore.com is up or not.
 
