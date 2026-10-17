@@ -228,7 +228,7 @@ php artisan design:apply --style=dashcore
 npm run build
 ```
 
-That writes `design/design.json` naming the style, puts two lines after Tailwind in `resources/css/app.css`, and adds the frame's script to `resources/js/app.js`:
+That writes `design/design.json` naming the style, puts two lines after Tailwind in `resources/css/app.css`, and adds the frame's script to `resources/js/app.js`. The standard itself ships in the package as `STANDARD.md`, so there is no pack to unzip: point the app's `CLAUDE.md` at `vendor/dashcore/design-kit/STANDARD.md`.
 
 ```css
 @import 'tailwindcss';

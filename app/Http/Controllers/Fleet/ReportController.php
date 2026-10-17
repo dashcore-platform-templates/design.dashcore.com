@@ -37,6 +37,8 @@ class ReportController extends Controller
             'standard_version' => ['nullable', 'string', 'regex:/^[0-9a-f]{6,40}$/'],
             'package_version' => ['nullable', 'string', 'max:40'],
             'design_slug' => ['nullable', 'string', 'regex:/^[a-z0-9-]+$/', 'max:100'],
+            'style' => ['nullable', 'string', 'regex:/^[a-z0-9-]+$/', 'max:40'],
+            'allowance' => ['nullable', 'integer', 'min:0', 'max:100000'],
             // Rule names are the audit's own, and a kit could be running an
             // older package with rules this tool has never heard of, so they
             // are bounded rather than matched against a list.
@@ -54,6 +56,8 @@ class ReportController extends Controller
             'standard_version' => $data['standard_version'] ?? null,
             'package_version' => $data['package_version'] ?? null,
             'design_slug' => $data['design_slug'] ?? null,
+            'style' => $data['style'] ?? null,
+            'allowance' => $data['allowance'] ?? null,
             'findings' => $findings,
             // Summed here rather than taken from the payload, so the number on
             // the page always agrees with the rules beside it.
@@ -68,6 +72,9 @@ class ReportController extends Controller
         $site->forceFill([
             'last_reported_at' => $report->reported_at,
             'design_slug' => $data['design_slug'] ?? $site->design_slug,
+            // A style replaces a design rather than sitting beside one, so the
+            // report says which and the site follows it either way.
+            'style' => $data['style'] ?? (isset($data['design_slug']) ? null : $site->style),
         ])->save();
 
         // The tool knows what the standard reads today, so it says so on the

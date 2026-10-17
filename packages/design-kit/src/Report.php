@@ -27,6 +27,8 @@ final class Report
         ?string $standardVersion,
         ?string $designSlug,
         ?string $packageVersion = null,
+        ?string $style = null,
+        ?int $allowance = null,
     ): array {
         // Rule names come from the audit, so they are ours, but the counts are
         // summed here rather than trusted from a caller that might have added
@@ -45,6 +47,11 @@ final class Report
             'standard_version' => $standardVersion,
             'package_version' => $packageVersion ?? self::packageVersion(),
             'design_slug' => $designSlug,
+            // An app on a built-in style names it instead of a design.
+            'style' => $style,
+            // The total its allowance permits, so the board can show how far
+            // the ratchet has come down. Null when it has none.
+            'allowance' => $allowance,
             'findings' => $counts,
             'total_findings' => array_sum($counts),
             'files_with_findings' => max(0, $filesWithFindings),

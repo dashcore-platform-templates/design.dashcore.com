@@ -114,7 +114,15 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                                 <span>github.com/{{ $site->repository }}</span>
                             </a>
                         </td>
-                        <td class="px-(--ds-cell-x) py-3 text-(--ds-text-muted)">{{ $site->design_slug ?? '—' }}</td>
+                        <td class="px-(--ds-cell-x) py-3 text-(--ds-text-muted)">
+                            {{-- An app on a built-in style takes it instead of a
+                                 design of its own (standard/14). --}}
+                            @if ($site->style)
+                                <span class="text-(--ds-text)">{{ $site->style }}</span> style
+                            @else
+                                {{ $site->design_slug ?? '—' }}
+                            @endif
+                        </td>
                         <td class="px-(--ds-cell-x) py-3">
                             @if ($report === null)
                                 <x-ds::badge>Never reported</x-ds::badge>
@@ -157,6 +165,11 @@ new #[Layout('layouts::tool')] #[Title('Fleet')] class extends Component
                                 >
                                     <span class="font-medium tabular-nums text-(--ds-text-strong)">{{ $report->total_findings }}</span>
                                     <span class="ms-1 text-xs text-(--ds-text-muted)">in {{ $report->files_with_findings }} {{ Str::plural('file', $report->files_with_findings) }}</span>
+                                    {{-- The ratchet: what this app is allowed, which
+                                         only comes down. Above it, the build fails. --}}
+                                    @if ($report->allowance !== null)
+                                        <span class="block text-xs text-(--ds-text-muted)">allowed {{ $report->allowance }}</span>
+                                    @endif
                                 </span>
                             @endif
                         </td>

@@ -155,4 +155,41 @@ class ReportEndpointTest extends TestCase
         $this->assertSame(0, $site->reports()->sole()->total_findings);
         $this->assertNotNull($site->fresh()?->last_reported_at);
     }
+
+    #[Test]
+    public function an_app_on_a_style_reports_it_and_its_allowance(): void
+    {
+        $site = Site::factory()->create(['design_slug' => null]);
+
+        $this->withToken($site->issueToken())
+            ->postJson('/api/reports', $this->payload(['design_slug' => null, 'style' => 'dashcore', 'allowance' => 40]))
+            ->assertCreated();
+
+        $report = $site->reports()->sole();
+        $this->assertSame('dashcore', $report->style);
+        $this->assertSame(40, $report->allowance);
+        $this->assertSame('dashcore', $site->fresh()?->style);
+    }
+
+    #[Test]
+    public function moving_from_a_style_to_a_design_clears_the_style(): void
+    {
+        $site = Site::factory()->create(['design_slug' => null]);
+        $site->forceFill(['style' => 'dashcore'])->save();
+
+        $this->withToken($site->issueToken())->postJson('/api/reports', $this->payload())->assertCreated();
+
+        $this->assertNull($site->fresh()?->style);
+        $this->assertSame('harbor-point', $site->fresh()?->design_slug);
+    }
+
+    #[Test]
+    public function a_style_name_is_a_slug_not_anything(): void
+    {
+        $site = Site::factory()->create();
+
+        $this->withToken($site->issueToken())
+            ->postJson('/api/reports', $this->payload(['style' => '<script>']))
+            ->assertUnprocessable();
+    }
 }

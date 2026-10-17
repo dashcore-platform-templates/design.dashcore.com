@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Console\Commands\DesignBuildStylesCommand;
+use App\Design\Pack;
 use App\Design\Standard;
 use App\Design\Styles;
 use App\Models\User;
@@ -25,6 +26,12 @@ class BuiltStylesTest extends TestCase
             $this->assertSame($json, file_get_contents(DesignBuildStylesCommand::jsonPath($name)), "{$name}.json is stale: run php artisan design:build-styles");
             $this->assertSame($css, file_get_contents(DesignBuildStylesCommand::cssPath($name)), "{$name}.css is stale: run php artisan design:build-styles");
         }
+    }
+
+    #[Test]
+    public function the_shipped_standard_is_the_standard_today(): void
+    {
+        $this->assertSame(Pack::standardFile(), file_get_contents(DesignBuildStylesCommand::standardPath()), 'packages/design-kit/STANDARD.md is stale: run php artisan design:build-styles');
     }
 
     #[Test]

@@ -21,6 +21,7 @@ use Illuminate\Support\Str;
  * @property string $name
  * @property string $repository
  * @property string|null $design_slug
+ * @property string|null $style
  * @property string $token_hash
  * @property Carbon|null $last_reported_at
  */
