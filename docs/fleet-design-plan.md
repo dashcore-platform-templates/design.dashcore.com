@@ -8,13 +8,15 @@ This settles the question `PURPOSE.md` left open: which of the two documents gov
 
 ## Where we are
 
-The fleet is the 24 apps in the catalogue besides this one: `Catalogue::APPS` in `dashcore/bridge`, which api.dashcore.com's `FleetPlan` reads. The local tools (fleets, work, herd) are not catalogue apps, and neither is anything else in `~/Herd`. Stacks were read from the local checkouts on 16 October 2026; delivery has only its `templates` checkout on the commander.
+The fleet is the 24 apps in the catalogue besides this one: `Catalogue::APPS` in `dashcore/bridge`, which api.dashcore.com's `FleetPlan` reads. The local tools (fleets, work, herd) are not catalogue apps, and neither is anything else in `~/Herd`. Stacks were read from the local checkouts on 16 October 2026; 
 
 | Group | Apps | Count |
 |---|---|---|
 | On `dashcore/ui` | api, brain, email, finance, hr, login, sales, security | 8 |
 | Livewire, no shared look | agents, audit, ceo, dashboards, delivery, health, memory, onboarding, services, team, tests | 11 |
 | Blade and Tailwind only | coaching, marketing, standards, talent, website | 5 |
+
+Two catalogue names differ from their repositories: delivery is `dashcoretech/dcos.dashcore.com`, and website is `dashcoretech/dashcore.com` (not the `website.dashcore.com` folder).
 
 No app requires `design-kit`. Only finance and login use Flux, and both are on `dashcore/ui` too. This app uses Flux and is the 25th, audited against its own standard already.
 
@@ -124,6 +126,14 @@ Row 12 is additive. `DESIGN.md`'s rules come into the standard as written.
 Measuring the style moved two values: the light page to `#f7f4ef`, because success and warning text measured 4.49:1 on `#f5f2ec`, and, in dark, a lighter muted step for quiet surfaces at `#aaa397`, because the old one measured 4.35:1 on the accent tint. Figures are in section 14.
 
 ---
+
+## Where it stands
+
+17 October 2026.
+
+- **Phase 0** done (#43).
+- **Phase 1** done (#44–#50). design-kit 6.2.0 carries the style from `vendor/`, the frame, `design:apply --style`, the ratchet and the standard. The mirror stays private and fleet apps take a copied release (`bin/vendor-into`). This site wears the style.
+- **Phase 2 and 3:** finance moved first (dashcoretech/finance.dashcore.com#287) and reports to `/fleet`. The other 23 apps are rolling out: the seven `dashcore/ui` apps move onto the style; the sixteen others install design-kit and report, with no visual change.
 
 ## Phases
 

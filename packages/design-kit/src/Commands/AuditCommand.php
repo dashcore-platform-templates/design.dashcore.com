@@ -160,7 +160,11 @@ class AuditCommand extends Command
 
         $this->line('');
         // None of these are mechanical, or --fix would have taken them.
-        $this->components->warn('Work through these with design/MIGRATION.md: one screen per commit, most-used first.');
+        // A pack brings design/MIGRATION.md. An app on a style, or one that
+        // only reports, has none, and the rules live in this package.
+        $this->components->warn(File::exists(base_path('design/MIGRATION.md'))
+            ? 'Work through these with design/MIGRATION.md: one screen per commit, most-used first.'
+            : 'Each rule is in vendor/dashcore/design-kit/STANDARD.md. Fix one screen per commit, most-used first, then lower the allowance with --baseline.');
 
         // Reporting is telling the board what is true, which succeeds whatever
         // it found. Exiting non-zero here turned the one step every app is told

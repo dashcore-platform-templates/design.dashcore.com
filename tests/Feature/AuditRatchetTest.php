@@ -78,4 +78,13 @@ class AuditRatchetTest extends TestCase
 
         $this->artisan('design:audit', ['--report' => true])->assertSuccessful();
     }
+
+    #[Test]
+    public function an_app_without_a_pack_is_pointed_at_the_standard_in_the_package(): void
+    {
+        $this->artisan('design:audit')
+            ->expectsOutputToContain('vendor/dashcore/design-kit/STANDARD.md')
+            ->doesntExpectOutputToContain('design/MIGRATION.md')
+            ->assertFailed();
+    }
 }
