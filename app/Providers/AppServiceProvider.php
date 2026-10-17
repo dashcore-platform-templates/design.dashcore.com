@@ -21,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(DecisionSource::class, AnthropicDecisionSource::class);
+
+        // The package's own config, for the audit command registered below:
+        // design:audit --report reads its board's address from it. Without it
+        // the tool's own report went to "/api/reports" and nowhere.
+        $this->mergeConfigFrom(base_path('packages/design-kit/config/design-kit.php'), 'design-kit');
     }
 
     /**
