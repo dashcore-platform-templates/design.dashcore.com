@@ -46,7 +46,7 @@ These never change per project.
 | Danger | red 700 | red 400 | red 600 |
 | Info | blue 700 | blue 400 | blue 700 |
 
-Status colours mark status. A green button is not a primary button; a red-outlined one is a destructive one, and nothing is ever filled red. Success, warning and danger appear only on badges, callouts, toasts, form errors, and deltas.
+Status colours mark status. A green button is not a primary button; a red-outlined one is a destructive one, and nothing is ever filled red. Success, warning and danger appear only on badges, callouts, toasts, form errors, deltas, and a progress bar measured against a limit (06).
 
 ## The contrast floor
 

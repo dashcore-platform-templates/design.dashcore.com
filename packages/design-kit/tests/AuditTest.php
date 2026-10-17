@@ -13,6 +13,12 @@ class AuditTest extends TestCase
         return array_values(array_unique(array_map(fn (array $f): string => $f['rule'], Audit::file($blade))));
     }
 
+    /** @return list<string> */
+    private function rulesAt(string $blade, string $path): array
+    {
+        return array_values(array_unique(array_map(fn (array $f): string => $f['rule'], Audit::file($blade, $path))));
+    }
+
     #[Test]
     public function a_view_already_on_the_standard_reports_nothing(): void
     {
@@ -120,22 +126,52 @@ class AuditTest extends TestCase
     }
 
     #[Test]
-    public function a_public_page_keeps_its_hero_but_nothing_else(): void
+    public function a_public_page_keeps_its_own_brand(): void
     {
         $hero = '<h1 class="text-5xl font-semibold text-(--ds-text-strong)">Run the clinic, not the paperwork</h1>';
 
         $this->assertSame(['page title not in the page header'], $this->rules($hero), 'an app screen still has to use the page header');
 
-        // 13: a hero is not a page title, so the rule goes. The marker says so
-        // rather than the folder, because public is about who reaches a page.
-        $this->assertSame([], Audit::file("{{-- @ds-public --}}\n".$hero));
+        // 13: the standard unifies the signed-in back end. A page a signed-out
+        // person reaches keeps its own look, says so with the marker rather
+        // than its folder, and the audit leaves all of it alone.
+        $off = "{{-- @ds-public --}}\n".'<p class="p-5 font-bold text-gray-600 text-[10px]">Best in class solutions</p>'."\n".$hero;
+        $this->assertSame([], Audit::file($off));
         $this->assertSame([], Audit::file($hero, 'resources/views/welcome.blade.php'), 'every Laravel app has one and it is always the landing page');
         $this->assertNotSame([], Audit::file($hero, 'resources/views/welcome-back.blade.php'), 'only that filename counts');
 
-        // Losing one rule is not an exemption. Everything else still applies,
-        // which is the whole difference between 13 and the old ignore-file.
-        $off = "{{-- @ds-public --}}\n".'<p class="p-5 font-bold text-gray-600 text-[10px]">Best in class solutions</p>';
-        $this->assertSame(['colour off the roles', 'spacing off the scale', 'text under 12px', 'weight off the scale'], $this->publicRules($off));
+        // Sign-in is the door to the back end: on the roles, its heading no title.
+        $this->assertSame([], Audit::file($hero, 'resources/views/livewire/auth/login.blade.php'));
+        $this->assertSame(['colour off the roles'], $this->rulesAt('<p class="text-gray-600">Forgot it?</p>', 'resources/views/livewire/auth/login.blade.php'));
+    }
+
+    #[Test]
+    public function a_flux_colour_the_style_cannot_turn_into_a_role_is_a_finding(): void
+    {
+        // Callouts and progress bars in a status family are corrected by the
+        // style, and zinc is its neutral ramp.
+        foreach ([
+            '<flux:progress :value="$p" color="red" />',
+            '<flux:progress :value="$p" :color="$over ? \'red\' : \'green\'" />',
+            '<flux:callout color="amber" icon="clock">Late</flux:callout>',
+            '<flux:button color="zinc">Cancel</flux:button>',
+            '<flux:badge color="violet">Plan</flux:badge>',
+        ] as $fine) {
+            $this->assertNotContains('Flux colour off the roles', $this->rules($fine), $fine);
+        }
+
+        foreach ([
+            '<flux:progress :value="$p" color="violet" />' => 'status family',
+            '<flux:progress :value="$p" :color="$colour" />' => 'status family',
+            '<flux:button variant="primary" color="green">Save</flux:button>' => 'variant="danger"',
+            '<flux:navlist.badge color="blue">3</flux:navlist.badge>' => 'Drop color=',
+            '<flux:text color="red">Overdue</flux:text>' => 'Drop color=',
+        ] as $off => $fix) {
+            $finding = array_values(array_filter(Audit::file($off), fn (array $f): bool => $f['rule'] === 'Flux colour off the roles'));
+            $this->assertCount(1, $finding, $off);
+            $this->assertStringContainsString($fix, $finding[0]['fix'], $off);
+            $this->assertStringStartsWith('<flux:', $finding[0]['snippet']);
+        }
     }
 
     #[Test]
@@ -204,15 +240,6 @@ class AuditTest extends TestCase
         $this->assertSame([], $this->rules('<div class="mx-auto max-w-prose">'), '03 caps prose at 65 characters, which is this');
         $this->assertSame([], $this->rules('<p class="text-(length:--ds-prose)">'), 'as a type size it is what it is for');
         $this->assertSame([], $this->rules('<div class="p-(--ds-card) h-(--ds-row)">'), 'the other density tokens really are lengths');
-    }
-
-    /** @return list<string> */
-    private function publicRules(string $blade): array
-    {
-        $rules = array_values(array_unique(array_map(fn (array $f): string => $f['rule'], Audit::file($blade))));
-        sort($rules);
-
-        return $rules;
     }
 
     #[Test]
