@@ -5,6 +5,7 @@ namespace Dashcore\DesignKit\Commands;
 use Dashcore\DesignKit\Applier;
 use Dashcore\DesignKit\Contrast;
 use Dashcore\DesignKit\Source;
+use Dashcore\DesignKit\Style;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\File;
@@ -18,6 +19,11 @@ use LogicException;
  * php artisan design:apply meridian-credit-union
  * php artisan design:apply https://design.dashcore.com/designs/meridian-credit-union/pack.json
  * php artisan design:apply design/design.json
+ * php artisan design:apply --style=dashcore
+ *
+ * --style takes a built-in style instead of a design: the app imports the
+ * style's stylesheet from vendor/ rather than holding a copy of its tokens, so
+ * a release of this package restyles it with nothing to re-apply.
  *
  * A slug or a URL pulls the pack from design.dashcore.com into design/ first,
  * so the repo ends up with the same four files a downloaded zip would give it.
@@ -30,7 +36,8 @@ class ApplyCommand extends Command
     protected $signature = 'design:apply
         {source=design/design.json : A design slug, a pack URL from design.dashcore.com, or a local design file}
         {--check : Print what would change and exit 1 if anything would; write nothing}
-        {--force : Delete the Lucide icon overrides and the unused sign-in layouts without asking}';
+        {--force : Delete the Lucide icon overrides and the unused sign-in layouts without asking}
+        {--style= : A built-in style, such as dashcore, instead of a design}';
 
     protected $description = 'Apply a Dashcore design file to this kit: theme variables, fonts, brand copy, sign-in layout';
 
@@ -38,6 +45,11 @@ class ApplyCommand extends Command
 
     public function handle(): int
     {
+        $style = $this->option('style');
+        if (is_string($style) && $style !== '') {
+            return $this->applyStyle($style);
+        }
+
         $source = $this->argument('source');
         if (! is_string($source) || $source === '') {
             $this->components->error('Give a design slug, a pack URL, or the path to a design file.');
@@ -120,6 +132,87 @@ class ApplyCommand extends Command
 
         $this->line('');
         $this->components->info($changed === [] ? 'Already applied. Nothing changed.' : 'Applied. Run `npm run build` and reload.');
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * Take a built-in style. Everything it writes is a pointer at the package
+     * (an import, a source line, a script, three .env keys, and design.json
+     * naming the style), never a copy of a value the package holds.
+     */
+    private function applyStyle(string $name): int
+    {
+        $tokens = Style::tokens($name);
+        if ($tokens === null || ! Style::exists($name)) {
+            $this->components->error("No built-in style called {$name}. This release ships: dashcore.");
+
+            return self::FAILURE;
+        }
+
+        $changes = [];
+        $put = function (string $path, string $before, string $after) use (&$changes): void {
+            $changes[] = ['path' => $path, 'action' => 'write', 'after' => $after, 'changed' => $after !== $before];
+        };
+
+        $designFile = base_path('design/design.json');
+        $before = File::exists($designFile) ? File::get($designFile) : '';
+        $put($designFile, $before, json_encode(['schema' => 'dashcore-design/1', 'style' => $name], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
+
+        $css = base_path('resources/css/app.css');
+        $before = File::exists($css) ? File::get($css) : '';
+        $put($css, $before, Applier::applyStyleCss($before, $name));
+
+        $js = base_path('resources/js/app.js');
+        if (File::exists($js)) {
+            $before = File::get($js);
+            $put($js, $before, Applier::applyStyleJs($before));
+        }
+
+        // Fonts: the same two places a design's fonts go. An app on
+        // dashcore/ui loads them with <x-dashcore::fonts />, which is now this
+        // package's and reads the style, so it needs nothing here.
+        $vite = base_path('vite.config.js');
+        $head = base_path('resources/views/partials/head.blade.php');
+        if (File::exists($vite) && preg_match('/^\s*fonts:\s*\[/m', File::get($vite))) {
+            $before = File::get($vite);
+            $put($vite, $before, Applier::applyVite($before, $tokens));
+        } elseif (File::exists($head) && str_contains(File::get($head), 'fonts.bunny.net')) {
+            $before = File::get($head);
+            $put($head, $before, Applier::applyHead($before, $tokens));
+        } else {
+            $this->components->warn('No Vite fonts array and no Bunny link in partials/head.blade.php. Put <x-ds::fonts /> in <head>.');
+        }
+
+        foreach (['.env', '.env.example'] as $envFile) {
+            $envPath = base_path($envFile);
+            if (File::exists($envPath)) {
+                $before = File::get($envPath);
+                $put($envPath, $before, Applier::applyEnv($before, Applier::styleEnvValues($tokens, Style::motif($name))));
+            }
+        }
+
+        $changed = array_filter($changes, fn (array $c) => $c['changed']);
+
+        $this->components->info(sprintf('The %s style: %s, from vendor/.', $name, $tokens['fonts']['sans']['family'].' + '.$tokens['fonts']['second']['family']));
+        foreach ($changes as $c) {
+            $this->components->twoColumnDetail($c['path'], $c['changed'] ? '<fg=yellow>write</>' : '<fg=gray>unchanged</>');
+        }
+        $this->reportFluxTier();
+
+        if ($this->option('check')) {
+            $this->line('');
+            $this->components->{$changed === [] ? 'info' : 'warn'}($changed === [] ? 'Nothing to change.' : count($changed).' '.Str::plural('file', count($changed)).' would change.');
+
+            return $changed === [] ? self::SUCCESS : self::FAILURE;
+        }
+
+        foreach ($changed as $c) {
+            $this->write($c['path'], $c['after']);
+        }
+
+        $this->line('');
+        $this->components->info($changed === [] ? 'Already on the style. Nothing changed.' : 'Applied. Run `npm run build` and reload. A release of dashcore/design-kit restyles this app from here on.');
 
         return self::SUCCESS;
     }

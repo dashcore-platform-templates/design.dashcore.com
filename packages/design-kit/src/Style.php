@@ -25,6 +25,14 @@ final class Style
         return is_array($data) && is_array($data['tokens'] ?? null) ? $data['tokens'] : null;
     }
 
+    /** The motif the style takes, which the components read from config('brand.motif'). */
+    public static function motif(string $name): string
+    {
+        $data = is_file(self::jsonPath($name)) ? json_decode((string) file_get_contents(self::jsonPath($name)), true) : null;
+
+        return is_array($data) && is_string($data['motif'] ?? null) ? $data['motif'] : 'accent-bar';
+    }
+
     public static function jsonPath(string $name): string
     {
         return dirname(__DIR__).'/styles/'.basename($name).'.json';

@@ -42,7 +42,7 @@ class DesignBuildStylesCommand extends Command
     {
         $tokens = Styles::get($name);
 
-        $json = json_encode(['schema' => 'dashcore-style/1', 'style' => $name, 'tokens' => $tokens], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n";
+        $json = json_encode(['schema' => 'dashcore-style/1', 'style' => $name, 'motif' => Styles::MOTIFS[$name], 'tokens' => $tokens], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n";
 
         return [$json, Stylesheet::build($name, $tokens)];
     }
