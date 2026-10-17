@@ -13,6 +13,28 @@ namespace Dashcore\DesignKit;
  */
 final class Audit
 {
+    /**
+     * Every rule the audit can report, by the name it reports under. The
+     * ratchet uses this to tell a rule an app has zero of from a rule this
+     * release added, which is allowed at whatever it finds until the app
+     * records it. A test holds the list to the rules the code actually raises.
+     */
+    public const RULES = [
+        '--ds-prose used as a length',
+        'colour off the roles',
+        'Flux badge',
+        'Flux heading at section size',
+        'Flux Pro component',
+        'Flux table styled on the screen',
+        'hardcoded colour',
+        'Lucide icon name',
+        'page title not in the page header',
+        'spacing off the scale',
+        'tap target under 36px',
+        'text under 12px',
+        'weight off the scale',
+    ];
+
     /** Spacing steps that are not on the standard's eight-step scale (05). */
     private const OFF_SCALE = ['5', '7', '9', '10', '11', '13', '14', '15', '18', '20'];
 

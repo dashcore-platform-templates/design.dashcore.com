@@ -28,6 +28,8 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 **An app can take a style instead of a design.** New, and nothing an app on a design has to do. `php artisan design:apply --style=dashcore` points an app at the `dashcore` style in the package rather than copying a design's tokens into it, and `design/design.json` then names the style and nothing else (09). A release of the package restyles every app on the style; `design:update` re-applies it.
 
+**The audit can hold an app where it is.** New, and nothing an app has to do. `design:audit --baseline` records an app's findings by rule in `design/allowance.json`, and from then on `design:audit` fails only when a count rises (09). The allowance only shrinks. A rule a release adds is allowed until the app records it, so a new rule still never turns a build red, and `--report` still never fails.
+
 ---
 
 ## 12 October 2026
