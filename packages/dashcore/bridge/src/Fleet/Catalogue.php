@@ -50,9 +50,13 @@ final class Catalogue
      * the client's company data, in one session on a call, so no fleet
      * opens empty.
      *
+     * admin joined in 0.11.46: it is where a fleet's owner sets up the
+     * company — its name, timezone, domain and who runs it — and every
+     * other app reads that from it, so no fleet can come up without it.
+     *
      * @var list<string>
      */
-    public const REQUIRED = [self::CONTROL_PLANE, 'login', 'standards', 'tests', 'design', 'memory', 'onboarding'];
+    public const REQUIRED = [self::CONTROL_PLANE, 'login', 'standards', 'tests', 'design', 'memory', 'onboarding', 'admin'];
 
     /**
      * Keyed by short name. A null subdomain is the domain's apex — the
