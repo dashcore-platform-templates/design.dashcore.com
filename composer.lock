@@ -260,11 +260,11 @@
         },
         {
             "name": "dashcore/bridge",
-            "version": "0.11.46",
+            "version": "0.11.48",
             "dist": {
                 "type": "path",
                 "url": "packages/dashcore/bridge",
-                "reference": "5e72a3630b205e91acaddf28bf5c918de56c8b1d"
+                "reference": "fae45af4d127a6af766d8d079054584529b7d7d7"
             },
             "require": {
                 "ext-sodium": "*",
@@ -272,6 +272,7 @@
                 "php": "^8.4"
             },
             "require-dev": {
+                "brianium/paratest": "^7.27",
                 "orchestra/testbench": "^11.0",
                 "pestphp/pest": "^5.0"
             },
