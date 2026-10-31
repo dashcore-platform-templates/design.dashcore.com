@@ -101,6 +101,7 @@ final class Catalogue
         'dashboards' => ['subdomain' => 'dashboards', 'group' => 'Surface', 'repo' => 'dashcoretech/dashboards.dashcore.com'],
         'call' => ['subdomain' => 'call', 'group' => 'Domain service', 'repo' => 'dashcoretech/call.dashcore.com'],
         'admin' => ['subdomain' => 'admin', 'group' => 'Domain service', 'repo' => 'dashcoretech/admin.dashcore.com'],
+        'registry' => ['subdomain' => 'registry', 'group' => 'Domain service', 'repo' => 'dashcoretech/registry.dashcore.com'],
     ];
 
     /**
