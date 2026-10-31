@@ -30,12 +30,6 @@ class FleetInviteCommand extends Command
         $name = $this->argument('name');
         $email = $this->argument('email');
 
-        if (! is_string($name) || ! is_string($email)) {
-            $this->components->error('A name and an email address are both needed.');
-
-            return self::FAILURE;
-        }
-
         $validator = Validator::make(['name' => $name, 'email' => $email], [
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
