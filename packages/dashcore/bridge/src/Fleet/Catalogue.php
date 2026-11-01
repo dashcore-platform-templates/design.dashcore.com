@@ -103,6 +103,7 @@ final class Catalogue
         'admin' => ['subdomain' => 'admin', 'group' => 'Domain service', 'repo' => 'dashcoretech/admin.dashcore.com'],
         'registry' => ['subdomain' => 'registry', 'group' => 'Domain service', 'repo' => 'dashcoretech/registry.dashcore.com'],
         'performance' => ['subdomain' => 'performance', 'group' => 'Domain service', 'repo' => 'dashcoretech/performance.dashcore.com'],
+        'ai' => ['subdomain' => 'ai', 'group' => 'Domain service', 'repo' => 'dashcoretech/ai.dashcore.com'],
     ];
 
     /**
