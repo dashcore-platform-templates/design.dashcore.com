@@ -46,9 +46,10 @@ final class Catalogue
      * its sessions learn, what the team knows, the plan — and a fleet that
      * learns has to have somewhere to put it from its first day.
      *
-     * onboarding joined in 0.11.34: it is how a fleet gets its set-up and
-     * the client's company data, in one session on a call, so no fleet
-     * opens empty.
+     * onboarding joined in 0.11.34 and left in 0.11.51: the onboarding call
+     * runs on Dashcore's own onboarding.dashcore.com, so a client fleet does
+     * not get one. It stays in the catalogue, so a fleet that lists it (as
+     * Dashcore's own does) still has it.
      *
      * admin joined in 0.11.46: it is where a fleet's owner sets up the
      * company — its name, timezone, domain and who runs it — and every
@@ -56,7 +57,7 @@ final class Catalogue
      *
      * @var list<string>
      */
-    public const REQUIRED = [self::CONTROL_PLANE, 'login', 'standards', 'tests', 'design', 'memory', 'onboarding', 'admin'];
+    public const REQUIRED = [self::CONTROL_PLANE, 'login', 'standards', 'tests', 'design', 'memory', 'admin'];
 
     /**
      * Keyed by short name. A null subdomain is the domain's apex — the
