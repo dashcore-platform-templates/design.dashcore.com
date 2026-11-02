@@ -10,6 +10,10 @@ The full reasoning for each decision is in the cut sheet in the design repositor
 
 ---
 
+## 1 November 2026
+
+**Fleet apps sign in through the fleet's login.** A tightening, for Dashcore's catalogue apps only; client designs are unchanged apart from the drawing. 14 now makes it a must: an app people sign in to leads its sign-in with **Sign in with Dashcore**, through the bridge's sign-in redirect, admits only accounts it already holds, and has no public registration route, form or link. An API or a worker with no sign-in page is exempt, as is the login app itself. 02's sign-in now draws the login button as the one primary action, with the email form beneath it as the fallback. `design:audit` does not check this, because the proof lives in routes and migrations rather than views: Console's catalogue reads each app's main branch and opens a finding naming any app with a sign-in page but no login sign-in, or with registration open. An app without it has to act: wire the bridge's sign-in, keep `sso_subject` on its users, and drop any register route. registry and hr are the two known today.
+
 ## 17 October 2026
 
 **Any colour scale of an app's own is a finding.** A tightening, reported under the existing `brand colour scale`, which now covers every scale an app defines for itself, not only `accent-*`. The starter template ten apps came from defines `surface-50` to `surface-950`, `success-*` and `warning-*`, and its light mode inverts the surface scale, so `text-surface-100` is near-white in dark and near-black in light. That scale is those apps' whole neutral palette, about 9,300 uses across the fleet, and the audit read none of it. Tailwind's own families stay the palette rule's. The ratchet allows what an app has today until it runs `--baseline`; team and hr, which have, have none.

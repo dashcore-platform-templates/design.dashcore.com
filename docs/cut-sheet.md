@@ -64,6 +64,7 @@ The tool's Components screen also names the ten Pro components it renders, becau
 | 2.9 | Sign-in two panels, 40/60, copy fields | generator + code | keep the copy part, cut the panel geometry from prompt |
 | 2.10 | No third shell; sidebar holds no content; breadcrumbs at three levels; no footer | people | cut from prompt |
 | 2.11 | New: page titles go through `x-ds::page-header` | people | add, per 6.5 above |
+| 2.12 | New, 1 November 2026: sign-in leads with Sign in with Dashcore; no sign-up anywhere | Console's catalogue | below the marker; the generator writes copy, not the form |
 
 ## 03 Type
 
@@ -184,3 +185,5 @@ Nothing that the schema, the resolver or the rules pass enforces can change as a
 The whole section sits below the marker except its heading and one sentence. The generator needs to know the style exists and is not an option; it must never see the values, or a client design could reach for an accent or a pairing that only this style is allowed. Enforced by: people, until the adapter carries styles; then code.
 
 Settled the same day, with `dashcore/ui`'s `DESIGN.md` beside the standard. The standard's rule stood on the type scale, status colours and sidebar. `DESIGN.md`'s became everyone's for selected tabs, the danger button, table row height and the badge, each in its own section. The plan behind it is `docs/fleet-design-plan.md`.
+
+**Signing in, added 1 November 2026.** Below the marker with the rest of 14. Every catalogue app with a human UI signs in through the fleet's login, admits existing accounts only and keeps registration closed. Enforced by: Console's catalogue, which reads each app's main branch (the `sso_subject` migration, a link to the bridge's sign-in redirect, no register route), not `design:audit`, because the proof is in routes and migrations rather than in views. Why: registry reached production without it and nothing noticed.
