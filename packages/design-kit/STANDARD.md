@@ -1,6 +1,6 @@
 # The Dashcore Standard
 
-Standard version: 629ccd6b
+Standard version: 733b5865
 
 That stamp is the text below, hashed. If it differs from the one in your `design/STANDARD.md`, the standard moved since you last applied a design, and `design/CHANGELOG.md` says what changed.
 
@@ -77,7 +77,9 @@ Padding from the spacing scale for the chosen density.
 
 ## Sign-in in detail
 
-Left panel, 40 percent of the width on desktop, carries the brand. Its surface is `sunken` in light and `surface` in dark, with an optional hero image. Right panel, 60 percent, is `page` and holds the form: heading, email, password, remember me, primary button, and the secondary links.
+Left panel, 40 percent of the width on desktop, carries the brand. Its surface is `sunken` in light and `surface` in dark, with an optional hero image. Right panel, 60 percent, is `page` and holds the form: heading, the **Sign in with Dashcore** button as the one primary action, a divider, then email, password, remember me, a secondary button, and the secondary links.
+
+A fleet app signs people in through the fleet's login, so the login button comes first and is the primary. The email form beneath it is the fallback, for an account that has a password of its own. Neither one makes an account: sign-in admits people who already have one, and there is no sign-up link on this page or anywhere else. 14 says which apps this binds.
 
 ## Rules
 
@@ -1152,6 +1154,16 @@ Everything in 01 to 13 holds for these apps exactly as for any other. The style 
 | `copy` | Each app writes its own. The sign-in words are about what that app is for, so they are the one decision the fleet does not share. |
 
 Shell: `sidebar` for every app with a signed-in area. website is the public site and follows 13.
+
+## Signing in
+
+Every app in the catalogue that people sign in to signs them in through the fleet's login, `login.dashcore.com` on Dashcore's own fleet and the fleet's own login on a client's. This is a must, not part of the look, and it holds before the app's first deploy.
+
+- **Through the fleet's login.** The sign-in page leads with a **Sign in with Dashcore** button that goes to the bridge's sign-in redirect, and the app keeps the account's `sso_subject` so the same person is the same account every time. 02 draws the page.
+- **Existing accounts only.** Signing in never makes an account. A person the app does not already hold is turned away with a message saying who can invite them, not given a new, empty account.
+- **No public registration.** The app has no register route, no sign-up form and no sign-up link. Accounts are made by invitation or from the people list, by someone already inside.
+
+An app with no human UI, such as an API or a worker, has no sign-in page and is exempt. So is the login app itself, which is the provider. The starter new apps are made from ships with this already wired, and Console's catalogue reads each app's main branch for it: an app with a sign-in page but no login sign-in, or with registration open, is a finding naming the app.
 
 ## The exceptions
 

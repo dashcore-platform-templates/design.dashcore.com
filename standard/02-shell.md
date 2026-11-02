@@ -47,7 +47,9 @@ Padding from the spacing scale for the chosen density.
 
 ## Sign-in in detail
 
-Left panel, 40 percent of the width on desktop, carries the brand. Its surface is `sunken` in light and `surface` in dark, with an optional hero image. Right panel, 60 percent, is `page` and holds the form: heading, email, password, remember me, primary button, and the secondary links.
+Left panel, 40 percent of the width on desktop, carries the brand. Its surface is `sunken` in light and `surface` in dark, with an optional hero image. Right panel, 60 percent, is `page` and holds the form: heading, the **Sign in with Dashcore** button as the one primary action, a divider, then email, password, remember me, a secondary button, and the secondary links.
+
+A fleet app signs people in through the fleet's login, so the login button comes first and is the primary. The email form beneath it is the fallback, for an account that has a password of its own. Neither one makes an account: sign-in admits people who already have one, and there is no sign-up link on this page or anywhere else. 14 says which apps this binds.
 
 ## Rules
 

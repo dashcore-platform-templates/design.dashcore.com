@@ -33,7 +33,17 @@
         <form class="w-full max-w-sm space-y-(--ds-field-gap)">
             <div>
                 <h2 class="text-lg font-semibold leading-tight text-(--ds-text-strong)">Sign in</h2>
-                <p class="mt-1 text-sm text-(--ds-text-muted)">Use the email your administrator invited.</p>
+                <p class="mt-1 text-sm text-(--ds-text-muted)">Use the account your administrator invited.</p>
+            </div>
+            {{-- 14: a fleet app signs people in through the fleet's login, so
+                 that is the one primary action. The form below is the fallback
+                 for an account with a password of its own, and neither makes an
+                 account: there is no sign-up link. --}}
+            <button type="button" class="inline-flex h-(--ds-control) w-full items-center justify-center rounded-(--radius-lg) bg-(--ds-accent) text-sm font-medium text-(--ds-on-accent)">Sign in with Dashcore</button>
+            <div class="flex items-center gap-3 text-xs text-(--ds-text-muted)">
+                <span class="h-px flex-1 bg-(--ds-border)"></span>
+                or with your email
+                <span class="h-px flex-1 bg-(--ds-border)"></span>
             </div>
             <label class="block">
                 <span class="ds-label block text-(--ds-text)">Email</span>
@@ -47,7 +57,7 @@
                 <span class="grid size-4 place-items-center rounded-(--radius-sm) bg-(--ds-accent)"><flux:icon name="check" variant="micro" class="size-3 text-(--ds-on-accent)" /></span>
                 Keep me signed in
             </label>
-            <button type="button" class="inline-flex h-(--ds-control) w-full items-center justify-center rounded-(--radius-lg) bg-(--ds-accent) text-sm font-medium text-(--ds-on-accent)">Sign in</button>
+            <button type="button" class="inline-flex h-(--ds-control) w-full items-center justify-center rounded-(--radius-lg) border border-(--ds-border-strong) bg-(--ds-surface) text-sm font-medium text-(--ds-text-strong)">Sign in with email</button>
             <p class="text-center text-xs text-(--ds-text-muted)">Trouble signing in? <span class="text-(--ds-accent-content)">Ask your administrator</span></p>
         </form>
     </section>
