@@ -10,6 +10,22 @@
 
         <x-passkey-verify />
 
+        {{-- The fleet's sign-in, when this install has switched it on
+             (BRIDGE_SSO_MODE registers the route). The password form below
+             stays either way: it is the break-glass way in when the sign-in
+             server is down. --}}
+        @if (Route::has('bridge.sso.redirect'))
+            @if (session('bridge.sso.error'))
+                <p class="text-center text-sm text-(--ds-danger)" data-test="sso-error">{{ session('bridge.sso.error') }}</p>
+            @endif
+
+            <flux:button :href="route('bridge.sso.redirect')" variant="primary" class="w-full" data-test="sso-button">
+                {{ __('Sign in with :company', ['company' => config('fleet.company.name')]) }}
+            </flux:button>
+
+            <p class="text-center text-xs text-(--ds-text-muted)">{{ __('or with your password') }}</p>
+        @endif
+
         <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
             @csrf
 
