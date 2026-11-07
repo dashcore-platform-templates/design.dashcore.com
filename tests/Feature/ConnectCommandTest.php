@@ -27,6 +27,8 @@ class ConnectCommandTest extends TestCase
 
     private string $realBase;
 
+    private string|false $githubRepository;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -40,10 +42,20 @@ class ConnectCommandTest extends TestCase
 
         $this->realBase = $this->app->basePath();
         $this->app->setBasePath($this->fresh);
+
+        // Inside Actions the command takes GITHUB_REPOSITORY over the remote,
+        // and a Templates copy runs under another owner, so the scratch
+        // repository's remote is only read once that is out of the way.
+        $this->githubRepository = getenv('GITHUB_REPOSITORY');
+        putenv('GITHUB_REPOSITORY');
     }
 
     protected function tearDown(): void
     {
+        if ($this->githubRepository !== false) {
+            putenv('GITHUB_REPOSITORY='.$this->githubRepository);
+        }
+
         $this->app->setBasePath($this->realBase);
         File::deleteDirectory($this->fresh);
 
