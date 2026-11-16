@@ -1,0 +1,44 @@
+name: phpstan
+
+# The PHP suite, Pint and design:audit no longer run on GitHub (REQ-1049):
+# our gate machines run them on every pull request and post the commit
+# status "gate", the check a pull request merges on. `composer ci:check`
+# also ran PHPStan (`composer types:check`), which the gate does not, so
+# that part alone stays here.
+on:
+  push:
+    branches:
+      - main
+      - 'maintain/**'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: '8.5'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run PHPStan
+        run: composer types:check
