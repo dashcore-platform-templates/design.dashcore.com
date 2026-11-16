@@ -36,6 +36,8 @@ jobs:
           php artisan key:generate
 
       - name: Report to design.dashcore.com
+        # Redundant with the trigger, but design:connect reads this guard.
+        if: github.ref_name == github.event.repository.default_branch
         env:
           DESIGN_SOURCE: https://design.dashcore.com
         run: php artisan design:audit --report

@@ -132,7 +132,7 @@ class ConnectCommandTest extends TestCase
         $this->app->setBasePath($this->realBase);
 
         $this->artisan('design:connect')
-            ->expectsOutputToContain('.github/workflows/tests.yml')
+            ->expectsOutputToContain('.github/workflows/design-report.yml')
             ->doesntExpectOutputToContain('No workflow reports to the board')
             ->assertSuccessful();
     }
