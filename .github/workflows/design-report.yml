@@ -1,0 +1,43 @@
+name: Design report
+
+# Tests and lint are no longer run on GitHub (REQ-1049): our gate machines
+# run the suite, Pint and design:audit on every pull request and post the
+# commit status "gate". This only reports the default branch's design audit
+# to design.dashcore.com, proving which repository it is with GitHub's own
+# OIDC token, which only an Actions run can mint.
+on:
+  push:
+    branches: ['maintain/0.4']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  report:
+    name: design-report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Report to design.dashcore.com
+        # Redundant with the trigger, but design:connect reads this guard.
+        if: github.ref_name == github.event.repository.default_branch
+        env:
+          DESIGN_SOURCE: https://design.dashcore.com
+        run: php artisan design:audit --report
