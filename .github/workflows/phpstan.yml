@@ -17,7 +17,10 @@ permissions:
 
 jobs:
   phpstan:
-    runs-on: ubuntu-latest
+    # The runner comes from the org variable CI_RUNNER (REQ-1322). Templates sets it,
+    # for private repositories only, to its self-hosted runner; where it is unset
+    # (dashcoretech, or a public repository such as this one) jobs stay on GitHub's.
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '"ubuntu-latest"') }}
 
     steps:
       - name: Checkout code
